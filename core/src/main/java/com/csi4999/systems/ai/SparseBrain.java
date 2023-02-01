@@ -1,4 +1,4 @@
-package com.csi4999.lwjgl3.systems.ai;
+package com.csi4999.systems.ai;
 
 import com.badlogic.gdx.math.RandomXS128;
 
@@ -18,15 +18,19 @@ public class SparseBrain implements Brain{
     private float[] neuronValues;
     private float[] pNeuronValues;
     private float[] weights;
+    private float[] bias;
     private int[] edges;
     private float[] output;
+
+    private int currentInputSize;
 
 
     public SparseBrain() {} // empty constructor for Kryo
 
     // Full constructor
     public SparseBrain(int inputs, int outputs, int hiddenNeurons, float inputToHiddenConnectivity,
-                       float inputToOutputConnectivity, float hiddenToHiddenConnectivity, float hiddenToOutputConnectivity, RandomXS128 rand) {
+                       float inputToOutputConnectivity, float hiddenToHiddenConnectivity, float hiddenToOutputConnectivity, Random rand) {
+        this.currentInputSize = inputs;
         // calculate number of weights between input, hidden, output using connectivity
         // we have these possible connections: {input, hidden} -> {hidden, output}
         int inputToHiddenWeights = (int) (inputToHiddenConnectivity * inputs * hiddenNeurons);
@@ -42,6 +46,7 @@ public class SparseBrain implements Brain{
 
         this.neuronValues = new float[neurons];
         this.pNeuronValues = new float[neurons];
+        this.bias = new float[neurons];
         this.weights = new float[weights];
         this.edges = new int[weights * 2];
         this.output = new float[outputs];
@@ -50,9 +55,11 @@ public class SparseBrain implements Brain{
         Arrays.fill(this.neuronValues, 0f);
         Arrays.fill(this.pNeuronValues, 0f);
 
-        // generate initial weights with mean = 0, std = 1
+        // generate initial weights & bias with mean = 0, std = 1
         for (int i = 0; i < this.weights.length; i++)
             this.weights[i] = (float) rand.nextGaussian();
+        for (int i = 0; i < this.bias.length; i++)
+            this.bias[i] = (float) rand.nextGaussian();
 
         // to select the initial edges, make four lists of the possible edges
         // then select without replacement from these lists
@@ -136,6 +143,9 @@ public class SparseBrain implements Brain{
         // perform sparse vector-matrix multiply thingy
         for (int i = 0; i < edges.length; i += 2)
             neuronValues[edges[i+1]] += pNeuronValues[edges[i]] * weights[i/2];
+        // add bias
+        for (int i = 0; i < neuronValues.length; i++)
+            neuronValues[i] += bias[i];
 
         // apply activation function
         for (int i = 0; i < neuronValues.length; i++)
@@ -144,6 +154,32 @@ public class SparseBrain implements Brain{
         // copy output neurons to output
         System.arraycopy(this.neuronValues, neuronValues.length - output.length, output, 0, output.length);
 
+        // swap current and previous neurons
+        float[] temp = this.neuronValues;
+        this.neuronValues = this.pNeuronValues;
+        this.pNeuronValues = temp;
+
         return output;
+    }
+
+    @Override
+    public void resizeInput(int newInputSize) {
+        if (currentInputSize != newInputSize) {
+            int delta = newInputSize - currentInputSize;
+            float[] newNeurons = new float[neuronValues.length + delta];
+            float[] newPNeurons = new float[neuronValues.length + delta];
+            if (newInputSize > currentInputSize) {
+                // increase size of edges and neurons
+
+            } else {
+
+            }
+            currentInputSize = newInputSize;
+        }
+    }
+
+    @Override
+    public void resizeOutput(int newOutputSize) {
+
     }
 }

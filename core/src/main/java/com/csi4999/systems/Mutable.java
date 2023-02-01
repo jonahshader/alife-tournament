@@ -1,4 +1,4 @@
-package com.csi4999.lwjgl3.systems;
+package com.csi4999.systems;
 
 import java.util.Random;
 
