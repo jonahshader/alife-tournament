@@ -164,15 +164,51 @@ public class SparseBrain implements Brain{
 
     @Override
     public void resizeInput(int newInputSize) {
+        // weights are the only thing that don't change
         if (currentInputSize != newInputSize) {
             int delta = newInputSize - currentInputSize;
             float[] newNeurons = new float[neuronValues.length + delta];
             float[] newPNeurons = new float[neuronValues.length + delta];
+            float[] newBias = new float[neuronValues.length + delta];
+            Arrays.fill(newNeurons, 0f);
+            Arrays.fill(newPNeurons, 0f);
+            Arrays.fill(newBias, 0f); // new neurons are only inputs, so we don't care about initializing bias with gaussian
+
+            System.arraycopy(neuronValues, 0, newNeurons, 0, currentInputSize);
+            System.arraycopy(neuronValues, 0, newPNeurons, 0, currentInputSize);
+            System.arraycopy(bias, 0, newBias, 0, bias.length);
+
+            System.arraycopy(neuronValues, currentInputSize, newNeurons, newInputSize, neuronValues.length - currentInputSize);
+            System.arraycopy(neuronValues, currentInputSize, newPNeurons, newInputSize, neuronValues.length - currentInputSize);
+            System.arraycopy(bias, currentInputSize, newBias, newInputSize, bias.length - currentInputSize);
+
             if (newInputSize > currentInputSize) {
-                // increase size of edges and neurons
-
+                // shift down edges that are greater than or equal to currentInputSize
+                for (int i = 0; i < edges.length; i++) {
+                    if (edges[i] >= currentInputSize) edges[i] += delta;
+                }
             } else {
-
+                // delete edges that are greater than or equal to new
+                // first, count the number of edges that need to be deleted
+                int toDelete = 0;
+                for (int i = 0; i < edges.length; i += 2) {
+                    if ((edges[i] < currentInputSize && edges[i] >= newInputSize) || (edges[i+1] < currentInputSize && edges[i+1] >= newInputSize)) toDelete++;
+                }
+                int[] newEdges = new int[edges.length - toDelete * 2];
+                float[] newWeights = new float[newEdges.length/2];
+                // copy over to new arrays
+                int index = 0;
+                for (int i = 0; i < edges.length; i += 2) {
+                    // if we are keeping this edge,
+                    if ((edges[i] >= currentInputSize || edges[i] < newInputSize) && (edges[i + 1] >= currentInputSize || edges[i + 1] < newInputSize)) {
+                        newEdges[index++] = edges[i];
+                        newEdges[index++] = edges[i+1];
+                        newWeights[index/2] = weights[i/2];
+                    }
+                }
+                // swap in new arrays
+                edges = newEdges;
+                weights = newWeights;
             }
             currentInputSize = newInputSize;
         }
