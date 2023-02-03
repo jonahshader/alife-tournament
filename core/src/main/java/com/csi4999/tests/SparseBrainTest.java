@@ -32,7 +32,7 @@ public class SparseBrainTest {
         Random r = new RandomXS128(1);
         for (int i = 0; i < 1000; i++) {
             b1.mutate(1f, r);
-//            System.out.println(Arrays.toString(b1.run(input)));
+            System.out.println(Arrays.toString(b1.run(input)));
         }
     }
 }

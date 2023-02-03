@@ -121,13 +121,17 @@ public class SparseBrain implements Brain {
         return -1;
     }
 
-    private boolean tryAddEdge(int source, int destination) {
+    private boolean tryAddEdge(int source, int destination, float weight) {
         if (findEdge(source, destination) == -1) {
             int[] newEdges = new int[edges.length+2];
+            float[] newWeights = new float[newEdges.length/2];
             System.arraycopy(edges, 0, newEdges, 0, edges.length);
+            System.arraycopy(weights, 0, newWeights, 0, weights.length);
             newEdges[newEdges.length-2] = source;
             newEdges[newEdges.length-1] = destination;
+            newWeights[newWeights.length-1] = weight;
             edges = newEdges;
+            weights = newWeights;
             return true;
         } else {
             return false;
@@ -135,14 +139,20 @@ public class SparseBrain implements Brain {
     }
 
     private boolean tryRemoveEdge(int source, int destination) {
+        // TODO: since we don't care about edge order, instead of doing two arraycopies per array, just swap removed
+        // edge with the last edge then copy all over except for last
         int edgePos = findEdge(source, destination);
         if (edgePos == -1) {
             return false;
         } else {
             int[] newEdges = new int[edges.length-2];
+            float[] newWeights = new float[newEdges.length/2];
             System.arraycopy(edges, 0, newEdges, 0, edgePos);
-            System.arraycopy(edges, edgePos+2, newEdges, edgePos, edges.length - (edgePos+2));
+            System.arraycopy(edges, edgePos+2, newEdges, edgePos, edges.length - edgePos - 2);
+            System.arraycopy(weights, 0, newWeights, 0, edgePos/2);
+            System.arraycopy(weights, edgePos/2+1, newWeights, edgePos/2, (edges.length - edgePos - 2)/2);
             edges = newEdges;
+            weights = newWeights;
             return true;
         }
     }
@@ -155,7 +165,7 @@ public class SparseBrain implements Brain {
             // pick random edge from {in, hidden} x {hidden, out}
             int src = rand.nextInt(neuronValues.length - output.length);
             int dst = rand.nextInt(currentInputSize, neuronValues.length);
-            if (tryAddEdge(src, dst)) {
+            if (tryAddEdge(src, dst, (float) rand.nextGaussian())) {
                 System.out.println("Added edge: " + src + " -> " + dst);
             } else {
                 System.out.println("Failed to add edge: " + src + " -> " + dst);
@@ -173,15 +183,17 @@ public class SparseBrain implements Brain {
         } else if (rn < (ADD_EDGE_CHANCE + REMOVE_EDGE_CHANCE + ADD_NEURON_CHANCE) * amount) {
             // add (hidden) neuron
             int hiddenNeurons = neuronValues.length - currentInputSize - output.length;
-            if (hiddenNeurons > 0) {
-                int toRemove = rand.nextInt(hiddenNeurons) + currentInputSize;
-                removeNeuron(toRemove);
-            }
+            int toAdd = rand.nextInt(hiddenNeurons) + currentInputSize;
+            insertNeuron(toAdd, (float) rand.nextGaussian());
+            System.out.println("Added neuron " + toAdd);
         } else if (rn < (ADD_EDGE_CHANCE + REMOVE_EDGE_CHANCE + ADD_NEURON_CHANCE + REMOVE_NEURON_CHANCE) * amount) {
             // remove (hidden) neuron
             int hiddenNeurons = neuronValues.length - currentInputSize - output.length;
-            int toAdd = rand.nextInt(hiddenNeurons) + currentInputSize;
-            insertNeuron(toAdd, (float) rand.nextGaussian());
+            if (hiddenNeurons > 0) {
+                int toRemove = rand.nextInt(hiddenNeurons) + currentInputSize;
+                removeNeuron(toRemove);
+                System.out.println("Removed neuron " + toRemove);
+            }
         }
 
         // mutate weights
@@ -303,7 +315,9 @@ public class SparseBrain implements Brain {
         int toDelete = 0;
         for (int i = 0; i < edges.length; i += 2)
             if (edges[i] == neuronIndex || edges[i+1] == neuronIndex) toDelete++;
-
+        System.out.println("Deleting " + toDelete + " edges.");
+        System.out.println("Edges: " + edges.length);
+        System.out.println("Weights: " + weights.length);
         int[] newEdges = new int[edges.length - toDelete * 2];
         float[] newWeights = new float[newEdges.length / 2];
         // copy over valid edges
@@ -319,6 +333,12 @@ public class SparseBrain implements Brain {
         // swap
         edges = newEdges;
         weights = newWeights;
+
+        // shift up edges > neuronIndex
+        for (int i = 0; i < edges.length; i++)
+            if (edges[i] > neuronIndex) edges[i]--;
+
+
     }
 
 }
