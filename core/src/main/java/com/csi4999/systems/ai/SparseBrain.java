@@ -1,7 +1,5 @@
 package com.csi4999.systems.ai;
 
-import com.badlogic.gdx.math.RandomXS128;
-
 import java.util.*;
 
 public class SparseBrain implements Brain {
