@@ -1,13 +1,13 @@
 package com.csi4999.systems.ai;
 
-import com.badlogic.gdx.math.RandomXS128;
-
 import java.util.*;
 
-public class SparseBrain implements Brain{
+public class SparseBrain implements Brain {
     // TODO: change this (and other systems maybe) to target a number of edges?
     private static final float ADD_EDGE_CHANCE = 0.025f;
     private static final float REMOVE_EDGE_CHANCE = 0.025f;
+    private static final float ADD_NEURON_CHANCE = 0.01f;
+    private static final float REMOVE_NEURON_CHANCE = 0.01f;
     private static final float MUTATE_WEIGHT_STD = 0.01f;
     // TODO: cycles can form that do not impact the output, but through mutations connections can form to these cycles
     // enabling them to impact the output. optimizing these out would improve performance, but these dormant cycles
@@ -109,7 +109,6 @@ public class SparseBrain implements Brain{
     }
 
     /**
-     *
      * @param source - the source of the edge
      * @param destination - the destination of the edge
      * @return index of the edge's source in this.edges, -1 if not found
@@ -120,13 +119,79 @@ public class SparseBrain implements Brain{
         return -1;
     }
 
+    private boolean tryAddEdge(int source, int destination, float weight) {
+        if (findEdge(source, destination) == -1) {
+            int[] newEdges = new int[edges.length+2];
+            float[] newWeights = new float[newEdges.length/2];
+            System.arraycopy(edges, 0, newEdges, 0, edges.length);
+            System.arraycopy(weights, 0, newWeights, 0, weights.length);
+            newEdges[newEdges.length-2] = source;
+            newEdges[newEdges.length-1] = destination;
+            newWeights[newWeights.length-1] = weight;
+            edges = newEdges;
+            weights = newWeights;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean tryRemoveEdge(int source, int destination) {
+        // TODO: since we don't care about edge order, instead of doing two arraycopies per array, just swap removed
+        // edge with the last edge then copy all over except for last
+        int edgePos = findEdge(source, destination);
+        if (edgePos == -1) {
+            return false;
+        } else {
+            int[] newEdges = new int[edges.length-2];
+            float[] newWeights = new float[newEdges.length/2];
+            System.arraycopy(edges, 0, newEdges, 0, edgePos);
+            System.arraycopy(edges, edgePos+2, newEdges, edgePos, edges.length - edgePos - 2);
+            System.arraycopy(weights, 0, newWeights, 0, edgePos/2);
+            System.arraycopy(weights, edgePos/2+1, newWeights, edgePos/2, (edges.length - edgePos - 2)/2);
+            edges = newEdges;
+            weights = newWeights;
+            return true;
+        }
+    }
+
     @Override
     public void mutate(float amount, Random rand) {
         float rn = rand.nextFloat();
         if (rn < ADD_EDGE_CHANCE * amount) {
-            // TODO add edge
-        } else if (rn < ADD_EDGE_CHANCE * amount + REMOVE_EDGE_CHANCE + amount) {
-            // TODO remove edge
+            // add edge
+            // pick random edge from {in, hidden} x {hidden, out}
+            int src = rand.nextInt(neuronValues.length - output.length);
+            int dst = rand.nextInt(currentInputSize, neuronValues.length);
+            if (tryAddEdge(src, dst, (float) rand.nextGaussian())) {
+                System.out.println("Added edge: " + src + " -> " + dst);
+            } else {
+                System.out.println("Failed to add edge: " + src + " -> " + dst);
+            }
+        } else if (rn < (ADD_EDGE_CHANCE + REMOVE_EDGE_CHANCE) * amount) {
+            // remove edge
+            // pick random edge from {in, hidden} x {hidden, out}
+            int src = rand.nextInt(neuronValues.length - output.length);
+            int dst = rand.nextInt(currentInputSize, neuronValues.length);
+            if (tryRemoveEdge(src, dst)) {
+                System.out.println("Removed edge: " + src + " -> " + dst);
+            } else {
+                System.out.println("Failed to remove edge: " + src + " -> " + dst);
+            }
+        } else if (rn < (ADD_EDGE_CHANCE + REMOVE_EDGE_CHANCE + ADD_NEURON_CHANCE) * amount) {
+            // add (hidden) neuron
+            int hiddenNeurons = neuronValues.length - currentInputSize - output.length;
+            int toAdd = rand.nextInt(hiddenNeurons) + currentInputSize;
+            insertNeuron(toAdd, (float) rand.nextGaussian());
+            System.out.println("Added neuron " + toAdd);
+        } else if (rn < (ADD_EDGE_CHANCE + REMOVE_EDGE_CHANCE + ADD_NEURON_CHANCE + REMOVE_NEURON_CHANCE) * amount) {
+            // remove (hidden) neuron
+            int hiddenNeurons = neuronValues.length - currentInputSize - output.length;
+            if (hiddenNeurons > 0) {
+                int toRemove = rand.nextInt(hiddenNeurons) + currentInputSize;
+                removeNeuron(toRemove);
+                System.out.println("Removed neuron " + toRemove);
+            }
         }
 
         // mutate weights
@@ -163,23 +228,117 @@ public class SparseBrain implements Brain{
     }
 
     @Override
-    public void resizeInput(int newInputSize) {
-        if (currentInputSize != newInputSize) {
-            int delta = newInputSize - currentInputSize;
-            float[] newNeurons = new float[neuronValues.length + delta];
-            float[] newPNeurons = new float[neuronValues.length + delta];
-            if (newInputSize > currentInputSize) {
-                // increase size of edges and neurons
-
-            } else {
-
-            }
-            currentInputSize = newInputSize;
-        }
+    public void insertInput(int inputIndex, Random rand) {
+        insertNeuron(inputIndex, (float) rand.nextGaussian());
+        currentInputSize++;
     }
 
     @Override
-    public void resizeOutput(int newOutputSize) {
+    public void insertOutput(int outputIndex, Random rand) {
+        insertNeuron(outputIndex + neuronValues.length - output.length, (float) rand.nextGaussian());
+        float[] newOutput = new float[output.length+1];
+        System.arraycopy(output, 0, newOutput, 0, output.length);
+        newOutput[newOutput.length-1] = 0f;
+        output = newOutput;
+    }
+
+    @Override
+    public void removeInput(int inputIndex) {
+        assert(currentInputSize > 0);
+        removeNeuron(inputIndex);
+        currentInputSize--;
+    }
+
+    @Override
+    public void removeOutput(int outputIndex) {
+        assert(output.length > 1); // can't have zero length array, no outputs doesn't even make sense
+        removeNeuron(outputIndex + neuronValues.length - output.length);
+        float[] newOutput = new float[output.length-1];
+        System.arraycopy(output, 0, newOutput, 0, output.length);
+        output = newOutput;
+    }
+
+    private void insertNeuron(int neuronIndex, float neuronBias) {
+        float[] newNeurons = new float[neuronValues.length + 1];
+        float[] newPNeurons = new float[neuronValues.length + 1];
+        float[] newBias = new float[neuronValues.length + 1];
+        // copy the first chunk over (up to neuronIndex)
+        if (neuronIndex > 0) {
+            System.arraycopy(neuronValues, 0, newNeurons, 0, neuronIndex);
+            System.arraycopy(pNeuronValues, 0, newPNeurons, 0, neuronIndex);
+            System.arraycopy(bias, 0, newBias, 0, neuronIndex);
+        }
+        // copy the second chunk over (after neuronIndex)
+        if (neuronValues.length-neuronIndex > 0) {
+            System.arraycopy(neuronValues, neuronIndex, newNeurons, neuronIndex + 1, neuronValues.length - neuronIndex);
+            System.arraycopy(pNeuronValues, neuronIndex, newPNeurons, neuronIndex + 1, pNeuronValues.length - neuronIndex);
+            System.arraycopy(bias, neuronIndex, newBias, neuronIndex + 1, bias.length - neuronIndex);
+        }
+        // init
+        newNeurons[neuronIndex] = 0f;
+        newPNeurons[neuronIndex] = 0f;
+        newBias[neuronIndex] = neuronBias;
+        // swap
+        neuronValues = newNeurons;
+        pNeuronValues = newPNeurons;
+        bias = newBias;
+
+        // shift down edges >= neuronIndex
+        for (int i = 0; i < edges.length; i++)
+            if (edges[i] >= neuronIndex) edges[i]++;
+    }
+
+    private void removeNeuron(int neuronIndex) {
+        float[] newNeurons = new float[neuronValues.length - 1];
+        float[] newPNeurons = new float[neuronValues.length - 1];
+        float[] newBias = new float[neuronValues.length - 1];
+        // copy the first chunk over (up to neuronIndex)
+        if (neuronIndex > 0) {
+            System.arraycopy(neuronValues, 0, newNeurons, 0, neuronIndex);
+            System.arraycopy(pNeuronValues, 0, newPNeurons, 0, neuronIndex);
+            System.arraycopy(bias, 0, newBias, 0, neuronIndex);
+        }
+        // copy the second chunk over (after neuronIndex)
+        if (neuronValues.length-neuronIndex > 0) {
+            System.arraycopy(neuronValues, neuronIndex + 1, newNeurons, neuronIndex, neuronValues.length - (neuronIndex + 1));
+            System.arraycopy(pNeuronValues, neuronIndex + 1, newPNeurons, neuronIndex, pNeuronValues.length - (neuronIndex + 1));
+            System.arraycopy(bias, neuronIndex + 1, newBias, neuronIndex, bias.length - (neuronIndex + 1));
+        }
+        // swap
+        neuronValues = newNeurons;
+        pNeuronValues = newPNeurons;
+        bias = newBias;
+
+        // remove newly invalid edges
+        int toDelete = 0;
+        for (int i = 0; i < edges.length; i += 2)
+            if (edges[i] == neuronIndex || edges[i+1] == neuronIndex) toDelete++;
+        System.out.println("Deleting " + toDelete + " edges.");
+        System.out.println("Edges: " + edges.length);
+        System.out.println("Weights: " + weights.length);
+        int[] newEdges = new int[edges.length - toDelete * 2];
+        float[] newWeights = new float[newEdges.length / 2];
+        // copy over valid edges
+        int currentEdge = 0;
+        for (int i = 0; i < edges.length; i += 2) {
+            if (edges[i] != neuronIndex && edges[i + 1] != neuronIndex) {
+                newWeights[currentEdge/2] = weights[i/2];
+                newEdges[currentEdge++] = edges[i];
+                newEdges[currentEdge++] = edges[i+1];
+            }
+        }
+
+        // swap
+        edges = newEdges;
+        weights = newWeights;
+
+        // shift up edges > neuronIndex
+        for (int i = 0; i < edges.length; i++)
+            if (edges[i] > neuronIndex) edges[i]--;
+
 
     }
+
 }
+
+
