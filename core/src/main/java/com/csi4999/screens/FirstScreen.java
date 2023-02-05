@@ -1,4 +1,4 @@
-package com.csi4999;
+package com.csi4999.screens;
 
 import com.badlogic.gdx.Screen;
 
