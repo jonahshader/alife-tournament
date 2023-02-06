@@ -27,7 +27,6 @@ public class PanCam implements InputProcessor {
         lastTouchY = screenY;
         float screenToWorldRatio = Math.min(viewport.getWorldWidth() / (float) Gdx.graphics.getWidth(),
             viewport.getWorldHeight() / (float) Gdx.graphics.getHeight());
-        System.out.println(screenToWorldRatio);
         float scaleFactor = cam.zoom * screenToWorldRatio;
         cam.translate(-dx * scaleFactor, dy * scaleFactor, 0);
         return true;
