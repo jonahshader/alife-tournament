@@ -26,8 +26,8 @@ public class PhysicsObject {
     public PhysicsObject() {    }
     public void move(float dt) {
 
-        velocity = velocity.mulAdd(acceleration, dt);
-        position = position.mulAdd(velocity, dt);
+        velocity.mulAdd(acceleration, dt);
+        position.mulAdd(velocity, dt);
 
     }
     public float getX () {
@@ -35,19 +35,16 @@ public class PhysicsObject {
     }
 
     public void setX (float X) {
-        if (position.x != X) {
             position.x = X;
-        }
     }
 
     public float getY () {
         return position.y;
     }
 
-    public void setY (float Y) {
-        if (position.y != Y) {
+    public void setY (float Y){
             position.y = Y;
-        }
+
     }
 
 }
