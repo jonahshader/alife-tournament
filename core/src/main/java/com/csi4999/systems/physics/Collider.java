@@ -41,6 +41,4 @@ public abstract class Collider extends PhysicsObject {
         super.move(dt);
         computeBounds();
     }
-
-    abstract void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha);
 }

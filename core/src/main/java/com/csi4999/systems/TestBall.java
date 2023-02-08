@@ -23,7 +23,8 @@ public class TestBall extends Circle {
         super(position, velocity, acceleration, radius);
     }
 
-    void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
+    @Override
+    public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
         shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
         shapeDrawer.filledCircle(0f, 0f, this.radius);
     }

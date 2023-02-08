@@ -48,9 +48,9 @@ public abstract class Circle extends Collider {
         // hopefully scale is uniform. take the max just in case
         transformedRadius = radius * Math.max(Math.abs(transformedScale.x), Math.abs(transformedScale.y));
 
-        bounds.setSize(transformedRadius);
+        bounds.setSize(transformedRadius * 2);
         bounds.setCenter(transformedPos.x, transformedPos.y);
     }
 
-    abstract void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha);
+//    abstract void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha);
 }

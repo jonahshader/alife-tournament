@@ -62,7 +62,7 @@ public abstract class PhysicsObject {
         resetTransform(batch);
     }
 
-    abstract void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha);
+    abstract public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha);
 
     public float getX() {
         return position.x;
