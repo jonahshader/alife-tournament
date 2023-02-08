@@ -16,27 +16,26 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 
-public class SettingsScreen implements Screen {
+public class SavedEntitiesScreen implements Screen {
     private TextureAtlas atlas;
     private Skin skin;
-    private final OrthographicCamera settingsCam;
-    private final FitViewport settingsViewport;
+    private final OrthographicCamera savedEntitiesCam;
+    private final FitViewport savedEntitiesViewport;
     private final ALifeApp app;
     private Stage stage;
-
-    public SettingsScreen(ALifeApp app) {
+    public SavedEntitiesScreen(ALifeApp app) {
         this.app = app;
 
         atlas = new TextureAtlas("ui/neutralizer/skin/neutralizer-ui.atlas");
         skin = new Skin(Gdx.files.internal("ui/neutralizer/skin/neutralizer-ui.json"));
 
-        settingsCam = new OrthographicCamera();
-        settingsViewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), settingsCam);
+        savedEntitiesCam = new OrthographicCamera();
+        savedEntitiesViewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), savedEntitiesCam);
 
-        settingsCam.position.set(settingsCam.viewportWidth/2, settingsCam.viewportHeight/2, 0);
-        settingsCam.update();
+        savedEntitiesCam.position.set(savedEntitiesCam.viewportWidth/2, savedEntitiesCam.viewportHeight/2, 0);
+        savedEntitiesCam.update();
 
-        stage = new Stage(settingsViewport, app.batch);
+        stage = new Stage(savedEntitiesViewport, app.batch);
         Gdx.input.setInputProcessor(stage);
     }
     @Override
@@ -49,7 +48,7 @@ public class SettingsScreen implements Screen {
 
         TextButton backButton = new TextButton("Go Back", skin);
         backButton.setColor(1f, 0f, 0f, 1f);
-        TextButton saveButton = new TextButton("Save Settings", skin);
+        TextButton option2 = new TextButton("Placeholder", skin);
 
 
         backButton.addListener(new ClickListener(){
@@ -59,16 +58,16 @@ public class SettingsScreen implements Screen {
             }
         });
 
-        saveButton.addListener(new ClickListener(){
+        option2.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // TODO: Save whatever settings are changed
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
             }
         });
 
 
         mainTable.row().pad(0, 0, 50, 0);
-        mainTable.add(saveButton).fill().uniform();
+        mainTable.add(option2).fill().uniform();
         mainTable.row().pad(0, 0, 10, 0);
         mainTable.add(backButton).fill().uniform();
 
