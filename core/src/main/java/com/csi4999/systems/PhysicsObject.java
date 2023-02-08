@@ -2,10 +2,7 @@ package com.csi4999.systems;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Affine2;
-import com.badlogic.gdx.math.Matrix3;
-import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.*;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
@@ -17,10 +14,13 @@ public abstract class PhysicsObject {
     public Vector2 acceleration;
     public Vector2 position;
 
-    private final Matrix4 oldTransform = new Matrix4();
-    private final Matrix4 computedTransform = new Matrix4();
+    private Matrix4 oldTransform;
+    protected Matrix4 computedTransform;
 
-    public final Color color = new Color(1, 1, 1, 1);
+    protected Vector3 transformedPos;
+    protected Vector3 transformedScale;
+
+    public Color color;
 
     public Vector2 scale;
 
@@ -88,6 +88,11 @@ public abstract class PhysicsObject {
         this.children = new ArrayList<>();
         this.worldTransform = new Affine2().idt();
         this.scale = new Vector2(1, 1);
+        this.oldTransform = new Matrix4();
+        this.computedTransform = new Matrix4();
+        this.color = new Color(1, 1, 1, 1);
+        this.transformedPos = new Vector3();
+        this.transformedScale = new Vector3();
     }
 
     // assumes the parent's worldTransform is accurate
@@ -96,6 +101,11 @@ public abstract class PhysicsObject {
         if (parent != null)
             worldTransform.preMul(parent.worldTransform);
         computedTransform.set(worldTransform);
+
+        // get translation and scale for collision use
+        computedTransform.getTranslation(transformedPos);
+        computedTransform.getScale(transformedScale);
+
         return computedTransform;
     }
 

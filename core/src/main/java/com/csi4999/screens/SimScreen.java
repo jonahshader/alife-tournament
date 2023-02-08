@@ -27,15 +27,13 @@ public class SimScreen implements Screen {
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
         Gdx.input.setInputProcessor(new PanCam(worldViewport, worldCam)); // TODO: use multiplexer
 
-        ball1 = new TestBall(new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0));
+        ball1 = new TestBall(new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), 16f);
         ball1.color.b = 0;
         ball1.rotationDegrees = 0;
         ball1.velocity.x = 6;
-        ball2 = new TestBall(new Vector2(32, 0), new Vector2(0, 0), new Vector2(0, 0));
+        ball2 = new TestBall(new Vector2(32, 0), new Vector2(0, 0), new Vector2(0, 0), 12f);
         ball2.color.g = 0;
         ball1.getChildren().add(ball2);
-
-        ball2.radius = 3f;
     }
 
     @Override
@@ -55,6 +53,7 @@ public class SimScreen implements Screen {
         app.shapeDrawer.filledCircle(0f, 0f, 32f);
 
         ball1.draw(app.batch, app.shapeDrawer, null, 1f);
+        ball1.renderBounds(app.shapeDrawer);
 
 
         app.batch.end();
