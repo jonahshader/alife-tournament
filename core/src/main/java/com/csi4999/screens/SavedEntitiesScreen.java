@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -17,7 +16,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 
 public class SavedEntitiesScreen implements Screen {
-    private TextureAtlas atlas;
     private Skin skin;
     private final OrthographicCamera savedEntitiesCam;
     private final FitViewport savedEntitiesViewport;
@@ -26,11 +24,10 @@ public class SavedEntitiesScreen implements Screen {
     public SavedEntitiesScreen(ALifeApp app) {
         this.app = app;
 
-        atlas = new TextureAtlas("ui/neutralizer/skin/neutralizer-ui.atlas");
         skin = new Skin(Gdx.files.internal("ui/neutralizer/skin/neutralizer-ui.json"));
 
         savedEntitiesCam = new OrthographicCamera();
-        savedEntitiesViewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), savedEntitiesCam);
+        savedEntitiesViewport = new FitViewport(400, 400, savedEntitiesCam);
 
         savedEntitiesCam.position.set(savedEntitiesCam.viewportWidth/2, savedEntitiesCam.viewportHeight/2, 0);
         savedEntitiesCam.update();

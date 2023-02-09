@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -17,27 +16,23 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 
 public class MainMenuScreen implements Screen {
-
-    private TextureAtlas atlas;
     private Skin skin;
     private final OrthographicCamera menuCam;
     private final FitViewport menuViewport;
     private final ALifeApp app;
     private Stage stage;
-
     private BitmapFont titleFont;
     private Color titleFontColor;
 
     public MainMenuScreen(ALifeApp app) {
         this.app = app;
 
-        atlas = new TextureAtlas("ui/neutralizer/skin/neutralizer-ui.atlas");
         skin = new Skin(Gdx.files.internal("ui/neutralizer/skin/neutralizer-ui.json"));
         titleFont = new BitmapFont(Gdx.files.internal("ui/neutralizer/raw/font-title-export.fnt"));
         titleFontColor = new Color(1f, 1f, 1f, 1f);
 
         menuCam = new OrthographicCamera();
-        menuViewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), menuCam);
+        menuViewport = new FitViewport(400, 400, menuCam);
 
         menuCam.position.set(menuCam.viewportWidth/2, menuCam.viewportHeight/2, 0);
         menuCam.update();
@@ -118,8 +113,7 @@ public class MainMenuScreen implements Screen {
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();
 
-
-        mainTable.row().pad(0,0,100,0);
+        mainTable.row().pad(40,0,50,0);
         mainTable.add(title);
         mainTable.row();
         mainTable.add(buttonsTable);
@@ -132,6 +126,11 @@ public class MainMenuScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        app.batch.begin();
+        app.shapeDrawer.setColor(.18f, .2f, .28f, 1);
+        app.shapeDrawer.filledRectangle(0,25, menuViewport.getScreenWidth() - 10, menuCam.viewportHeight - 50);
+        app.batch.end();
 
         stage.act();
         stage.draw();

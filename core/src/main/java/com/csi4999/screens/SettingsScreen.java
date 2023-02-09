@@ -5,19 +5,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
+import com.csi4999.systems.AppPreferences;
 
-public class SettingsScreen implements Screen {
-    private TextureAtlas atlas;
+public class SettingsScreen extends AppPreferences implements Screen  {
     private Skin skin;
     private final OrthographicCamera settingsCam;
     private final FitViewport settingsViewport;
@@ -27,11 +26,10 @@ public class SettingsScreen implements Screen {
     public SettingsScreen(ALifeApp app) {
         this.app = app;
 
-        atlas = new TextureAtlas("ui/neutralizer/skin/neutralizer-ui.atlas");
         skin = new Skin(Gdx.files.internal("ui/neutralizer/skin/neutralizer-ui.json"));
 
         settingsCam = new OrthographicCamera();
-        settingsViewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), settingsCam);
+        settingsViewport = new FitViewport(400, 400, settingsCam);
 
         settingsCam.position.set(settingsCam.viewportWidth/2, settingsCam.viewportHeight/2, 0);
         settingsCam.update();
@@ -46,12 +44,9 @@ public class SettingsScreen implements Screen {
         mainTable.top();
         mainTable.align(Align.center);
 
-
+        // Button to go back to main menu
         TextButton backButton = new TextButton("Go Back", skin);
         backButton.setColor(1f, 0f, 0f, 1f);
-        TextButton saveButton = new TextButton("Save Settings", skin);
-
-
         backButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -59,18 +54,84 @@ public class SettingsScreen implements Screen {
             }
         });
 
-        saveButton.addListener(new ClickListener(){
+
+        // Sliders and checkboxes for various settings
+        // TODO: Figure out if these preference changes actually work
+        final CheckBox fullscreenCheckbox = new CheckBox(null, skin);
+
+        final Slider masterSlider = new Slider(0f, 1f, 0.1f, false, skin);
+        final Slider musicSlider = new Slider( 0f, 1f, 0.1f,false, skin );
+        final Slider soundSlider = new Slider(0f, 1f, 0.1f, false, skin);
+        final Slider hudSlider = new Slider(0f, 1f, 0.1f, false, skin);
+        masterSlider.setValue(getMasterVolume());
+        musicSlider.setValue(getMusicVolume());
+        soundSlider.setValue(getSoundVolume());
+        hudSlider.setValue(getHudScale());
+
+        fullscreenCheckbox.setChecked(isFullscreenEnabled());
+        masterSlider.addListener( new EventListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y) {
-                // TODO: Save whatever settings are changed
+            public boolean handle(Event event) {
+                setMasterVolume( masterSlider.getValue() );
+                return false;
+            }
+        });
+        musicSlider.addListener( new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                setMusicVolume( musicSlider.getValue() );
+                return false;
+            }
+        });
+        soundSlider.addListener( new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                setSoundVolume( soundSlider.getValue() );
+                return false;
+            }
+        });
+        hudSlider.addListener( new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                setHudScale( hudSlider.getValue() );
+                return false;
+            }
+        });
+        fullscreenCheckbox.addListener( new EventListener() {
+            @Override
+            public boolean handle(Event event) {
+                boolean enabled = fullscreenCheckbox.isChecked();
+                setFullscreenEnabled(enabled);
+                return false;
             }
         });
 
 
-        mainTable.row().pad(0, 0, 50, 0);
-        mainTable.add(saveButton).fill().uniform();
-        mainTable.row().pad(0, 0, 10, 0);
-        mainTable.add(backButton).fill().uniform();
+
+        // Setting labels
+        Label masterVolume = new Label("Master Volume", skin);
+        Label musicVolume = new Label("Music Volume", skin);
+        Label soundVolume = new Label("Sound Volume", skin);
+        Label fullscreenToggle = new Label("Toggle Fullscreen", skin);
+        Label hudScale = new Label("HUD Scale", skin);
+
+
+        mainTable.add(masterVolume);
+        mainTable.add(masterSlider);
+        mainTable.row().pad(10,0,0,0);
+        mainTable.add(musicVolume);
+        mainTable.add(musicSlider);
+        mainTable.row().pad(10,0,0,0);
+        mainTable.add(soundVolume);
+        mainTable.add(soundSlider);
+        mainTable.row().pad(10,0,0,0);
+        mainTable.add(hudScale);
+        mainTable.add(hudSlider);
+        mainTable.row().pad(10,0,0,0);
+        mainTable.add(fullscreenToggle);
+        mainTable.add(fullscreenCheckbox);
+        mainTable.row().pad(50,0,0,0);
+        mainTable.add(backButton);
 
         stage.addActor(mainTable);
     }
