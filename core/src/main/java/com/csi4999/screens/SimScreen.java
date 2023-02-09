@@ -62,7 +62,7 @@ public class SimScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        ball1.rotationDegrees = time * 304;
+        ball1.rotationDegrees = time * 80;
         ball1.move(delta);
         balls.forEach(b -> b.move(delta));
         physics.run();
