@@ -1,11 +1,6 @@
 package com.csi4999.systems.physics;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
-import com.csi4999.systems.PhysicsObject;
-import space.earlygrey.shapedrawer.ShapeDrawer;
 
 public abstract class Circle extends Collider {
     protected float radius;
@@ -31,13 +26,13 @@ public abstract class Circle extends Collider {
     @Override
     public boolean collidesWith(Collider other) {
         if (other instanceof Circle) {
-            return circleCircle((Circle) other);
+            return circleCheck((Circle) other);
         } else {
             return false;
         }
     }
 
-    private boolean circleCircle(Circle o) {
+    private boolean circleCheck(Circle o) {
         return (o.transformedPos.x - transformedPos.x) * (o.transformedPos.x - transformedPos.x) +
             (o.transformedPos.y - transformedPos.y) * (o.transformedPos.y - transformedPos.y) <=
             (o.transformedRadius + transformedRadius) * (o.transformedRadius + transformedRadius);

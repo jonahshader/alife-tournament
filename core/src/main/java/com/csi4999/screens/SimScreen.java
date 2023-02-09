@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.TestBall;
+import com.csi4999.systems.TestLine;
+import com.csi4999.systems.physics.Line;
 import com.csi4999.systems.ui.PanCam;
 
 public class SimScreen implements Screen {
@@ -18,6 +20,7 @@ public class SimScreen implements Screen {
     private final ALifeApp app;
 
     private TestBall ball1, ball2;
+    private TestLine line1;
     private float time = 0;
 
     public SimScreen(ALifeApp app) {
@@ -34,6 +37,10 @@ public class SimScreen implements Screen {
         ball2 = new TestBall(new Vector2(32, 0), new Vector2(0, 0), new Vector2(0, 0), 12f);
         ball2.color.g = 0;
         ball1.getChildren().add(ball2);
+
+        line1 = new TestLine(new Vector2(64f, 0f));
+        line1.color.r = 0;
+        ball2.getChildren().add(line1);
     }
 
     @Override
@@ -54,6 +61,8 @@ public class SimScreen implements Screen {
 
         ball1.draw(app.batch, app.shapeDrawer, null, 1f);
         ball1.renderBounds(app.shapeDrawer);
+        ball2.renderBounds(app.shapeDrawer);
+        line1.renderBounds(app.shapeDrawer);
 
 
         app.batch.end();

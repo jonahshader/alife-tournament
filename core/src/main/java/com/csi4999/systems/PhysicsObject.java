@@ -17,8 +17,8 @@ public abstract class PhysicsObject {
     private Matrix4 oldTransform;
     protected Matrix4 computedTransform;
 
-    protected Vector3 transformedPos;
-    protected Vector3 transformedScale;
+    public Vector3 transformedPos;
+    public Vector3 transformedScale;
 
     public Color color;
 
