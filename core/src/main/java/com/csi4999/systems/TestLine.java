@@ -25,6 +25,8 @@ public class TestLine extends Line {
 
     @Override
     public void receiveActiveColliders(List<Collider> activeColliders) {
-
+        for (Collider activeCollider : activeColliders) {
+            activeCollider.color.g = 1f;
+        }
     }
 }
