@@ -30,7 +30,7 @@ public class PhysicsEngine {
 
             for (int j = i + 1; j < colliders.size(); j++) {
                 Collider nextCollider = colliders.get(j);
-                if (baseCollider.bounds.x + baseCollider.bounds.width > nextCollider.bounds.x) {
+                if (baseCollider.bounds.x + baseCollider.bounds.width >= nextCollider.bounds.x) {
                     if (baseCollider.collidesWith(nextCollider)) {
                         collision.add(nextCollider);
                     }
@@ -40,7 +40,7 @@ public class PhysicsEngine {
             }
             for (int j = i - 1; j >= 0; j--) {
                 Collider nextCollider = colliders.get(j);
-                if (baseCollider.bounds.x + baseCollider.bounds.width > nextCollider.bounds.x) {
+                if (baseCollider.bounds.x <= nextCollider.bounds.x + nextCollider.bounds.width) {
                     if (baseCollider.collidesWith(nextCollider)) {
                         collision.add(nextCollider);
                     }

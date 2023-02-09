@@ -75,6 +75,7 @@ public abstract class Line extends Collider {
         bounds.setPosition(lineStart);
         bounds.setSize(0f);
         bounds.merge(lineEnd);
+        System.out.println(bounds);
     }
 
 }
