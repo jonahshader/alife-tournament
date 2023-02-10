@@ -9,7 +9,10 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 import java.util.List;
 
 public class TestBall extends Circle {
-
+    /**
+     * An example of a concrete class that extends Circle, implementing the necessary methods.
+     * Changes its own color when colliding with others for demonstration.
+     */
 
     public TestBall(float radius) {
         super(radius);
@@ -40,7 +43,6 @@ public class TestBall extends Circle {
         }
         color.g -= 0.01f;
         color.g = Math.max(color.g, 0f);
-
     }
 
 

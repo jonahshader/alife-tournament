@@ -3,17 +3,21 @@ package com.csi4999.systems;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.physics.Collider;
-import com.csi4999.systems.physics.Line;
+import com.csi4999.systems.physics.LineSegment;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.List;
 
-public class TestLine extends Line {
+public class TestLineSegment extends LineSegment {
+    /**
+     * An example of a concrete class that extends LineSegment, implementing the necessary methods.
+     * Changes the color of colliders for demonstration.
+     */
 
-    public TestLine() {
+    public TestLineSegment() {
     }
 
-    public TestLine(Vector2 line) {
+    public TestLineSegment(Vector2 line) {
         super(line);
     }
 

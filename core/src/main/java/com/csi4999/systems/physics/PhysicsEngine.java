@@ -23,11 +23,15 @@ public class PhysicsEngine {
     }
 
     public void run() {
+        // NOTE: currently not thread safe!
+        // compute the bounds of each collider, as it is used for the sweep & prune
         colliders.forEach(Collider::computeBounds);
         insertionSort();
+        // iterate through all colliders, comparing each to the surrounding colliders
         for (int i = 0; i < colliders.size(); i++) {
+            // we are comparing the baseCollider to - and + neighbors in the sorted colliders list
             Collider baseCollider = colliders.get(i);
-
+            // check + possible collisions
             for (int j = i + 1; j < colliders.size(); j++) {
                 Collider nextCollider = colliders.get(j);
                 if (baseCollider.bounds.x + baseCollider.bounds.width >= nextCollider.bounds.x) {
@@ -38,6 +42,7 @@ public class PhysicsEngine {
                     break;
                 }
             }
+            // check - possible collisions
             for (int j = i - 1; j >= 0; j--) {
                 Collider nextCollider = colliders.get(j);
                 if (baseCollider.bounds.x <= nextCollider.bounds.x + nextCollider.bounds.width) {
@@ -48,12 +53,13 @@ public class PhysicsEngine {
                     break;
                 }
             }
+            // notify the collider of whom it collided with
             baseCollider.receiveActiveColliders(collision);
             collision.clear();
         }
     }
 
-    // using insertion sort because it performs well for nearly sorted arrays
+    // using insertion sort because it performs well for nearly-sorted arrays
     private void insertionSort() {
         for (int i = 1; i < colliders.size(); i++) {
             Collider key = colliders.get(i);

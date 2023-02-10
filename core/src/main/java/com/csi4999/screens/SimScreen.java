@@ -9,8 +9,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.TestBall;
-import com.csi4999.systems.TestLine;
-import com.csi4999.systems.physics.Line;
+import com.csi4999.systems.TestLineSegment;
 import com.csi4999.systems.physics.PhysicsEngine;
 import com.csi4999.systems.ui.PanCam;
 
@@ -26,7 +25,7 @@ public class SimScreen implements Screen {
     private final ALifeApp app;
 
     private TestBall ball1, ball2;
-    private TestLine line1;
+    private TestLineSegment line1;
 
     private List<TestBall> balls = new ArrayList<>();
     private PhysicsEngine physics = new PhysicsEngine();
@@ -48,7 +47,7 @@ public class SimScreen implements Screen {
         ball2.color.g = 0;
         ball1.getChildren().add(ball2);
 
-        line1 = new TestLine(new Vector2(64f, 0f));
+        line1 = new TestLineSegment(new Vector2(64f, 0f));
         line1.color.r = 0;
         ball2.getChildren().add(line1);
         Random r = new RandomXS128();

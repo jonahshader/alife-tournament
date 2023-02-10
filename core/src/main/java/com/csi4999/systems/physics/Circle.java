@@ -3,6 +3,9 @@ package com.csi4999.systems.physics;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class Circle extends Collider {
+    /**
+     * Circle collider. Radius specifies the pre-transform radius.
+     */
     protected float radius;
     float transformedRadius;
 

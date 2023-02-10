@@ -49,19 +49,24 @@ public abstract class PhysicsObject {
     public void move(float dt) {
         velocity.mulAdd(acceleration, dt);
         position.mulAdd(velocity, dt);
-
+        // move children
         children.forEach(child -> child.move(dt));
     }
 
     public void draw(Batch batch, ShapeDrawer shapeDrawer, PhysicsObject parent, float parentAlpha) {
         applyTransform(batch, computeTransform(parent));
+        // draw this
         draw(batch, shapeDrawer, parentAlpha);
         parentAlpha *= this.color.a;
         float finalParentAlpha = parentAlpha;
+        // draw children
         children.forEach(child -> child.draw(batch, shapeDrawer, this, finalParentAlpha));
         resetTransform(batch);
     }
 
+    // this is for rendering this object. transformations are applied prior to this method call,
+    // so drawing something at (0, 0) will be drawn at the transformed position.
+    // this needs to be implemented by concrete classes
     abstract public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha);
 
     public float getX() {
