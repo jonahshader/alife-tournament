@@ -4,9 +4,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.RandomXS128;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
+import com.csi4999.systems.TestBall;
+import com.csi4999.systems.TestLineSegment;
+import com.csi4999.systems.physics.PhysicsEngine;
 import com.csi4999.systems.ui.PanCam;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class SimScreen implements Screen {
     public static final int GAME_WIDTH = 640;
@@ -15,16 +24,47 @@ public class SimScreen implements Screen {
     private final ExtendViewport worldViewport;
     private final ALifeApp app;
 
+    private TestBall ball1, ball2;
+    private TestLineSegment line1;
+
+    private List<TestBall> balls = new ArrayList<>();
+    private PhysicsEngine physics = new PhysicsEngine();
+
+    private float time = 0;
+
     public SimScreen(ALifeApp app) {
         this.app = app;
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
         Gdx.input.setInputProcessor(new PanCam(worldViewport, worldCam)); // TODO: use multiplexer
+
+        ball1 = new TestBall(new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), 16f);
+        ball1.color.b = 0;
+        ball1.rotationDegrees = 0;
+        ball1.velocity.x = 6;
+        ball2 = new TestBall(new Vector2(32, 0), new Vector2(0, 0), new Vector2(0, 0), 12f);
+        ball2.color.g = 0;
+        ball1.getChildren().add(ball2);
+
+        line1 = new TestLineSegment(new Vector2(64f, 0f));
+        line1.color.r = 0;
+        ball2.getChildren().add(line1);
+        Random r = new RandomXS128();
+        for (int i = 0; i < 100; i++) {
+            TestBall newBall = new TestBall(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new Vector2((float) r.nextGaussian(0f, 4f), (float) r.nextGaussian(0f, 4f)), new Vector2(0f, 0f), 8f);
+            physics.addCollider(newBall);
+            balls.add(newBall);
+        }
+        physics.addCollider(line1);
     }
 
     @Override
     public void render(float delta) {
+        ball1.rotationDegrees = time * 80;
+        ball1.move(delta);
+        balls.forEach(b -> b.move(delta));
+        physics.run();
         worldViewport.apply();
         app.batch.setProjectionMatrix(worldCam.combined);
 
@@ -37,7 +77,15 @@ public class SimScreen implements Screen {
         app.shapeDrawer.setColor(1f, 1f, 1f, 1f);
         app.shapeDrawer.filledCircle(0f, 0f, 32f);
 
+        balls.forEach(b -> b.draw(app.batch, app.shapeDrawer, null, 1f));
+        ball1.draw(app.batch, app.shapeDrawer, null, 1f);
+        ball1.renderBounds(app.shapeDrawer);
+        ball2.renderBounds(app.shapeDrawer);
+        line1.renderBounds(app.shapeDrawer);
+
+
         app.batch.end();
+        time += delta;
     }
 
     @Override
