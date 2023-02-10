@@ -6,10 +6,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.PhysicsObject;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class Collider extends PhysicsObject {
     Rectangle bounds;
+    float[] similarityVector;
+
     abstract public boolean collidesWith(Collider other);
     abstract public void computeBounds();
     abstract public void receiveActiveColliders(List<Collider> activeColliders);
@@ -31,6 +34,25 @@ public abstract class Collider extends PhysicsObject {
         return null;
     }
 
+    // get similarity for another collider, dot product between both similarities, return -1 if one or both are null
+    public float getSimilarity(float[] other) {
+        float res = -1f;
+
+        if (similarityVector != null && other != null) {
+            normalizeSimilarity();
+
+            for (int i = 0; i < similarityVector.length; i++) {
+                res += similarityVector[i] * other[i];
+            }
+        }
+
+        return res;
+    }
+
+    public void setSimilarity(float[] sim) {
+        similarityVector = sim;
+    }
+
     public void renderBounds(ShapeDrawer d) {
         d.setColor(1f, .5f, .25f, 1f);
         d.rectangle(bounds);
@@ -40,5 +62,19 @@ public abstract class Collider extends PhysicsObject {
     public void move(float dt) {
         super.move(dt);
         computeBounds();
+    }
+
+    private void normalizeSimilarity() {
+        float sumsq = 0.0f;
+
+        for (float num : similarityVector) {
+            sumsq += num * num;
+        }
+
+        float weight = 1.0f / (float) Math.sqrt(sumsq);
+
+        for (int i = 0; i < similarityVector.length; i++) {
+            similarityVector[i] *= weight;
+        }
     }
 }
