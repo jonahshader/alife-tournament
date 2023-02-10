@@ -9,6 +9,8 @@ public abstract class Circle extends Collider {
     protected float radius;
     float transformedRadius;
 
+    public Circle() {}
+
     public Circle(float radius) {
         this.radius = radius;
         this.transformedRadius = 0;
