@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.AppPreferences;
 
-public class SettingsScreen extends AppPreferences implements Screen  {
+public class SettingsScreen extends AppPreferences implements Screen {
     private Skin skin;
     private final OrthographicCamera settingsCam;
     private final FitViewport settingsViewport;
@@ -31,12 +31,13 @@ public class SettingsScreen extends AppPreferences implements Screen  {
         settingsCam = new OrthographicCamera();
         settingsViewport = new FitViewport(400, 400, settingsCam);
 
-        settingsCam.position.set(settingsCam.viewportWidth/2, settingsCam.viewportHeight/2, 0);
+        settingsCam.position.set(settingsCam.viewportWidth / 2, settingsCam.viewportHeight / 2, 0);
         settingsCam.update();
 
         stage = new Stage(settingsViewport, app.batch);
         Gdx.input.setInputProcessor(stage);
     }
+
     @Override
     public void show() {
         Table mainTable = new Table();
@@ -47,20 +48,19 @@ public class SettingsScreen extends AppPreferences implements Screen  {
         // Button to go back to main menu
         TextButton backButton = new TextButton("Go Back", skin);
         backButton.setColor(1f, 0f, 0f, 1f);
-        backButton.addListener(new ClickListener(){
+        backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new MainMenuScreen(app));
+                ((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenuScreen(app));
             }
         });
-
 
         // Sliders and checkboxes for various settings
         // TODO: Figure out if these preference changes actually work
         final CheckBox fullscreenCheckbox = new CheckBox(null, skin);
 
         final Slider masterSlider = new Slider(0f, 1f, 0.1f, false, skin);
-        final Slider musicSlider = new Slider( 0f, 1f, 0.1f,false, skin );
+        final Slider musicSlider = new Slider(0f, 1f, 0.1f, false, skin);
         final Slider soundSlider = new Slider(0f, 1f, 0.1f, false, skin);
         final Slider hudSlider = new Slider(0f, 1f, 0.1f, false, skin);
         masterSlider.setValue(getMasterVolume());
@@ -69,46 +69,30 @@ public class SettingsScreen extends AppPreferences implements Screen  {
         hudSlider.setValue(getHudScale());
 
         fullscreenCheckbox.setChecked(isFullscreenEnabled());
-        masterSlider.addListener( new EventListener() {
-            @Override
-            public boolean handle(Event event) {
-                setMasterVolume( masterSlider.getValue() );
-                return false;
-            }
+        masterSlider.addListener(event -> {
+            setMasterVolume(masterSlider.getValue());
+            return false;
         });
-        musicSlider.addListener( new EventListener() {
-            @Override
-            public boolean handle(Event event) {
-                setMusicVolume( musicSlider.getValue() );
-                return false;
-            }
+        musicSlider.addListener(event -> {
+            setMusicVolume(musicSlider.getValue());
+            return false;
         });
-        soundSlider.addListener( new EventListener() {
-            @Override
-            public boolean handle(Event event) {
-                setSoundVolume( soundSlider.getValue() );
-                return false;
-            }
+        soundSlider.addListener(event -> {
+            setSoundVolume(soundSlider.getValue());
+            return false;
         });
-        hudSlider.addListener( new EventListener() {
-            @Override
-            public boolean handle(Event event) {
-                setHudScale( hudSlider.getValue() );
-                return false;
-            }
+        hudSlider.addListener(event -> {
+            setHudScale(hudSlider.getValue());
+            return false;
         });
-        fullscreenCheckbox.addListener( new EventListener() {
-            @Override
-            public boolean handle(Event event) {
-                boolean enabled = fullscreenCheckbox.isChecked();
-                setFullscreenEnabled(enabled);
-                return false;
-            }
+        fullscreenCheckbox.addListener(event -> {
+            boolean enabled = fullscreenCheckbox.isChecked();
+            setFullscreenEnabled(enabled);
+            return false;
         });
 
 
-
-        // Setting labels
+        // Labels for settings added to the table
         Label masterVolume = new Label("Master Volume", skin);
         Label musicVolume = new Label("Music Volume", skin);
         Label soundVolume = new Label("Sound Volume", skin);
@@ -118,19 +102,19 @@ public class SettingsScreen extends AppPreferences implements Screen  {
 
         mainTable.add(masterVolume);
         mainTable.add(masterSlider);
-        mainTable.row().pad(10,0,0,0);
+        mainTable.row().pad(10, 0, 0, 0);
         mainTable.add(musicVolume);
         mainTable.add(musicSlider);
-        mainTable.row().pad(10,0,0,0);
+        mainTable.row().pad(10, 0, 0, 0);
         mainTable.add(soundVolume);
         mainTable.add(soundSlider);
-        mainTable.row().pad(10,0,0,0);
+        mainTable.row().pad(10, 0, 0, 0);
         mainTable.add(hudScale);
         mainTable.add(hudSlider);
-        mainTable.row().pad(10,0,0,0);
+        mainTable.row().pad(10, 0, 0, 0);
         mainTable.add(fullscreenToggle);
         mainTable.add(fullscreenCheckbox);
-        mainTable.row().pad(50,0,0,0);
+        mainTable.row().pad(50, 0, 0, 0);
         mainTable.add(backButton);
 
         stage.addActor(mainTable);
@@ -167,6 +151,6 @@ public class SettingsScreen extends AppPreferences implements Screen  {
 
     @Override
     public void dispose() {
-
+        stage.dispose();
     }
 }

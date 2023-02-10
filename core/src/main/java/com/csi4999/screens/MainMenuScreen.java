@@ -27,6 +27,7 @@ public class MainMenuScreen implements Screen {
     public MainMenuScreen(ALifeApp app) {
         this.app = app;
 
+        // Asset manager?
         skin = new Skin(Gdx.files.internal("ui/neutralizer/skin/neutralizer-ui.json"));
         titleFont = new BitmapFont(Gdx.files.internal("ui/neutralizer/raw/font-title-export.fnt"));
         titleFontColor = new Color(1f, 1f, 1f, 1f);
@@ -43,7 +44,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
-        // Table that holds the buttons table and a label at the top
+        // Main table that holds the title label at the top and a buttons table at the bottom
         Table mainTable = new Table();
         Table buttonsTable = new Table();
 
@@ -129,7 +130,8 @@ public class MainMenuScreen implements Screen {
 
         app.batch.begin();
         app.shapeDrawer.setColor(.18f, .2f, .28f, 1);
-        app.shapeDrawer.filledRectangle(0,25, menuViewport.getScreenWidth() - 10, menuCam.viewportHeight - 50);
+
+        app.shapeDrawer.filledRectangle(0,25, menuViewport.getScreenWidth() - 10, menuCam.viewportHeight - 50); // Why are these the values that produce a somewhat symmetrical result?
         app.batch.end();
 
         stage.act();
@@ -158,6 +160,6 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        stage.dispose();
     }
 }
