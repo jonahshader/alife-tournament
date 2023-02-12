@@ -202,7 +202,8 @@ public class SparseBrain implements Brain {
     @Override
     public float[] run(float[] input) {
         // copy input into previous neuron values
-        System.arraycopy(input, 0, pNeuronValues, 0, input.length);
+        if (input != null)
+            System.arraycopy(input, 0, pNeuronValues, 0, input.length);
         // compute current neuron values
         Arrays.fill(neuronValues, 0f);
         // perform sparse vector-matrix multiply thingy

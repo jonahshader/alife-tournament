@@ -10,9 +10,14 @@ import java.util.List;
 
 public abstract class PhysicsObject {
 
+    public Vector2 position;
     public Vector2 velocity;
     public Vector2 acceleration;
-    public Vector2 position;
+
+
+    public float rotationDegrees;
+    public float rotationalVel;
+    public float rotationalAccel;
 
     private Matrix4 oldTransform;
     protected Matrix4 computedTransform;
@@ -24,7 +29,7 @@ public abstract class PhysicsObject {
 
     public Vector2 scale;
 
-    public float rotationDegrees;
+
 
     public Affine2 worldTransform;
 
@@ -47,8 +52,11 @@ public abstract class PhysicsObject {
     public PhysicsObject() {}
 
     public void move(float dt) {
+        // integrate vel, accel
         velocity.mulAdd(acceleration, dt);
         position.mulAdd(velocity, dt);
+        rotationalVel += rotationalAccel * dt;
+        rotationDegrees += rotationalVel * dt;
         // move children
         children.forEach(child -> child.move(dt));
     }
@@ -98,6 +106,9 @@ public abstract class PhysicsObject {
         this.color = new Color(1, 1, 1, 1);
         this.transformedPos = new Vector3();
         this.transformedScale = new Vector3();
+        this.rotationDegrees = 0f;
+        this.rotationalVel = 0;
+        this.rotationalAccel = 0f;
     }
 
     // assumes the parent's worldTransform is accurate

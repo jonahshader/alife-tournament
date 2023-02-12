@@ -1,8 +1,9 @@
 package com.csi4999.systems.creature;
 
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.csi4999.systems.Mutable;
+import com.csi4999.systems.physics.PhysicsEngine;
 
-public abstract class Tool extends Group implements Mutable {
-    public abstract void use(float strength);
+public interface Tool extends Mutable {
+    void use(float strength);
+    void remove(PhysicsEngine engine);
 }
