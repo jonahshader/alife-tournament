@@ -60,7 +60,7 @@ public class SimScreen implements Screen {
             TestBall newBall = new TestBall(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new Vector2((float) r.nextGaussian(0f, 4f), (float) r.nextGaussian(0f, 4f)), new Vector2(0f, 0f), 8f);
 
             // Sets random similarity vector for each ball for testing purposes
-            newBall.setSimilarity(new float[] {r.nextFloat(), r.nextFloat(), r.nextFloat(), r.nextFloat()});
+            //newBall.setSimilarity(new float[] {r.nextFloat(), r.nextFloat(), r.nextFloat(), r.nextFloat()});
             physics.addCollider(newBall);
             balls.add(newBall);
         }

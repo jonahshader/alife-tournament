@@ -57,11 +57,9 @@ public class Eye extends LineSegment implements Sensor {
             visionData[1] = activeColliders.get(0).color.g;
             visionData[2] = activeColliders.get(0).color.b;
 
-            // Need some parent entity data to compare
+            // Might need some parent entity data to compare
             visionData[3] = activeColliders.get(0).getSimilarity(visionData);
-
         }
-
 
         // Line changes to color of seen object
         this.color.r = visionData[0];

@@ -39,7 +39,8 @@ public abstract class Collider extends PhysicsObject {
         float res = -1f;
 
         if (similarityVector != null && other != null) {
-            normalizeSimilarity();
+            normalizeSimilarity(other);
+            normalizeSimilarity(similarityVector);
 
             for (int i = 0; i < similarityVector.length; i++) {
                 res += similarityVector[i] * other[i];
@@ -64,17 +65,17 @@ public abstract class Collider extends PhysicsObject {
         computeBounds();
     }
 
-    private void normalizeSimilarity() {
+    private void normalizeSimilarity(float[] sim) {
         float sumsq = 0.0f;
 
-        for (float num : similarityVector) {
+        for (float num : sim) {
             sumsq += num * num;
         }
 
         float weight = 1.0f / (float) Math.sqrt(sumsq);
 
-        for (int i = 0; i < similarityVector.length; i++) {
-            similarityVector[i] *= weight;
+        for (int i = 0; i < sim.length; i++) {
+            sim[i] *= weight;
         }
     }
 }
