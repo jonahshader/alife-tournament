@@ -128,10 +128,11 @@ public class MainMenuScreen implements Screen {
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        app.batch.setProjectionMatrix(menuCam.combined);
         app.batch.begin();
         app.shapeDrawer.setColor(.18f, .2f, .28f, 1);
 
-        app.shapeDrawer.filledRectangle(0,25, menuViewport.getScreenWidth() - 10, menuCam.viewportHeight - 50); // Why are these the values that produce a somewhat symmetrical result?
+        app.shapeDrawer.filledRectangle(25,25, menuViewport.getWorldWidth() - 50, menuViewport.getWorldHeight() - 50); // Why are these the values that produce a somewhat symmetrical result?
         app.batch.end();
 
         stage.act();
@@ -141,6 +142,7 @@ public class MainMenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        menuCam.update();
     }
 
     @Override

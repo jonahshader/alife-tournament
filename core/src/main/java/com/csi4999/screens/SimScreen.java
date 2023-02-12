@@ -10,6 +10,9 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.TestBall;
 import com.csi4999.systems.TestLineSegment;
+import com.csi4999.systems.creature.Creature;
+import com.csi4999.systems.creature.SensorBuilder;
+import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.Eye;
 import com.csi4999.systems.physics.PhysicsEngine;
 import com.csi4999.systems.ui.PanCam;
@@ -30,6 +33,7 @@ public class SimScreen implements Screen {
     private Eye eye1;
 
     private List<TestBall> balls = new ArrayList<>();
+    private List<Creature> creatures = new ArrayList<>();
     private PhysicsEngine physics = new PhysicsEngine();
 
     private float time = 0;
@@ -49,6 +53,8 @@ public class SimScreen implements Screen {
         ball2.color.g = 0;
         ball1.getChildren().add(ball2);
 
+
+
         //line1 = new TestLineSegment(new Vector2(64f, 0f));
         //line1.color.r = 0;
         //ball2.getChildren().add(line1);
@@ -64,6 +70,13 @@ public class SimScreen implements Screen {
             physics.addCollider(newBall);
             balls.add(newBall);
         }
+
+        for (int i = 0; i < 25; i++) {
+            Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new ArrayList<>(), new ArrayList<>(), 0, 0, physics, r);
+            physics.addCollider(c);
+            creatures.add(c);
+        }
+
         //physics.addCollider(line1);
         physics.addCollider(eye1);
     }
@@ -92,6 +105,8 @@ public class SimScreen implements Screen {
         ball2.renderBounds(app.shapeDrawer);
         //line1.renderBounds(app.shapeDrawer);
         eye1.renderBounds(app.shapeDrawer);
+        creatures.forEach(c -> c.move(delta));
+        creatures.forEach(c -> c.draw(app.batch, app.shapeDrawer, null, 1f));
 
 
         app.batch.end();

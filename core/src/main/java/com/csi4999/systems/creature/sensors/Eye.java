@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.creature.Sensor;
 import com.csi4999.systems.physics.Collider;
 import com.csi4999.systems.physics.LineSegment;
+import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.Arrays;
@@ -35,6 +36,11 @@ public class Eye extends LineSegment implements Sensor {
     @Override
     public float[] read() {
         return visionData;
+    }
+
+    @Override
+    public void remove(PhysicsEngine engine) {
+        engine.removeCollider(this);
     }
 
     @Override

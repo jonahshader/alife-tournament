@@ -1,6 +1,7 @@
 package com.csi4999.systems.creature;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.Mutable;
 import com.csi4999.systems.ai.Brain;
 import com.csi4999.systems.ai.SparseBrain;
@@ -10,16 +11,19 @@ import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class Creature extends Circle implements Mutable {
+
+    private static final float BASE_RADIUS = 16f;
     private static final float BASE_MAX_HEALTH = 10f;
     private static final float BASE_MAX_ACCEL = 10f; // units per second. meters?
     private static final float DRAG = 2f; // accel per velocity
     private static final float ANGULAR_DRAG = 2f; // accel per velocity (degrees)
 
-    private static final float COLOR_CHANGE_VELOCITY = 3f; // units per second
+    private static final float COLOR_CHANGE_VELOCITY = 8f; // units per second
     private static final int MISC_OUTPUTS = 3;
     private float maxHealth;
     private float maxAccel;
@@ -30,9 +34,9 @@ public class Creature extends Circle implements Mutable {
 
     public Creature() {}
 
-    public Creature(List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders, int initialSensors, int initialTools, PhysicsEngine engine, Random rand) {
+    public Creature(Vector2 pos, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders, int initialSensors, int initialTools, PhysicsEngine engine, Random rand) {
+        super(pos, new Vector2().setZero(), new Vector2().setZero(), BASE_RADIUS);
         // these may change based on passives the creatures has, but initially they are the base values
-        radius = 30f;
         maxHealth = BASE_MAX_HEALTH;
         maxAccel = BASE_MAX_ACCEL;
 
@@ -42,26 +46,35 @@ public class Creature extends Circle implements Mutable {
         // make some sensors
         // also keep track of input size
         int inputSize = 0;
-        for (int i = 0; i < initialSensors; i++) {
-            Sensor newSensor = sensorBuilders.get(rand.nextInt(sensorBuilders.size())).buildSensor(this, engine, rand);
-            inputSize += newSensor.read().length; // TODO: do we need a getSize method in Sensor? or is using read().length fine?
-            sensors.add(newSensor);
+        if (sensorBuilders.size() > 0) {
+            for (int i = 0; i < initialSensors; i++) {
+                Sensor newSensor = sensorBuilders.get(rand.nextInt(sensorBuilders.size())).buildSensor(this, engine, rand);
+                inputSize += newSensor.read().length; // TODO: do we need a getSize method in Sensor? or is using read().length fine?
+                sensors.add(newSensor);
+            }
+            inputs = new float[inputSize];
+        } else {
+            inputs = null;
         }
-        inputs = new float[inputSize];
+
+
 
         // make some tools
-        for (int i = 0; i < initialTools; i++) {
-            Tool newTool  = toolBuilders.get(rand.nextInt(toolBuilders.size())).buildTool(this, engine, rand);
-            tools.add(newTool);
+        if (toolBuilders.size() > 0) {
+            for (int i = 0; i < initialTools; i++) {
+                Tool newTool  = toolBuilders.get(rand.nextInt(toolBuilders.size())).buildTool(this, engine, rand);
+                tools.add(newTool);
+            }
         }
+
 
         brain = new SparseBrain(inputSize, tools.size() + MISC_OUTPUTS, inputSize + tools.size() + MISC_OUTPUTS + 20,
             .33f, .1f, .25f, .5f, rand);
     }
 
-    public void removeCollidersFromEngine(PhysicsEngine engine) {
-        tools.forEach(t -> t.removeFromEngine(engine));
-        sensors.forEach(s -> s.removeFromEngine(engine));
+    public void remove(PhysicsEngine engine) {
+        tools.forEach(t -> t.remove(engine));
+        sensors.forEach(s -> s.remove(engine));
         engine.removeCollider(this);
     }
 
@@ -129,7 +142,7 @@ public class Creature extends Circle implements Mutable {
         } else if (desired < current - rate) {
             current -= rate;
         } else if (desired < current) {
-            current = rate;
+            current = desired;
         }
 
         return current;
