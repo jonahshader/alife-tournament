@@ -41,7 +41,7 @@ public abstract class Collider extends PhysicsObject {
         if (similarityVector != null && other != null) {
             normalizeSimilarity(other);
             normalizeSimilarity(similarityVector);
-res = 0;
+            res = 0;
             for (int i = 0; i < similarityVector.length; i++) {
                 res += similarityVector[i] * other[i];
             }
