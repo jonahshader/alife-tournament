@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.TestBall;
 import com.csi4999.systems.TestLineSegment;
+import com.csi4999.systems.creature.sensors.Eye;
 import com.csi4999.systems.physics.PhysicsEngine;
 import com.csi4999.systems.ui.PanCam;
 
@@ -25,7 +26,8 @@ public class SimScreen implements Screen {
     private final ALifeApp app;
 
     private TestBall ball1, ball2;
-    private TestLineSegment line1;
+    //private TestLineSegment line1;
+    private Eye eye1;
 
     private List<TestBall> balls = new ArrayList<>();
     private PhysicsEngine physics = new PhysicsEngine();
@@ -47,16 +49,23 @@ public class SimScreen implements Screen {
         ball2.color.g = 0;
         ball1.getChildren().add(ball2);
 
-        line1 = new TestLineSegment(new Vector2(64f, 0f));
-        line1.color.r = 0;
-        ball2.getChildren().add(line1);
+        //line1 = new TestLineSegment(new Vector2(64f, 0f));
+        //line1.color.r = 0;
+        //ball2.getChildren().add(line1);
+
+        eye1 = new Eye(new Vector2(64f, 0f));
+        ball2.getChildren().add(eye1);
         Random r = new RandomXS128();
         for (int i = 0; i < 100; i++) {
             TestBall newBall = new TestBall(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new Vector2((float) r.nextGaussian(0f, 4f), (float) r.nextGaussian(0f, 4f)), new Vector2(0f, 0f), 8f);
+
+            // Sets random similarity vector for each ball for testing purposes
+            //newBall.setSimilarity(new float[] {r.nextFloat(), r.nextFloat(), r.nextFloat(), r.nextFloat()});
             physics.addCollider(newBall);
             balls.add(newBall);
         }
-        physics.addCollider(line1);
+        //physics.addCollider(line1);
+        physics.addCollider(eye1);
     }
 
     @Override
@@ -81,7 +90,8 @@ public class SimScreen implements Screen {
         ball1.draw(app.batch, app.shapeDrawer, null, 1f);
         ball1.renderBounds(app.shapeDrawer);
         ball2.renderBounds(app.shapeDrawer);
-        line1.renderBounds(app.shapeDrawer);
+        //line1.renderBounds(app.shapeDrawer);
+        eye1.renderBounds(app.shapeDrawer);
 
 
         app.batch.end();

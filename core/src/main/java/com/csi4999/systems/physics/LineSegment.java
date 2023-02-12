@@ -44,11 +44,6 @@ public abstract class LineSegment extends Collider {
     }
 
     private boolean circleCheck(Circle o) {
-//        lineMat.setToTranslation(line);
-//        lineMat.preMul(worldTransform);
-//        lineStart.set(transformedPos.x, transformedPos.y);
-//        lineMat.getTranslation(lineEnd);
-
         return Intersector.nearestSegmentPoint(lineStart.x, lineStart.y, lineEnd.x, lineEnd.y, o.transformedPos.x, o.transformedPos.y, temp1).dst2(o.transformedPos.x, o.transformedPos.y) < o.transformedRadius * o.transformedRadius;
     }
 
