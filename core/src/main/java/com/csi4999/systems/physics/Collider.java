@@ -60,8 +60,8 @@ public abstract class Collider extends PhysicsObject {
     }
 
     @Override
-    public void move(float dt) {
-        super.move(dt);
+    public void move(float dt, PhysicsObject parent) {
+        super.move(dt, parent);
         computeBounds();
     }
 

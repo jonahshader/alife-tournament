@@ -10,24 +10,24 @@ public abstract class LineSegment extends Collider {
      * LineSegment collider. The line parameter specifies the length/direction of the segment (end - start), and
      * the PhysicsObject position vector represents the starting position of the segment.
      */
-    protected Vector2 line;
+    protected float lineLength;
 
     private Vector2 lineStart, lineEnd, temp1;
     private Affine2 lineMat;
 
     public LineSegment() {}
-    public LineSegment(Vector2 line) {
+    public LineSegment(float lineLength) {
         super(new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f));
-        this.line = line;
+        this.lineLength = lineLength;
         lineStart = new Vector2();
         lineEnd = new Vector2();
         temp1 = new Vector2();
         lineMat = new Affine2();
     }
 
-    public LineSegment(Vector2 pos, Vector2 line) {
+    public LineSegment(Vector2 pos, float lineLength) {
         super(pos, new Vector2(0f, 0f), new Vector2(0f, 0f));
-        this.line = line;
+        this.lineLength = lineLength;
         lineStart = new Vector2();
         lineEnd = new Vector2();
         temp1 = new Vector2();
@@ -50,7 +50,7 @@ public abstract class LineSegment extends Collider {
     @Override
     public void computeBounds() {
         // TODO: remove redundant computation between this and circleCheck
-        lineMat.setToTranslation(line);
+        lineMat.setToTranslation(lineLength, 0f);
         lineMat.preMul(worldTransform);
         lineStart.set(transformedPos.x, transformedPos.y);
         lineMat.getTranslation(lineEnd);

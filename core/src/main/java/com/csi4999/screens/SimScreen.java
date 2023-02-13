@@ -8,12 +8,16 @@ import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
+import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.TestBall;
 import com.csi4999.systems.TestLineSegment;
 import com.csi4999.systems.creature.Creature;
+import com.csi4999.systems.creature.Sensor;
 import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.Eye;
+import com.csi4999.systems.creature.sensors.EyeBuilder;
+import com.csi4999.systems.creature.tools.FlagellaBuilder;
 import com.csi4999.systems.physics.PhysicsEngine;
 import com.csi4999.systems.ui.PanCam;
 
@@ -29,8 +33,6 @@ public class SimScreen implements Screen {
     private final ALifeApp app;
 
     private TestBall ball1, ball2;
-    //private TestLineSegment line1;
-    private Eye eye1;
 
     private List<TestBall> balls = new ArrayList<>();
     private List<Creature> creatures = new ArrayList<>();
@@ -53,14 +55,6 @@ public class SimScreen implements Screen {
         ball2.color.g = 0;
         ball1.getChildren().add(ball2);
 
-
-
-        //line1 = new TestLineSegment(new Vector2(64f, 0f));
-        //line1.color.r = 0;
-        //ball2.getChildren().add(line1);
-
-        eye1 = new Eye(new Vector2(64f, 0f));
-        ball2.getChildren().add(eye1);
         Random r = new RandomXS128();
         for (int i = 0; i < 100; i++) {
             TestBall newBall = new TestBall(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new Vector2((float) r.nextGaussian(0f, 4f), (float) r.nextGaussian(0f, 4f)), new Vector2(0f, 0f), 8f);
@@ -71,21 +65,24 @@ public class SimScreen implements Screen {
             balls.add(newBall);
         }
 
-        for (int i = 0; i < 25; i++) {
-            Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new ArrayList<>(), new ArrayList<>(), 0, 0, physics, r);
+        List<ToolBuilder> toolBuilders = new ArrayList<>();
+        toolBuilders.add(new FlagellaBuilder());
+
+        List<SensorBuilder> sensorBuilders = new ArrayList<>();
+        sensorBuilders.add(new EyeBuilder());
+
+        for (int i = 0; i < 400; i++) {
+            Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), sensorBuilders, toolBuilders, 4, 4, physics, r);
             physics.addCollider(c);
             creatures.add(c);
         }
-
-        //physics.addCollider(line1);
-        physics.addCollider(eye1);
     }
 
     @Override
     public void render(float delta) {
         ball1.rotationDegrees = time * 80;
-        ball1.move(delta);
-        balls.forEach(b -> b.move(delta));
+        ball1.move(delta, null);
+        balls.forEach(b -> b.move(delta, null));
         physics.run();
         worldViewport.apply();
         app.batch.setProjectionMatrix(worldCam.combined);
@@ -103,14 +100,14 @@ public class SimScreen implements Screen {
         ball1.draw(app.batch, app.shapeDrawer, null, 1f);
         ball1.renderBounds(app.shapeDrawer);
         ball2.renderBounds(app.shapeDrawer);
-        //line1.renderBounds(app.shapeDrawer);
-        eye1.renderBounds(app.shapeDrawer);
-        creatures.forEach(c -> c.move(delta));
+//        creatures.forEach(c -> c.move(1/60f, null));
+        creatures.parallelStream().forEach(c -> c.move(1/60f, null));
         creatures.forEach(c -> c.draw(app.batch, app.shapeDrawer, null, 1f));
 
 
         app.batch.end();
         time += delta;
+        System.out.println(1/delta);
     }
 
     @Override

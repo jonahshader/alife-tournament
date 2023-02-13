@@ -26,7 +26,7 @@ public class PhysicsEngine {
         // NOTE: currently not thread safe!
         // compute the bounds of each collider, as it is used for the sweep & prune
         colliders.forEach(Collider::computeBounds);
-        insertionSort();
+        insertionSort(colliders);
         // iterate through all colliders, comparing each to the surrounding colliders
         for (int i = 0; i < colliders.size(); i++) {
             // we are comparing the baseCollider to - and + neighbors in the sorted colliders list
@@ -60,15 +60,15 @@ public class PhysicsEngine {
     }
 
     // using insertion sort because it performs well for nearly-sorted arrays
-    private void insertionSort() {
-        for (int i = 1; i < colliders.size(); i++) {
-            Collider key = colliders.get(i);
+    private static void insertionSort(List<Collider> arr) {
+        for (int i = 1; i < arr.size(); i++) {
+            Collider key = arr.get(i);
             int j = i - 1;
-            while (j >= 0 && colliders.get(j).bounds.x > key.bounds.x) {
-                colliders.set(j + 1, colliders.get(j));
+            while (j >= 0 && arr.get(j).bounds.x > key.bounds.x) {
+                arr.set(j + 1, arr.get(j));
                 j--;
             }
-            colliders.set(j + 1, key);
+            arr.set(j + 1, key);
         }
     }
 }

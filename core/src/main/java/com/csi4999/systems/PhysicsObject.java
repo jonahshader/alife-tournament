@@ -51,14 +51,15 @@ public abstract class PhysicsObject {
 
     public PhysicsObject() {}
 
-    public void move(float dt) {
+    public void move(float dt, PhysicsObject parent) {
         // integrate vel, accel
         velocity.mulAdd(acceleration, dt);
         position.mulAdd(velocity, dt);
         rotationalVel += rotationalAccel * dt;
         rotationDegrees += rotationalVel * dt;
+        computeTransform(parent);
         // move children
-        children.forEach(child -> child.move(dt));
+        children.forEach(child -> child.move(dt, parent));
     }
 
     public void draw(Batch batch, ShapeDrawer shapeDrawer, PhysicsObject parent, float parentAlpha) {
