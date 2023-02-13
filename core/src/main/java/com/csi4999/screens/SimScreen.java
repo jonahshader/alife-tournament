@@ -100,8 +100,8 @@ public class SimScreen implements Screen {
         ball1.draw(app.batch, app.shapeDrawer, null, 1f);
         ball1.renderBounds(app.shapeDrawer);
         ball2.renderBounds(app.shapeDrawer);
-//        creatures.forEach(c -> c.move(1/60f, null));
-        creatures.parallelStream().forEach(c -> c.move(1/60f, null));
+        creatures.forEach(c -> c.move(1/60f, null));
+//        creatures.parallelStream().forEach(c -> c.move(1/60f, null));
         creatures.forEach(c -> c.draw(app.batch, app.shapeDrawer, null, 1f));
 
 
