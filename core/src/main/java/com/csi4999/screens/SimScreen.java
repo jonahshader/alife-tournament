@@ -54,11 +54,6 @@ public class SimScreen implements Screen {
         ball1.getChildren().add(ball2);
 
 
-
-        //line1 = new TestLineSegment(new Vector2(64f, 0f));
-        //line1.color.r = 0;
-        //ball2.getChildren().add(line1);
-
         eye1 = new Eye(new Vector2(64f, 0f));
         ball2.getChildren().add(eye1);
         Random r = new RandomXS128();
@@ -77,16 +72,16 @@ public class SimScreen implements Screen {
             creatures.add(c);
         }
 
-        //physics.addCollider(line1);
         physics.addCollider(eye1);
     }
 
     @Override
     public void render(float delta) {
         ball1.rotationDegrees = time * 80;
-        ball1.move(delta);
-        balls.forEach(b -> b.move(delta));
+
         physics.run();
+        physics.move(delta);
+
         worldViewport.apply();
         app.batch.setProjectionMatrix(worldCam.combined);
 
@@ -96,18 +91,11 @@ public class SimScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         app.batch.begin();
+
         app.shapeDrawer.setColor(1f, 1f, 1f, 1f);
         app.shapeDrawer.filledCircle(0f, 0f, 32f);
 
-        balls.forEach(b -> b.draw(app.batch, app.shapeDrawer, null, 1f));
-        ball1.draw(app.batch, app.shapeDrawer, null, 1f);
-        ball1.renderBounds(app.shapeDrawer);
-        ball2.renderBounds(app.shapeDrawer);
-        //line1.renderBounds(app.shapeDrawer);
-        eye1.renderBounds(app.shapeDrawer);
-        creatures.forEach(c -> c.move(delta));
-        creatures.forEach(c -> c.draw(app.batch, app.shapeDrawer, null, 1f));
-
+        physics.draw(app.batch, app.shapeDrawer);
 
         app.batch.end();
         time += delta;
