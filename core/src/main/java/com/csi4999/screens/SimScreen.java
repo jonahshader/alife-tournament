@@ -14,6 +14,8 @@ import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.Eye;
+import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.environment.Food;
 import com.csi4999.systems.physics.PhysicsEngine;
 import com.csi4999.systems.ui.PanCam;
 
@@ -28,15 +30,7 @@ public class SimScreen implements Screen {
     private final ExtendViewport worldViewport;
     private final ALifeApp app;
 
-    private TestBall ball1, ball2;
-    //private TestLineSegment line1;
-    private Eye eye1;
-
-    private List<TestBall> balls = new ArrayList<>();
-    private List<Creature> creatures = new ArrayList<>();
-    private PhysicsEngine physics = new PhysicsEngine();
-
-    private float time = 0;
+    private Environment env;
 
     public SimScreen(ALifeApp app) {
         this.app = app;
@@ -45,42 +39,14 @@ public class SimScreen implements Screen {
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
         Gdx.input.setInputProcessor(new PanCam(worldViewport, worldCam)); // TODO: use multiplexer
 
-        ball1 = new TestBall(new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0), 16f);
-        ball1.color.b = 0;
-        ball1.rotationDegrees = 0;
-        ball1.velocity.x = 6;
-        ball2 = new TestBall(new Vector2(32, 0), new Vector2(0, 0), new Vector2(0, 0), 12f);
-        ball2.color.g = 0;
-        ball1.getChildren().add(ball2);
+        this.env = new Environment(100, 100);
 
-
-        eye1 = new Eye(new Vector2(64f, 0f));
-        ball2.getChildren().add(eye1);
-        Random r = new RandomXS128();
-        for (int i = 0; i < 100; i++) {
-            TestBall newBall = new TestBall(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new Vector2((float) r.nextGaussian(0f, 4f), (float) r.nextGaussian(0f, 4f)), new Vector2(0f, 0f), 8f);
-
-            // Sets random similarity vector for each ball for testing purposes
-            //newBall.setSimilarity(new float[] {r.nextFloat(), r.nextFloat(), r.nextFloat(), r.nextFloat()});
-            physics.addCollider(newBall);
-            balls.add(newBall);
-        }
-
-        for (int i = 0; i < 25; i++) {
-            Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new ArrayList<>(), new ArrayList<>(), 0, 0, physics, r);
-            physics.addCollider(c);
-            creatures.add(c);
-        }
-
-        physics.addCollider(eye1);
     }
 
     @Override
     public void render(float delta) {
-        ball1.rotationDegrees = time * 80;
 
-        physics.run();
-        physics.move(delta);
+        env.moveObjects(delta);
 
         worldViewport.apply();
         app.batch.setProjectionMatrix(worldCam.combined);
@@ -91,14 +57,8 @@ public class SimScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         app.batch.begin();
-
-        app.shapeDrawer.setColor(1f, 1f, 1f, 1f);
-        app.shapeDrawer.filledCircle(0f, 0f, 32f);
-
-        physics.draw(app.batch, app.shapeDrawer);
-
+        env.drawObjects(app.shapeDrawer, app.batch);
         app.batch.end();
-        time += delta;
     }
 
     @Override
