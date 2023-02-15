@@ -62,44 +62,19 @@ public class Eye extends LineSegment implements Sensor {
     }
 
     @Override
-    public void receiveActiveColliders(List<Collider> activeColliders) {
+    public void handleColliders() {
 
-        if (activeColliders.size() <= 1) {
+        if (collision.size() <= 1) {
             Arrays.fill(visionData, 0f);
         } else {
-//            // find second-nearest
-//            float nearestDist = getDistToCollider(activeColliders.get(0));
-//            Collider nearest = activeColliders.get(0);
-//            Collider secondNearest = activeColliders.get(1);
-//            float sn = getDistToCollider(secondNearest);
-//            if (sn < nearestDist) {
-//                nearestDist = sn;
-//                nearest = secondNearest;
-//                secondNearest = activeColliders.get(0);
-//            }
-//            for (int i = 1; i < activeColliders.size(); i++) {
-//                Collider c = activeColliders.get(i);
-//                float d2 = getDistToCollider(c);
-//                if (d2 < nearestDist) {
-//                    nearestDist = d2;
-//                    secondNearest = nearest;
-//                    nearest = c;
-//                }
-//            }
-            activeColliders.sort((o1, o2) -> {
+            collision.sort((o1, o2) -> {
                 float d1 = getDistToCollider(o1);
                 float d2 = getDistToCollider(o2);
-                if (d1 < d2) {
-                    return -1;
-                } else if (d1 > d2) {
-                    return 1;
-                } else {
-                    return 0;
-                }
+                return Float.compare(d1, d2);
             });
-            Collider nearest = activeColliders.get(0);
+            Collider nearest = collision.get(0);
             if (nearest == parent)
-                nearest = activeColliders.get(1);
+                nearest = collision.get(1);
             visionData[0] = nearest.color.r;
             visionData[1] = nearest.color.g;
             visionData[2] = nearest.color.b;
@@ -117,10 +92,6 @@ public class Eye extends LineSegment implements Sensor {
     private float getDistToCollider(Collider c) {
         return (transformedPos.x - c.transformedPos.x) * (transformedPos.x - c.transformedPos.x) +
             (transformedPos.y - c.transformedPos.y) * (transformedPos.y - c.transformedPos.y);
-    }
-
-    private void computeLengthAndRotation() {
-
     }
 
 }

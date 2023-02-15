@@ -19,7 +19,7 @@ public abstract class PhysicsObject {
     public float rotationalVel;
     public float rotationalAccel;
 
-    private Matrix4 oldTransform;
+    protected Matrix4 oldTransform;
     protected Matrix4 computedTransform;
 
     public Vector3 transformedPos;
@@ -131,7 +131,7 @@ public abstract class PhysicsObject {
         batch.setTransformMatrix(transform);
     }
 
-    private void resetTransform (Batch batch) {
+    protected void resetTransform(Batch batch) {
         batch.setTransformMatrix(oldTransform);
     }
 

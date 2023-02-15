@@ -7,11 +7,9 @@ import java.util.List;
 
 public class PhysicsEngine {
     private List<Collider> colliders;
-    private List<Collider> collision;
 
     public PhysicsEngine() {
         colliders = new ArrayList<>();
-        collision = new ArrayList<>();
     }
 
     public void addCollider(Collider c) {
@@ -23,9 +21,8 @@ public class PhysicsEngine {
     }
 
     public void run() {
-        // NOTE: currently not thread safe!
         // compute the bounds of each collider, as it is used for the sweep & prune
-        colliders.forEach(Collider::computeBounds);
+//        colliders.forEach(Collider::computeBounds);
         insertionSort(colliders);
         // iterate through all colliders, comparing each to the surrounding colliders
         for (int i = 0; i < colliders.size(); i++) {
@@ -36,27 +33,20 @@ public class PhysicsEngine {
                 Collider nextCollider = colliders.get(j);
                 if (baseCollider.bounds.x + baseCollider.bounds.width >= nextCollider.bounds.x) {
                     if (baseCollider.collidesWith(nextCollider)) {
-                        collision.add(nextCollider);
+                        baseCollider.collision.add(nextCollider);
+                    }
+                    if (nextCollider.collidesWith(baseCollider)) {
+                        nextCollider.collision.add(nextCollider);
                     }
                 } else {
                     break;
                 }
             }
-            // check - possible collisions
-            for (int j = i - 1; j >= 0; j--) {
-                Collider nextCollider = colliders.get(j);
-                if (baseCollider.bounds.x <= nextCollider.bounds.x + nextCollider.bounds.width) {
-                    if (baseCollider.collidesWith(nextCollider)) {
-                        collision.add(nextCollider);
-                    }
-                } else {
-                    break;
-                }
-            }
-            // notify the collider of whom it collided with
-            baseCollider.receiveActiveColliders(collision);
-            collision.clear();
         }
+
+        // parallelStream()?
+        colliders.forEach(Collider::handleColliders);
+        colliders.forEach(c -> c.collision.clear());
     }
 
     // using insertion sort because it performs well for nearly-sorted arrays

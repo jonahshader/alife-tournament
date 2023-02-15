@@ -33,8 +33,8 @@ public class TestBall extends Circle {
     }
 
     @Override
-    public void receiveActiveColliders(List<Collider> activeColliders) {
-        if (activeColliders.size() > 0) {
+    public void handleColliders() {
+        if (collision.size() > 0) {
             color.r = 1f;
             color.b = 0f;
         } else {

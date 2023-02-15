@@ -28,8 +28,8 @@ public class TestLineSegment extends LineSegment {
     }
 
     @Override
-    public void receiveActiveColliders(List<Collider> activeColliders) {
-        for (Collider activeCollider : activeColliders) {
+    public void handleColliders() {
+        for (Collider activeCollider : collision) {
             activeCollider.color.g = 1f;
         }
     }

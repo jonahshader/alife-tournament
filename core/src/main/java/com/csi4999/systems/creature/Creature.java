@@ -1,11 +1,13 @@
 package com.csi4999.systems.creature;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.Mutable;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.ai.Brain;
 import com.csi4999.systems.ai.SparseBrain;
+import com.csi4999.systems.creature.sensors.Eye;
 import com.csi4999.systems.physics.Circle;
 import com.csi4999.systems.physics.Collider;
 import com.csi4999.systems.physics.PhysicsEngine;
@@ -69,6 +71,7 @@ public class Creature extends Circle implements Mutable {
 
         brain = new SparseBrain(inputSize, tools.size() + MISC_OUTPUTS, inputSize + tools.size() + MISC_OUTPUTS + 20,
             .33f, .1f, .25f, .5f, rand);
+//        getChildren().add(new )
     }
 
     public void remove(PhysicsEngine engine) {
@@ -118,10 +121,21 @@ public class Creature extends Circle implements Mutable {
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
         shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
         shapeDrawer.filledCircle(0f, 0f, this.radius);
+        Matrix4 current = batch.getTransformMatrix();
+        batch.setTransformMatrix(oldTransform);
+        renderBounds(shapeDrawer);
+        for (PhysicsObject o : getChildren()) {
+            if (o instanceof Eye) {
+
+                ((Eye)o).renderBounds(shapeDrawer);
+
+            }
+        }
+        batch.setTransformMatrix(current);
     }
 
     @Override
-    public void receiveActiveColliders(List<Collider> activeColliders) {
+    public void handleColliders() {
         // TODO: do we have a built in body collision sensor?
     }
 

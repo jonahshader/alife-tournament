@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.PhysicsObject;
@@ -71,17 +72,19 @@ public class SimScreen implements Screen {
         List<SensorBuilder> sensorBuilders = new ArrayList<>();
         sensorBuilders.add(new EyeBuilder());
 
-        for (int i = 0; i < 400; i++) {
-            Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), sensorBuilders, toolBuilders, 4, 4, physics, r);
+        for (int i = 0; i < 2; i++) {
+            Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), sensorBuilders, toolBuilders, 2, 3, physics, r);
             physics.addCollider(c);
             creatures.add(c);
         }
+
+        creatures.get(0).getChildren().add(ball1);
     }
 
     @Override
     public void render(float delta) {
         ball1.rotationDegrees = time * 80;
-        ball1.move(delta, null);
+//        ball1.move(delta, null);
         balls.forEach(b -> b.move(delta, null));
         physics.run();
         worldViewport.apply();
@@ -97,12 +100,14 @@ public class SimScreen implements Screen {
         app.shapeDrawer.filledCircle(0f, 0f, 32f);
 
         balls.forEach(b -> b.draw(app.batch, app.shapeDrawer, null, 1f));
-        ball1.draw(app.batch, app.shapeDrawer, null, 1f);
+//        ball1.draw(app.batch, app.shapeDrawer, null, 1f);
         ball1.renderBounds(app.shapeDrawer);
         ball2.renderBounds(app.shapeDrawer);
         creatures.forEach(c -> c.move(1/60f, null));
 //        creatures.parallelStream().forEach(c -> c.move(1/60f, null));
         creatures.forEach(c -> c.draw(app.batch, app.shapeDrawer, null, 1f));
+        Vector3 mousePos = worldViewport.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f));
+        creatures.get(0).position.set(mousePos.x, mousePos.y);
 
 
         app.batch.end();

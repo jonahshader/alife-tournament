@@ -3,6 +3,7 @@ package com.csi4999.systems.physics;
 
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class LineSegment extends Collider {
@@ -52,8 +53,13 @@ public abstract class LineSegment extends Collider {
         // TODO: remove redundant computation between this and circleCheck
         lineMat.setToTranslation(lineLength, 0f);
         lineMat.preMul(worldTransform);
-        lineStart.set(transformedPos.x, transformedPos.y);
         lineMat.getTranslation(lineEnd);
+        lineMat.setToTranslation(0f, 0f);
+        lineMat.preMul(worldTransform);
+        lineMat.getTranslation(lineStart);
+//        lineStart.set(transformedPos.x, transformedPos.y);
+        System.out.println(lineStart);
+        System.out.println(transformedPos);
 
         bounds.setPosition(lineStart);
         bounds.setSize(0f);
