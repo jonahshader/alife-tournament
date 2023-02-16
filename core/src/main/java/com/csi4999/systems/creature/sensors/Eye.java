@@ -91,8 +91,6 @@ public class Eye extends LineSegment implements Sensor {
             visionData[0] = nearest.color.r;
             visionData[1] = nearest.color.g;
             visionData[2] = nearest.color.b;
-
-            // Might need some parent entity data to compare
             visionData[3] = nearest.getSimilarity(visionData);
         }
 
