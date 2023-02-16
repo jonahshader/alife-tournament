@@ -89,13 +89,7 @@ public class Eye extends LineSegment implements Sensor {
             visionData[0] = nearest.color.r;
             visionData[1] = nearest.color.g;
             visionData[2] = nearest.color.b;
-
-
             visionData[3] = nearest.getSimilarity(visionData);
-            System.out.println("start");
-            for (Collider c : collision) {
-                System.out.println(getDistToCollider(c));
-            }
         }
 
         // Line changes to color of seen object

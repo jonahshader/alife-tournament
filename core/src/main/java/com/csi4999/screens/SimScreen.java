@@ -25,7 +25,7 @@ public class SimScreen implements Screen {
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
         Gdx.input.setInputProcessor(new PanCam(worldViewport, worldCam)); // TODO: use multiplexer
 
-        this.env = new Environment(100, 10);
+        this.env = new Environment(100, 100);
 
     }
 

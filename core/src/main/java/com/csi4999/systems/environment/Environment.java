@@ -24,6 +24,8 @@ public class Environment {
     List<SensorBuilder> sensorBuilders;
     List<ToolBuilder> toolBuilders;
 
+    public Environment() {}
+
     public Environment(int initialFood, int initalCreatures) {
         this.sensorBuilders = new ArrayList<>();
         this.toolBuilders = new ArrayList<>();

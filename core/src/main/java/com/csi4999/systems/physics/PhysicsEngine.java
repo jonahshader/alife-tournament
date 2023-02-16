@@ -73,7 +73,6 @@ public class PhysicsEngine {
 
     public void move(float dt) {
         for (PhysicsObject o: objects) {
-            // Resolve this
             o.move(dt, null);
         }
     }
