@@ -4,24 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.RandomXS128;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
-import com.csi4999.systems.TestBall;
-import com.csi4999.systems.TestLineSegment;
-import com.csi4999.systems.creature.Creature;
-import com.csi4999.systems.creature.SensorBuilder;
-import com.csi4999.systems.creature.ToolBuilder;
-import com.csi4999.systems.creature.sensors.Eye;
 import com.csi4999.systems.environment.Environment;
-import com.csi4999.systems.environment.Food;
-import com.csi4999.systems.physics.PhysicsEngine;
 import com.csi4999.systems.ui.PanCam;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 public class SimScreen implements Screen {
     public static final int GAME_WIDTH = 640;
@@ -46,7 +32,7 @@ public class SimScreen implements Screen {
     @Override
     public void render(float delta) {
 
-        env.moveObjects(delta);
+        env.update(delta);
 
         worldViewport.apply();
         app.batch.setProjectionMatrix(worldCam.combined);
@@ -57,7 +43,7 @@ public class SimScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         app.batch.begin();
-        env.drawObjects(app.shapeDrawer, app.batch);
+        env.draw(app.shapeDrawer, app.batch);
         app.batch.end();
     }
 

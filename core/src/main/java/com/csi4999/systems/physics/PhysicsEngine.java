@@ -2,6 +2,7 @@ package com.csi4999.systems.physics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.csi4999.systems.PhysicsObject;
+import com.csi4999.systems.creature.Creature;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
@@ -10,8 +11,11 @@ import java.util.List;
 public class PhysicsEngine {
     private List<Collider> colliders;
 
+    private List<PhysicsObject> objects;
+
     public PhysicsEngine() {
         colliders = new ArrayList<>();
+        objects = new ArrayList<>();
     }
 
     public void addCollider(Collider c) {
@@ -61,16 +65,20 @@ public class PhysicsEngine {
     }
 
     public void draw(Batch batch, ShapeDrawer shapeDrawer) {
-        for (Collider c: colliders) {
-            c.draw(batch, shapeDrawer, null, 1f);
+        for (PhysicsObject o: objects) {
+            o.draw(batch, shapeDrawer, null, 1f);
         }
     }
 
 
     public void move(float dt) {
-        for (Collider c: colliders) {
+        for (PhysicsObject o: objects) {
             // Resolve this
-            c.move(dt, null);
+            o.move(dt, null);
         }
+    }
+
+    public void addObject(PhysicsObject o) {
+        objects.add(o);
     }
 }

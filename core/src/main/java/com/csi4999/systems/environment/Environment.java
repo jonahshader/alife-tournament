@@ -2,7 +2,6 @@ package com.csi4999.systems.environment;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.RandomXS128;
-import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
@@ -37,11 +36,11 @@ public class Environment {
         this.creatureSpawner = new CreatureSpawner(initalCreatures, this.r, this.physics, sensorBuilders, toolBuilders);
     }
 
-    public void drawObjects(ShapeDrawer drawer, Batch batch) {
+    public void draw(ShapeDrawer drawer, Batch batch) {
         physics.draw(batch, drawer);
     }
 
-    public void moveObjects(float dt) {
+    public void update(float dt) {
         physics.run();
         physics.move(dt);
     }

@@ -18,6 +18,7 @@ public class CreatureSpawner {
             for (int i = 0; i < initialSize; i++) {
                 Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)),
                     sensorBuilders, toolBuilders, 3, 3, physics, r);
+                physics.addObject(c);
                 physics.addCollider(c);
                 allCreatures.add(c);
             }
