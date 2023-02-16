@@ -90,7 +90,7 @@ public class Eye extends LineSegment implements Sensor {
             visionData[1] = nearest.color.g;
             visionData[2] = nearest.color.b;
 
-            // Might need some parent entity data to compare
+
             visionData[3] = nearest.getSimilarity(visionData);
             System.out.println("start");
             for (Collider c : collision) {

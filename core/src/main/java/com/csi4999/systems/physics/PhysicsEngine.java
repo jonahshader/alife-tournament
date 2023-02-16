@@ -66,21 +66,10 @@ public class PhysicsEngine {
         }
     }
 
-    public void move(float dt) {
-        for (Collider c: colliders) {
-            c.move(dt);
-        }
-    }
-
-    public void draw(Batch batch, ShapeDrawer shapeDrawer) {
-        for (Collider c: colliders) {
-            c.draw(batch, shapeDrawer, null, 1f);
-        }
-    }
 
     public void move(float dt) {
         for (Collider c: colliders) {
-            c.move(dt);
+            c.move(dt, null);
         }
     }
 }

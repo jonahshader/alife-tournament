@@ -22,8 +22,8 @@ public class Food extends Circle {
     }
 
     @Override
-    public void receiveActiveColliders(List<Collider> activeColliders) {
-        if (activeColliders.size() > 0) {
+    public void handleColliders() {
+        if (collision.size() > 0) {
             radius -= 0.05f;
             color.r = 1f;
             color.g = 0f;

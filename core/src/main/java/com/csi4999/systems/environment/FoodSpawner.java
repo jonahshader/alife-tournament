@@ -13,9 +13,9 @@ public class FoodSpawner {
         this.allFood = new ArrayList<>();
 
         for (int i = 0; i < initialSize; i++) {
-            Food newFood = new Food(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new Vector2((float) r.nextGaussian(0f, 4f), (float) r.nextGaussian(0f, 4f)), new Vector2(0f, 0f), 8f);
-            addToPhysics(physics, newFood);
-            allFood.add(newFood);
+            Food f = new Food(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new Vector2((float) r.nextGaussian(0f, 4f), (float) r.nextGaussian(0f, 4f)), new Vector2(0f, 0f), 8f);
+            physics.addCollider(f);
+            allFood.add(f);
         }
     }
 

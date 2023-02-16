@@ -15,6 +15,7 @@ public class FlagellaBuilder implements ToolBuilder {
         float r = (float) (parent.radius * Math.sqrt(rand.nextFloat()));
         float theta = (float) (rand.nextFloat() * 2 * Math.PI);
         pos.set((float) (Math.cos(theta) * r), (float) (Math.sin(theta) * r));
+
         Flagella f = new Flagella(pos);
         f.rotationDegrees = rand.nextFloat() * 360;
         parent.getChildren().add(f);
