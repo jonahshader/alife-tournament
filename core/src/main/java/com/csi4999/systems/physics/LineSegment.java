@@ -1,10 +1,16 @@
 package com.csi4999.systems.physics;
 
 
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Affine2;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.csi4999.singletons.CustomAssetManager;
+import space.earlygrey.shapedrawer.ShapeDrawer;
+
+import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 
 public abstract class LineSegment extends Collider {
     /**
@@ -15,6 +21,8 @@ public abstract class LineSegment extends Collider {
 
     private Vector2 lineStart, lineEnd, temp1;
     private Affine2 lineMat;
+
+    private BitmapFont debugFont;
 
     public LineSegment() {}
     public LineSegment(float lineLength) {
@@ -58,12 +66,24 @@ public abstract class LineSegment extends Collider {
         lineMat.preMul(worldTransform);
         lineMat.getTranslation(lineStart);
 //        lineStart.set(transformedPos.x, transformedPos.y);
-        System.out.println(lineStart);
-        System.out.println(transformedPos);
+//        System.out.println(lineStart);
+//        System.out.println(transformedPos);
 
         bounds.setPosition(lineStart);
         bounds.setSize(0f);
         bounds.merge(lineEnd);
+    }
+
+    @Override
+    public void renderBounds(ShapeDrawer d) {
+//        computeBounds();
+//        if (debugFont == null) {
+//            Skin s = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
+//            debugFont = s.getFont("font");
+//        }
+
+        super.renderBounds(d);
+//        debugFont.draw(d.getBatch(), "tPos: " + transformedPos.toString(), transformedPos.x, transformedPos.y);
     }
 
 }

@@ -121,17 +121,17 @@ public class Creature extends Circle implements Mutable {
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
         shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
         shapeDrawer.filledCircle(0f, 0f, this.radius);
-        Matrix4 current = batch.getTransformMatrix();
-        batch.setTransformMatrix(oldTransform);
-        renderBounds(shapeDrawer);
-        for (PhysicsObject o : getChildren()) {
-            if (o instanceof Eye) {
-
-                ((Eye)o).renderBounds(shapeDrawer);
-
-            }
-        }
-        batch.setTransformMatrix(current);
+//        Matrix4 current = batch.getTransformMatrix();
+//        batch.setTransformMatrix(oldTransform);
+//        renderBounds(shapeDrawer);
+//        for (PhysicsObject o : getChildren()) {
+//            if (o instanceof Eye) {
+//
+//                ((Eye)o).renderBounds(shapeDrawer);
+//
+//            }
+//        }
+//        batch.setTransformMatrix(current);
     }
 
     @Override

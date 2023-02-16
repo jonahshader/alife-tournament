@@ -21,8 +21,6 @@ public class PhysicsEngine {
     }
 
     public void run() {
-        // compute the bounds of each collider, as it is used for the sweep & prune
-//        colliders.forEach(Collider::computeBounds);
         insertionSort(colliders);
         // iterate through all colliders, comparing each to the surrounding colliders
         for (int i = 0; i < colliders.size(); i++) {
@@ -32,12 +30,10 @@ public class PhysicsEngine {
             for (int j = i + 1; j < colliders.size(); j++) {
                 Collider nextCollider = colliders.get(j);
                 if (baseCollider.bounds.x + baseCollider.bounds.width >= nextCollider.bounds.x) {
-                    if (baseCollider.collidesWith(nextCollider)) {
+                    if (baseCollider.collidesWith(nextCollider))
                         baseCollider.collision.add(nextCollider);
-                    }
-                    if (nextCollider.collidesWith(baseCollider)) {
-                        nextCollider.collision.add(nextCollider);
-                    }
+                    if (nextCollider.collidesWith(baseCollider))
+                        nextCollider.collision.add(baseCollider);
                 } else {
                     break;
                 }

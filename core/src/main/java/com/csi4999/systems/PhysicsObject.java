@@ -59,11 +59,11 @@ public abstract class PhysicsObject {
         rotationDegrees += rotationalVel * dt;
         computeTransform(parent);
         // move children
-        children.forEach(child -> child.move(dt, parent));
+        children.forEach(child -> child.move(dt, this));
     }
 
     public void draw(Batch batch, ShapeDrawer shapeDrawer, PhysicsObject parent, float parentAlpha) {
-        applyTransform(batch, computeTransform(parent));
+        applyTransform(batch, computedTransform);
         // draw this
         draw(batch, shapeDrawer, parentAlpha);
         parentAlpha *= this.color.a;

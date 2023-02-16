@@ -62,6 +62,11 @@ public abstract class Collider extends PhysicsObject {
     public void renderBounds(ShapeDrawer d) {
         d.setColor(1f, .5f, .25f, 1f);
         d.rectangle(bounds);
+        for (PhysicsObject o : getChildren()) {
+            if (o instanceof Collider) {
+                ((Collider) o).renderBounds(d);
+            }
+        }
     }
 
     @Override
@@ -69,6 +74,11 @@ public abstract class Collider extends PhysicsObject {
         super.move(dt, parent);
         computeBounds();
     }
+
+//    @Override
+//    public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
+//        renderBounds(shapeDrawer);
+//    }
 
     private void normalizeSimilarity(float[] sim) {
         float sumsq = 0.0f;
