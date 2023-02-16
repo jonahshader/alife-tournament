@@ -26,6 +26,8 @@ public class Eye extends LineSegment implements Sensor {
     private static final float MUTATE_LENGTH_STD = 0.15f;
     private static final float MUTATE_ROTATION_STD = 0.25f;
 
+    private static final float ENERGY_CONSUMPTION = 0.1f; // energy per second
+
     private Color colorTransparent;
     private Collider parent;
 
@@ -110,4 +112,8 @@ public class Eye extends LineSegment implements Sensor {
         return transformedPos.dst2(c.transformedPos);
     }
 
+    @Override
+    public float getEnergyConsumption() {
+        return ENERGY_CONSUMPTION;
+    }
 }
