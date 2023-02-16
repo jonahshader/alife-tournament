@@ -18,24 +18,23 @@ public class Environment {
     // One and only instance of random
     PhysicsEngine physics;
     Random r;
-    // Environment will eventually have all sorts of spawners in it (food, creature, artifacts)
 
     FoodSpawner foodSpawner;
     CreatureSpawner creatureSpawner;
 
-    ArrayList<SensorBuilder> availableSensors;
-    ArrayList<ToolBuilder> availableTools;
+    List<SensorBuilder> sensorBuilders;
+    List<ToolBuilder> toolBuilders;
 
     public Environment(int initialFood, int initalCreatures) {
-        this.availableSensors = new ArrayList<>();
-        this.availableTools = new ArrayList<>();
-        this.availableSensors.add(new EyeBuilder());
-        this.availableTools.add(new FlagellaBuilder());
+        this.sensorBuilders = new ArrayList<>();
+        this.toolBuilders = new ArrayList<>();
+        this.sensorBuilders.add(new EyeBuilder());
+        this.toolBuilders.add(new FlagellaBuilder());
 
         this.physics = new PhysicsEngine();
         this.r = new RandomXS128();
         this.foodSpawner = new FoodSpawner(initialFood, this.r, this.physics);
-        this.creatureSpawner = new CreatureSpawner(initalCreatures, this.r, this.physics, availableSensors, availableTools);
+        this.creatureSpawner = new CreatureSpawner(initalCreatures, this.r, this.physics, sensorBuilders, toolBuilders);
     }
 
     public void drawObjects(ShapeDrawer drawer, Batch batch) {

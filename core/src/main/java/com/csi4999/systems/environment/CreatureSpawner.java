@@ -7,11 +7,12 @@ import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.physics.PhysicsEngine;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class CreatureSpawner {
-        private ArrayList<Creature> allCreatures;
-        public CreatureSpawner(int initialSize, Random r, PhysicsEngine physics, ArrayList<SensorBuilder> sensorBuilders, ArrayList<ToolBuilder> toolBuilders) {
+        private List<Creature> allCreatures;
+        public CreatureSpawner(int initialSize, Random r, PhysicsEngine physics, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders) {
             this.allCreatures = new ArrayList<>();
 
             for (int i = 0; i < initialSize; i++) {
