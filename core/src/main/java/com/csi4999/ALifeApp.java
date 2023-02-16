@@ -24,6 +24,8 @@ public class ALifeApp extends Game {
 
         // load assets
         CustomAssetManager.getInstance().loadImages();
+        CustomAssetManager.getInstance().loadFonts();
+        CustomAssetManager.getInstance().loadSkins();
         CustomAssetManager.getInstance().manager.finishLoading();
 
         // get white pixel necessary for ShapeDrawer to function

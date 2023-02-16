@@ -17,19 +17,19 @@ public class TestLineSegment extends LineSegment {
     public TestLineSegment() {
     }
 
-    public TestLineSegment(Vector2 line) {
-        super(line);
+    public TestLineSegment(float lineLength) {
+        super(lineLength);
     }
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
         shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
-        shapeDrawer.line(0f, 0f, line.x, line.y);
+        shapeDrawer.line(0f, 0f, lineLength, 0f);
     }
 
     @Override
-    public void receiveActiveColliders(List<Collider> activeColliders) {
-        for (Collider activeCollider : activeColliders) {
+    public void handleColliders() {
+        for (Collider activeCollider : collision) {
             activeCollider.color.g = 1f;
         }
     }

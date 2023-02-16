@@ -6,27 +6,32 @@ import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.PhysicsObject;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public abstract class Collider extends PhysicsObject {
+
+    public List<Collider> collision;
     Rectangle bounds;
     float[] similarityVector;
 
     abstract public boolean collidesWith(Collider other);
     abstract public void computeBounds();
-    abstract public void receiveActiveColliders(List<Collider> activeColliders);
+    abstract public void handleColliders();
 
     public Collider(){}
 
     public Collider(float initial_pX, float initial_pY, float initial_vX, float initial_vY, float initial_aX, float initial_aY) {
         super(initial_pX, initial_pY, initial_vX, initial_vY, initial_aX, initial_aY);
         this.bounds = new Rectangle();
+        this.collision = new ArrayList<>();
     }
 
     public Collider(Vector2 position, Vector2 velocity, Vector2 acceleration) {
         super(position, velocity, acceleration);
         this.bounds = new Rectangle();
+        this.collision = new ArrayList<>();
     }
 
     // default implementation
@@ -57,13 +62,23 @@ public abstract class Collider extends PhysicsObject {
     public void renderBounds(ShapeDrawer d) {
         d.setColor(1f, .5f, .25f, 1f);
         d.rectangle(bounds);
+        for (PhysicsObject o : getChildren()) {
+            if (o instanceof Collider) {
+                ((Collider) o).renderBounds(d);
+            }
+        }
     }
 
     @Override
-    public void move(float dt) {
-        super.move(dt);
+    public void move(float dt, PhysicsObject parent) {
+        super.move(dt, parent);
         computeBounds();
     }
+
+//    @Override
+//    public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
+//        renderBounds(shapeDrawer);
+//    }
 
     private void normalizeSimilarity(float[] sim) {
         float sumsq = 0.0f;

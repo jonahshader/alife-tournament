@@ -1,10 +1,13 @@
 package com.csi4999.systems.creature;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.Mutable;
+import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.ai.Brain;
 import com.csi4999.systems.ai.SparseBrain;
+import com.csi4999.systems.creature.sensors.Eye;
 import com.csi4999.systems.physics.Circle;
 import com.csi4999.systems.physics.Collider;
 import com.csi4999.systems.physics.PhysicsEngine;
@@ -17,16 +20,17 @@ import java.util.Random;
 
 public class Creature extends Circle implements Mutable {
 
-    private static final float BASE_RADIUS = 16f;
+    private static final float BASE_RADIUS = 10f;
     private static final float BASE_MAX_HEALTH = 10f;
     private static final float BASE_MAX_ACCEL = 10f; // units per second. meters?
-    private static final float DRAG = 2f; // accel per velocity
-    private static final float ANGULAR_DRAG = 2f; // accel per velocity (degrees)
+    private static final float DRAG = 8f; // accel per velocity
+    private static final float ANGULAR_DRAG = 12f; // accel per velocity (degrees)
 
     private static final float COLOR_CHANGE_VELOCITY = 8f; // units per second
     private static final int MISC_OUTPUTS = 3;
     private float maxHealth;
     private float maxAccel;
+
     private List<Sensor> sensors;
     private List<Tool> tools;
     private Brain brain;
@@ -57,8 +61,6 @@ public class Creature extends Circle implements Mutable {
             inputs = null;
         }
 
-
-
         // make some tools
         if (toolBuilders.size() > 0) {
             for (int i = 0; i < initialTools; i++) {
@@ -67,9 +69,9 @@ public class Creature extends Circle implements Mutable {
             }
         }
 
-
         brain = new SparseBrain(inputSize, tools.size() + MISC_OUTPUTS, inputSize + tools.size() + MISC_OUTPUTS + 20,
             .33f, .1f, .25f, .5f, rand);
+//        getChildren().add(new )
     }
 
     public void remove(PhysicsEngine engine) {
@@ -79,7 +81,7 @@ public class Creature extends Circle implements Mutable {
     }
 
     @Override
-    public void move(float dt) {
+    public void move(float dt, PhysicsObject parent) {
         // zero out accel, apply drag
         acceleration.setZero();
         acceleration.set(velocity).scl(-DRAG);
@@ -98,7 +100,7 @@ public class Creature extends Circle implements Mutable {
 
         // apply outputs to tools
         for (int i = 0; i < tools.size(); i++)
-            tools.get(i).use(output[i]);
+            tools.get(i).use(output[i], dt, this);
 
         // apply outputs to misc (just color for now)
         int miscOutputIndex = tools.size();
@@ -107,7 +109,7 @@ public class Creature extends Circle implements Mutable {
         color.b = towardsValue(color.b, output[miscOutputIndex++] * .5f + .5f, COLOR_CHANGE_VELOCITY * dt);
 
         // continue with default move behavior
-        super.move(dt);
+        super.move(dt, parent);
     }
     @Override
     public void mutate(float amount, Random rand) {
@@ -119,11 +121,27 @@ public class Creature extends Circle implements Mutable {
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
         shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
         shapeDrawer.filledCircle(0f, 0f, this.radius);
+//        Matrix4 current = batch.getTransformMatrix();
+//        batch.setTransformMatrix(oldTransform);
+//        renderBounds(shapeDrawer);
+//        for (PhysicsObject o : getChildren()) {
+//            if (o instanceof Eye) {
+//
+//                ((Eye)o).renderBounds(shapeDrawer);
+//
+//            }
+//        }
+//        batch.setTransformMatrix(current);
     }
 
     @Override
-    public void receiveActiveColliders(List<Collider> activeColliders) {
+    public void handleColliders() {
         // TODO: do we have a built in body collision sensor?
+    }
+
+    public float getMass() {
+        // TODO: maybe base this off of surface area, or "volume"?
+        return 1f;
     }
 
     // TODO: unit test
