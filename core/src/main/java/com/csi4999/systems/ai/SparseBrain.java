@@ -9,6 +9,7 @@ public class SparseBrain implements Brain {
     private static final float ADD_NEURON_CHANCE = 0.01f;
     private static final float REMOVE_NEURON_CHANCE = 0.01f;
     private static final float MUTATE_WEIGHT_STD = 0.01f;
+    private static final float ENERGY_PER_WEIGHT = 0.0025f;
     // TODO: cycles can form that do not impact the output, but through mutations connections can form to these cycles
     // enabling them to impact the output. optimizing these out would improve performance, but these dormant cycles
     // could be "re-enabled" when mutations occur. i think we should "archive" the original brain before pruning these
@@ -340,6 +341,10 @@ public class SparseBrain implements Brain {
 
     }
 
+    @Override
+    public float getEnergyConsumption() {
+        return weights.length * ENERGY_PER_WEIGHT;
+    }
 }
 
 
