@@ -21,6 +21,7 @@ import java.util.Random;
 public class Creature extends Circle implements Mutable {
 
     private static final float BASE_RADIUS = 10f;
+    private static final float MIN_SCALE = 0.5f;
     private static final float BASE_MAX_HEALTH = 10f;
     private static final float BASE_MAX_ACCEL = 10f; // units per second. meters?
     private static final float DRAG = 8f; // accel per velocity
@@ -28,8 +29,14 @@ public class Creature extends Circle implements Mutable {
 
     private static final float COLOR_CHANGE_VELOCITY = 8f; // units per second
     private static final int MISC_OUTPUTS = 3;
+    private static final float BASE_MAX_ENERGY_SCALAR = 1.5f;
+    private static final float BASE_ENERGY = 50f;
+
     private float maxHealth;
+    private float energy;
     private float maxAccel;
+
+    private boolean dead;
 
     private List<Sensor> sensors;
     private List<Tool> tools;
@@ -43,6 +50,8 @@ public class Creature extends Circle implements Mutable {
         // these may change based on passives the creatures has, but initially they are the base values
         maxHealth = BASE_MAX_HEALTH;
         maxAccel = BASE_MAX_ACCEL;
+        energy = BASE_ENERGY;
+        dead = false;
 
         sensors = new ArrayList<>();
         tools = new ArrayList<>();
@@ -71,7 +80,6 @@ public class Creature extends Circle implements Mutable {
 
         brain = new SparseBrain(inputSize, tools.size() + MISC_OUTPUTS, inputSize + tools.size() + MISC_OUTPUTS + 20,
             .33f, .1f, .25f, .5f, rand);
-//        getChildren().add(new )
     }
 
     public void remove(PhysicsEngine engine) {
@@ -107,6 +115,25 @@ public class Creature extends Circle implements Mutable {
         color.r = towardsValue(color.r, output[miscOutputIndex++] * .5f + .5f, COLOR_CHANGE_VELOCITY * dt);
         color.g = towardsValue(color.g, output[miscOutputIndex++] * .5f + .5f, COLOR_CHANGE_VELOCITY * dt);
         color.b = towardsValue(color.b, output[miscOutputIndex++] * .5f + .5f, COLOR_CHANGE_VELOCITY * dt);
+
+        // compute energy
+        float energyLoss = 0f;
+        for (Tool t : tools) energyLoss += t.getEnergyConsumption();
+        System.out.println(energyLoss);
+        for (Sensor s : sensors) energyLoss += s.getEnergyConsumption();
+        System.out.println(energyLoss);
+        energyLoss += brain.getEnergyConsumption();
+        System.out.println(energyLoss);
+        energy -= energyLoss * dt;
+        if (energy < 0) {
+            energy = 0;
+            dead = true;
+        }
+
+        float scl = ((float)Math.sqrt(energy / BASE_ENERGY) + MIN_SCALE) / (1 + MIN_SCALE);
+        scale.set(scl, scl);
+
+
 
         // continue with default move behavior
         super.move(dt, parent);

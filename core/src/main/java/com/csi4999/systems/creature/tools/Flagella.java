@@ -1,8 +1,6 @@
 package com.csi4999.systems.creature.tools;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.creature.Creature;
@@ -16,10 +14,12 @@ public class Flagella extends PhysicsObject implements Tool {
     private static final float MUTATE_POS_STD = 0.15f;
     private static final float MUTATE_ROT_STD = 1f;
     private static final float FORCE = 300f;
+    private static final float ENERGY_CONSUMPTION_DYNAMIC = 1f; // units per strength squared per second
+    private static final float ENERGY_CONSUMPTION_STATIC = 0.1f; // units per second
     private Vector2 thrust;
     private float lastStrength = 0f;
-
     private float animationProgress = 0;
+
 
     public Flagella(Vector2 position) {
         super(position, new Vector2().setZero(), new Vector2().setZero());
@@ -35,9 +35,6 @@ public class Flagella extends PhysicsObject implements Tool {
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
-
-//        shapeDrawer.filledTriangle(0f, 3f, 0f, -3f, 8f, 0f, color);
-//        shapeDrawer.line(0f, 0f, 10f, 0f, color);
         shapeDrawer.filledCircle(0f, 0f, 3f, color);
         int amount = (int) (10 * lastStrength);
         for (int i = 0; i < amount; i++) {
@@ -46,13 +43,6 @@ public class Flagella extends PhysicsObject implements Tool {
             float scl = (float)Math.pow(.6f + lastStrength * .2f, i);
             shapeDrawer.ellipse((-i*3 - (animationProgress * 40f) % 3) * lastStrength, 0, 2f * scl, 3f * scl);
         }
-//        float lastHeight = 0f;
-//        for (int i = 0; i < 16; i++) {
-//            float height = (float) Math.cos(i * .8f - animationProgress * 30);
-
-//            shapeDrawer.line(-i, lastHeight, -i + 1, height, color);
-//            lastHeight = height;
-//        }
     }
 
     @Override
@@ -78,6 +68,11 @@ public class Flagella extends PhysicsObject implements Tool {
 
     @Override
     public void remove(PhysicsEngine engine) {
+        // this isn't a Collider, so it's not in engine
+    }
 
+    @Override
+    public float getEnergyConsumption() {
+        return (lastStrength * lastStrength * ENERGY_CONSUMPTION_DYNAMIC) + ENERGY_CONSUMPTION_STATIC;
     }
 }

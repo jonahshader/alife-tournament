@@ -26,6 +26,8 @@ public class Eye extends LineSegment implements Sensor {
     private static final float MUTATE_LENGTH_STD = 0.15f;
     private static final float MUTATE_ROTATION_STD = 0.25f;
 
+    private static final float ENERGY_CONSUMPTION = 0.1f; // energy per second
+
     private Color colorTransparent;
     private Collider parent;
 
@@ -85,17 +87,13 @@ public class Eye extends LineSegment implements Sensor {
             Collider nearest = collision.get(0);
             if (nearest == parent)
                 nearest = collision.get(1);
-            lastHitDist = (float) Math.sqrt(getDistToCollider(nearest));
+            lastHitDist = (float) Math.sqrt(getDistToCollider(nearest)) / parent.scale.x;
             visionData[0] = nearest.color.r;
             visionData[1] = nearest.color.g;
             visionData[2] = nearest.color.b;
 
             // Might need some parent entity data to compare
             visionData[3] = nearest.getSimilarity(visionData);
-            System.out.println("start");
-            for (Collider c : collision) {
-                System.out.println(getDistToCollider(c));
-            }
         }
 
         // Line changes to color of seen object
@@ -110,4 +108,8 @@ public class Eye extends LineSegment implements Sensor {
         return transformedPos.dst2(c.transformedPos);
     }
 
+    @Override
+    public float getEnergyConsumption() {
+        return ENERGY_CONSUMPTION;
+    }
 }
