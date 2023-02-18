@@ -16,6 +16,8 @@ public abstract class Collider extends PhysicsObject {
     Rectangle bounds;
     float[] similarityVector;
 
+    public boolean collidable = true;
+
     abstract public boolean collidesWith(Collider other);
     abstract public void computeBounds();
     abstract public void handleColliders();

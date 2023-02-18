@@ -14,7 +14,7 @@ public class Flagella extends PhysicsObject implements Tool {
     private static final float MUTATE_POS_STD = 0.15f;
     private static final float MUTATE_ROT_STD = 1f;
     private static final float FORCE = 300f;
-    private static final float ENERGY_CONSUMPTION_DYNAMIC = 1f; // units per strength squared per second
+    private static final float ENERGY_CONSUMPTION_DYNAMIC = 0.7f; // units per strength squared per second
     private static final float ENERGY_CONSUMPTION_STATIC = 0.1f; // units per second
     private Vector2 thrust;
     private float lastStrength = 0f;
@@ -36,6 +36,8 @@ public class Flagella extends PhysicsObject implements Tool {
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
         shapeDrawer.filledCircle(0f, 0f, 3f, color);
+        shapeDrawer.setColor(0.5f, 0.5f, 0.5f, 1f);
+        shapeDrawer.circle(0f, 0f, 3f);
         int amount = (int) (10 * lastStrength);
         for (int i = 0; i < amount; i++) {
             float a = 1f - ((i + 1f) / amount);
