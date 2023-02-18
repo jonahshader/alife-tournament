@@ -33,7 +33,7 @@ public class Creature extends Circle implements Mutable {
     private static final float BASE_ENERGY = 50f;
 
     private float maxHealth;
-    private float energy;
+    public float energy;
     private float maxAccel;
 
     private boolean dead;
@@ -119,11 +119,8 @@ public class Creature extends Circle implements Mutable {
         // compute energy
         float energyLoss = 0f;
         for (Tool t : tools) energyLoss += t.getEnergyConsumption();
-        System.out.println(energyLoss);
         for (Sensor s : sensors) energyLoss += s.getEnergyConsumption();
-        System.out.println(energyLoss);
         energyLoss += brain.getEnergyConsumption();
-        System.out.println(energyLoss);
         energy -= energyLoss * dt;
         if (energy < 0) {
             energy = 0;
