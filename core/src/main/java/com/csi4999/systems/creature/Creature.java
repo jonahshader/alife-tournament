@@ -189,4 +189,10 @@ public class Creature extends Circle implements Mutable {
 
         return current;
     }
+
+    public void takeDamage(float damageAmount) {
+        maxHealth -= damageAmount;
+
+        if (maxHealth <= 0) dead = true;
+    }
 }

@@ -63,22 +63,17 @@ public class Horn extends LineSegment implements Tool {
 
     @Override
     public void handleColliders() {
-        // If there is a collision with horn and at least one non parent object
         if (collision.size() > 1) {
             this.color.r = 0f;
-            // Sort colliders by distance
             collision.sort((o1, o2) -> {
                 float d1 = getDistToCollider(o1);
                 float d2 = getDistToCollider(o2);
                 return Float.compare(d1, d2);
             });
 
-            // Get nearest collider and check if it's the parent
             Collider nearest = collision.get(0);
             if (nearest == parent) {
-                // Loop through all other colliders checking if they are creature
                 for (int i = 1; i < collision.size(); i++) {
-                    // If it is a creature, it might take damage
                     if (collision.get(i) instanceof Creature) {
                         Creature cr = (Creature) collision.get(i);
                         cr.takeDamage(lastStrength * lastDt * MAX_DAMAGE_RATE);
