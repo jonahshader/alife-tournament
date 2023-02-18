@@ -43,9 +43,9 @@ public class Horn extends LineSegment implements Tool {
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
-        lineLength = (float) ((Math.cos(animationProgress) * .5 + .5) * 20);
+
         shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
-        shapeDrawer.filledTriangle(-1f, -2f, lineLength, 0f, -1f, 2f, color);
+        shapeDrawer.filledTriangle(0f, 1.5f, lineLength, 0f, 0f, -1.5f, color);
     }
 
     @Override
@@ -54,6 +54,7 @@ public class Horn extends LineSegment implements Tool {
         lastStrength = (strength * .5f + .5f);
         animationProgress += lastStrength * dt * 20;
         animationProgress %= Math.PI * 2;
+        lineLength = (float) ((Math.cos(animationProgress) * .5 + .5) * 20);
     }
 
     @Override
@@ -63,30 +64,19 @@ public class Horn extends LineSegment implements Tool {
 
     @Override
     public void handleColliders() {
-        if (collision.size() > 1) {
-            this.color.r = 0f;
-            collision.sort((o1, o2) -> {
-                float d1 = getDistToCollider(o1);
-                float d2 = getDistToCollider(o2);
-                return Float.compare(d1, d2);
-            });
-
-            Collider nearest = collision.get(0);
-            if (nearest == parent) {
-                for (int i = 1; i < collision.size(); i++) {
-                    if (collision.get(i) instanceof Creature) {
-                        Creature cr = (Creature) collision.get(i);
+        if (collision.size() <= 1) {
+            color.r = 1f;
+        } else {
+            color.r = 0f;
+            for (Collider c : collision) {
+                if (c != parent) {
+                    if (c instanceof Creature) {
+                        Creature cr = (Creature) c;
                         cr.takeDamage(lastStrength * lastDt * MAX_DAMAGE_RATE);
                     }
                 }
             }
-        } else {
-            this.color.r = 1f;
         }
-    }
-
-    private float getDistToCollider (Collider c) {
-        return transformedPos.dst2(c.transformedPos);
     }
 
     @Override

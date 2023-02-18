@@ -22,7 +22,7 @@ public class Creature extends Circle implements Mutable {
 
     private static final float BASE_RADIUS = 10f;
     private static final float MIN_SCALE = 0.5f;
-    private static final float BASE_MAX_HEALTH = 10f;
+    private static final float MAX_HEALTH = 10f;
     private static final float BASE_MAX_ACCEL = 10f; // units per second. meters?
     private static final float DRAG = 8f; // accel per velocity
     private static final float ANGULAR_DRAG = 12f; // accel per velocity (degrees)
@@ -32,7 +32,7 @@ public class Creature extends Circle implements Mutable {
     private static final float BASE_MAX_ENERGY_SCALAR = 1.5f;
     private static final float BASE_ENERGY = 50f;
 
-    private float maxHealth;
+    private float health;
     public float energy;
     private float maxAccel;
 
@@ -48,7 +48,7 @@ public class Creature extends Circle implements Mutable {
     public Creature(Vector2 pos, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders, int initialSensors, int initialTools, PhysicsEngine engine, Random rand) {
         super(pos, new Vector2().setZero(), new Vector2().setZero(), BASE_RADIUS);
         // these may change based on passives the creatures has, but initially they are the base values
-        maxHealth = BASE_MAX_HEALTH;
+        health = MAX_HEALTH;
         maxAccel = BASE_MAX_ACCEL;
         energy = BASE_ENERGY;
         dead = false;
@@ -191,8 +191,8 @@ public class Creature extends Circle implements Mutable {
     }
 
     public void takeDamage(float damageAmount) {
-        maxHealth -= damageAmount;
+        health -= damageAmount;
 
-        if (maxHealth <= 0) dead = true;
+        if (health <= 0) dead = true;
     }
 }
