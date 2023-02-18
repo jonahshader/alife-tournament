@@ -30,7 +30,6 @@ public class MainMenuScreen implements Screen {
     public MainMenuScreen(ALifeApp app) {
         this.app = app;
 
-        // Asset manager?
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
         titleFont = CustomAssetManager.getInstance().manager.get(UI_FONT);

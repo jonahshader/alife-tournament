@@ -34,6 +34,12 @@ public class Food extends Circle {
         }
         color.b -= 0.01f;
         color.b = Math.max(color.b, 0f);
-        radius = Math.max(radius, 2f);
+        if (radius >= 25f) {
+            radius = 25f;
+        }
+
+        if (radius <= 2f) {
+            radius = 2f;
+        }
     }
 }

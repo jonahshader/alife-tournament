@@ -7,14 +7,11 @@ import com.csi4999.systems.Mutable;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.ai.Brain;
 import com.csi4999.systems.ai.SparseBrain;
-import com.csi4999.systems.creature.sensors.Eye;
 import com.csi4999.systems.physics.Circle;
-import com.csi4999.systems.physics.Collider;
 import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -119,11 +116,11 @@ public class Creature extends Circle implements Mutable {
         // compute energy
         float energyLoss = 0f;
         for (Tool t : tools) energyLoss += t.getEnergyConsumption();
-        System.out.println(energyLoss);
+        //System.out.println(energyLoss);
         for (Sensor s : sensors) energyLoss += s.getEnergyConsumption();
-        System.out.println(energyLoss);
+        //System.out.println(energyLoss);
         energyLoss += brain.getEnergyConsumption();
-        System.out.println(energyLoss);
+        //System.out.println(energyLoss);
         energy -= energyLoss * dt;
         if (energy < 0) {
             energy = 0;

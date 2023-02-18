@@ -38,8 +38,7 @@ public abstract class Collider extends PhysicsObject {
     public float[] getVisionVector() {
         return null;
     }
-
-    // get similarity for another collider, dot product between both similarities, return -1 if one or both are null
+    // get similarity for another collider, dot product between both (normalized) similarities, return -1 if one or both are null
     public float getSimilarity(float[] other) {
         float res = -1f;
 
