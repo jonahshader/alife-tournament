@@ -11,7 +11,8 @@ public abstract class Circle extends Collider {
 
     public Circle() {}
 
-    public Circle(float radius) {
+    public Circle(Vector2 pos, float radius) {
+        super(pos, new Vector2().setZero(), new Vector2().setZero());
         this.radius = radius;
         this.transformedRadius = 0;
     }

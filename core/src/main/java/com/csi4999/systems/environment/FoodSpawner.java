@@ -13,7 +13,7 @@ public class FoodSpawner {
         this.allFood = new ArrayList<>();
 
         for (int i = 0; i < initialSize; i++) {
-            Food f = new Food(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), new Vector2((float) r.nextGaussian(0f, 4f), (float) r.nextGaussian(0f, 4f)), new Vector2(0f, 0f), 8f);
+            Food f = new Food(new Vector2((float) r.nextGaussian(0f, 128f), (float) r.nextGaussian(0f, 64f)), r);
             physics.addCollider(f);
             physics.addObject(f);
             allFood.add(f);

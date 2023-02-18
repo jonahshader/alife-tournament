@@ -7,6 +7,7 @@ import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
 import com.csi4999.systems.creature.tools.FlagellaBuilder;
 import com.csi4999.systems.creature.tools.HornBuilder;
+import com.csi4999.systems.creature.tools.MouthBuilder;
 import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -33,6 +34,7 @@ public class Environment {
         this.sensorBuilders.add(new EyeBuilder());
         this.toolBuilders.add(new FlagellaBuilder());
         this.toolBuilders.add(new HornBuilder());
+        this.toolBuilders.add(new MouthBuilder());
 
         this.physics = new PhysicsEngine();
         this.r = new RandomXS128();
