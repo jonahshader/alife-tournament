@@ -30,7 +30,7 @@ public class Creature extends Circle implements Mutable {
     private static final float BASE_ENERGY = 50f;
 
     private float maxHealth;
-    private float energy;
+    public float energy;
     private float maxAccel;
 
     private boolean dead;
@@ -188,5 +188,11 @@ public class Creature extends Circle implements Mutable {
         }
 
         return current;
+    }
+
+    public void takeDamage(float damageAmount) {
+        maxHealth -= damageAmount;
+
+        if (maxHealth <= 0) dead = true;
     }
 }

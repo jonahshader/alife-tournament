@@ -11,13 +11,12 @@ import java.util.Random;
 public class HornBuilder implements ToolBuilder {
     @Override
     public Tool buildTool(Creature parent, PhysicsEngine engine, Random rand) {
-        Vector2 pos = new Vector2().setZero();
-        float r = (float) (parent.radius * Math.sqrt(rand.nextFloat()));
-        float theta = (float) (rand.nextFloat() * 2 * Math.PI);
-        pos.set((float) (Math.cos(theta) * r), (float) (Math.sin(theta) * r));
 
-        Horn h = new Horn(pos);
-        h.rotationDegrees = rand.nextFloat() * 360;
+        float rot = rand.nextFloat() * 360;
+        Vector2 pos = new Vector2().set(parent.radius, 0f).rotateDeg(rot);
+
+        Horn h = new Horn(pos,1f, rot, parent);
+        engine.addCollider(h);
         parent.getChildren().add(h);
 
         return h;
