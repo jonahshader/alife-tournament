@@ -9,7 +9,7 @@ public class SparseBrain implements Brain {
     private static final float ADD_NEURON_CHANCE = 0.01f;
     private static final float REMOVE_NEURON_CHANCE = 0.01f;
     private static final float MUTATE_WEIGHT_STD = 0.01f;
-    private static final float ENERGY_PER_WEIGHT = 0.0025f;
+    private static final float ENERGY_PER_WEIGHT = 0.001f;
     // TODO: cycles can form that do not impact the output, but through mutations connections can form to these cycles
     // enabling them to impact the output. optimizing these out would improve performance, but these dormant cycles
     // could be "re-enabled" when mutations occur. i think we should "archive" the original brain before pruning these
@@ -24,6 +24,17 @@ public class SparseBrain implements Brain {
     private float[] output;
 
     private int currentInputSize;
+
+    // copy constructor
+    public SparseBrain(SparseBrain b) {
+        neuronValues = b.neuronValues.clone();
+        pNeuronValues = b.pNeuronValues.clone();
+        weights = b.weights.clone();
+        bias = b.bias.clone();
+        edges = b.edges.clone();
+        output = b.output.clone();
+        currentInputSize = b.currentInputSize;
+    }
 
 
     public SparseBrain() {} // empty constructor for Kryo
@@ -165,9 +176,9 @@ public class SparseBrain implements Brain {
             int src = rand.nextInt(neuronValues.length - output.length);
             int dst = rand.nextInt(currentInputSize, neuronValues.length);
             if (tryAddEdge(src, dst, (float) rand.nextGaussian())) {
-                System.out.println("Added edge: " + src + " -> " + dst);
+//                System.out.println("Added edge: " + src + " -> " + dst);
             } else {
-                System.out.println("Failed to add edge: " + src + " -> " + dst);
+//                System.out.println("Failed to add edge: " + src + " -> " + dst);
             }
         } else if (rn < (ADD_EDGE_CHANCE + REMOVE_EDGE_CHANCE) * amount) {
             // remove edge
@@ -175,23 +186,23 @@ public class SparseBrain implements Brain {
             int src = rand.nextInt(neuronValues.length - output.length);
             int dst = rand.nextInt(currentInputSize, neuronValues.length);
             if (tryRemoveEdge(src, dst)) {
-                System.out.println("Removed edge: " + src + " -> " + dst);
+//                System.out.println("Removed edge: " + src + " -> " + dst);
             } else {
-                System.out.println("Failed to remove edge: " + src + " -> " + dst);
+//                System.out.println("Failed to remove edge: " + src + " -> " + dst);
             }
         } else if (rn < (ADD_EDGE_CHANCE + REMOVE_EDGE_CHANCE + ADD_NEURON_CHANCE) * amount) {
             // add (hidden) neuron
             int hiddenNeurons = neuronValues.length - currentInputSize - output.length;
             int toAdd = rand.nextInt(hiddenNeurons) + currentInputSize;
             insertNeuron(toAdd, (float) rand.nextGaussian());
-            System.out.println("Added neuron " + toAdd);
+//            System.out.println("Added neuron " + toAdd);
         } else if (rn < (ADD_EDGE_CHANCE + REMOVE_EDGE_CHANCE + ADD_NEURON_CHANCE + REMOVE_NEURON_CHANCE) * amount) {
             // remove (hidden) neuron
             int hiddenNeurons = neuronValues.length - currentInputSize - output.length;
             if (hiddenNeurons > 0) {
                 int toRemove = rand.nextInt(hiddenNeurons) + currentInputSize;
                 removeNeuron(toRemove);
-                System.out.println("Removed neuron " + toRemove);
+//                System.out.println("Removed neuron " + toRemove);
             }
         }
 
@@ -260,6 +271,11 @@ public class SparseBrain implements Brain {
         output = newOutput;
     }
 
+    @Override
+    public Brain copy() {
+        return new SparseBrain(this);
+    }
+
     private void insertNeuron(int neuronIndex, float neuronBias) {
         float[] newNeurons = new float[neuronValues.length + 1];
         float[] newPNeurons = new float[neuronValues.length + 1];
@@ -315,9 +331,9 @@ public class SparseBrain implements Brain {
         int toDelete = 0;
         for (int i = 0; i < edges.length; i += 2)
             if (edges[i] == neuronIndex || edges[i+1] == neuronIndex) toDelete++;
-        System.out.println("Deleting " + toDelete + " edges.");
-        System.out.println("Edges: " + edges.length);
-        System.out.println("Weights: " + weights.length);
+//        System.out.println("Deleting " + toDelete + " edges.");
+//        System.out.println("Edges: " + edges.length);
+//        System.out.println("Weights: " + weights.length);
         int[] newEdges = new int[edges.length - toDelete * 2];
         float[] newWeights = new float[newEdges.length / 2];
         // copy over valid edges

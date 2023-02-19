@@ -12,4 +12,6 @@ public interface Brain extends Mutable, CreatureComponent {
     void insertOutput(int outputIndex, Random rand);
     void removeInput(int inputIndex);
     void removeOutput(int outputIndex);
+
+    Brain copy();
 }

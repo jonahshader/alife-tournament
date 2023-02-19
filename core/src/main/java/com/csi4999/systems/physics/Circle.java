@@ -7,7 +7,7 @@ public abstract class Circle extends Collider {
      * Circle collider. Radius specifies the pre-transform radius.
      */
     public float radius;
-    float transformedRadius;
+    protected float transformedRadius;
 
     public Circle() {}
 

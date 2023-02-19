@@ -7,11 +7,14 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class PhysicsEngine {
     private List<Collider> colliders;
 
     private List<PhysicsObject> objects;
+
+    private ReentrantLock l = new ReentrantLock();
 
     public PhysicsEngine() {
         colliders = new ArrayList<>();
@@ -26,7 +29,18 @@ public class PhysicsEngine {
         colliders.remove(c);
     }
 
-    public void run() {
+    public void run(float dt) {
+        runCollision();
+        move(dt);
+
+        // handle removal of things
+        colliders.removeIf(c -> c.removeQueued);
+        l.lock();
+        objects.removeIf(c -> c.removeQueued);
+        l.unlock();
+    }
+
+    private void runCollision() {
         insertionSort(colliders);
         // iterate through all colliders, comparing each to the surrounding colliders
         for (int i = 0; i < colliders.size(); i++) {
@@ -65,9 +79,11 @@ public class PhysicsEngine {
     }
 
     public void draw(Batch batch, ShapeDrawer shapeDrawer) {
+        l.lock();
         for (PhysicsObject o: objects) {
             o.draw(batch, shapeDrawer, null, 1f);
         }
+        l.unlock();
     }
 
 
@@ -78,6 +94,8 @@ public class PhysicsEngine {
     }
 
     public void addObject(PhysicsObject o) {
+        l.lock();
         objects.add(o);
+        l.unlock();
     }
 }

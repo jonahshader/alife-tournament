@@ -29,6 +29,8 @@ public abstract class PhysicsObject {
 
     public Vector2 scale;
 
+    public boolean removeQueued;
+
 
 
     public Affine2 worldTransform;
@@ -98,6 +100,11 @@ public abstract class PhysicsObject {
         return children;
     }
 
+    public void queueRemoval() {
+        removeQueued = true;
+        children.forEach(PhysicsObject::queueRemoval);
+    }
+
     private void commonInit() {
         this.children = new ArrayList<>();
         this.worldTransform = new Affine2().idt();
@@ -110,6 +117,7 @@ public abstract class PhysicsObject {
         this.rotationDegrees = 0f;
         this.rotationalVel = 0;
         this.rotationalAccel = 0f;
+        this.removeQueued = false;
     }
 
     // assumes the parent's worldTransform is accurate

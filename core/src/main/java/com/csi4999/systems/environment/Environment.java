@@ -25,6 +25,8 @@ public class Environment {
     List<SensorBuilder> sensorBuilders;
     List<ToolBuilder> toolBuilders;
 
+    public float mutationRate = 1f;
+
     public Environment() {}
 
     public Environment(int initialFood, int initalCreatures) {
@@ -36,8 +38,8 @@ public class Environment {
 
         this.physics = new PhysicsEngine();
         this.r = new RandomXS128();
-        this.foodSpawner = new FoodSpawner(initialFood, this.r, this.physics);
-        this.creatureSpawner = new CreatureSpawner(initalCreatures, this.r, this.physics, sensorBuilders, toolBuilders);
+        this.foodSpawner = new FoodSpawner(this.r, this.physics);
+        this.creatureSpawner = new CreatureSpawner(this.r, this.physics, sensorBuilders, toolBuilders);
     }
 
     public void draw(ShapeDrawer drawer, Batch batch) {
@@ -45,7 +47,8 @@ public class Environment {
     }
 
     public void update(float dt) {
-        physics.run();
-        physics.move(dt);
+        physics.run(dt);
+        creatureSpawner.run(physics, r, mutationRate);
+        foodSpawner.run(r, physics);
     }
 }

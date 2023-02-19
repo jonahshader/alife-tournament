@@ -12,13 +12,12 @@ import java.util.List;
 import java.util.Random;
 
 public class Food extends Circle {
-    private static final float BASE_ENERGY_TARGET = 20;
-    private static final float BASE_ENERGY_TARGET_STD = 5f;
-    private static final float RADIUS_PER_ENERGY_SQRT = 2f;
+    private static final float BASE_ENERGY_TARGET = 60;
+    private static final float BASE_ENERGY_TARGET_STD = 10f;
+    private static final float RADIUS_PER_ENERGY_SQRT = 1.25f;
     private float targetEnergy;
     private float energy;
 
-    private boolean alive;
 
     public Food() {}
 
@@ -27,7 +26,6 @@ public class Food extends Circle {
         targetEnergy = (float) Math.max(1.0, rand.nextGaussian(BASE_ENERGY_TARGET, BASE_ENERGY_TARGET_STD));
         energy = 1f;
         color.set(rand.nextFloat() * .2f, rand.nextFloat() * .2f + .8f, rand.nextFloat() * .2f, 1f);
-        alive = true;
     }
 
     @Override
@@ -38,7 +36,7 @@ public class Food extends Circle {
 
     @Override
     public void move(float dt, PhysicsObject parent) {
-        if (alive) {
+        if (!removeQueued) {
             energy += Math.tanh(targetEnergy - energy) * dt;
             radius = energyToRadius(energy);
             super.move(dt, parent);
@@ -62,6 +60,11 @@ public class Food extends Circle {
 //        radius = Math.max(radius, 2f);
     }
 
+    @Override
+    public boolean collidesWith(Collider other) {
+        return false;
+    }
+
     public float eat(float amount) {
         if (energy > amount) {
             energy -= amount;
@@ -70,12 +73,16 @@ public class Food extends Circle {
             float tempEnergy = energy;
             energy = 0;
             radius = 0;
-            alive = false;
+            queueRemoval();
             return tempEnergy;
         }
     }
 
     private float energyToRadius(float energy) {
         return (float) (Math.sqrt(energy) * RADIUS_PER_ENERGY_SQRT);
+    }
+
+    public void growFully() {
+        energy = targetEnergy;
     }
 }

@@ -22,8 +22,6 @@ public abstract class LineSegment extends Collider {
     private Vector2 lineStart, lineEnd, temp1;
     private Affine2 lineMat;
 
-    private BitmapFont debugFont;
-
     public LineSegment() {}
     public LineSegment(float lineLength) {
         super(new Vector2(0f, 0f), new Vector2(0f, 0f), new Vector2(0f, 0f));

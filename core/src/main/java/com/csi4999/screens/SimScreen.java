@@ -9,6 +9,8 @@ import com.csi4999.ALifeApp;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.ui.PanCam;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class SimScreen implements Screen {
     public static final int GAME_WIDTH = 640;
     public static final int GAME_HEIGHT = 360;
@@ -18,6 +20,8 @@ public class SimScreen implements Screen {
 
     private Environment env;
 
+    private volatile boolean threadRunning;
+
     public SimScreen(ALifeApp app) {
         this.app = app;
 
@@ -25,14 +29,22 @@ public class SimScreen implements Screen {
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
         Gdx.input.setInputProcessor(new PanCam(worldViewport, worldCam)); // TODO: use multiplexer
 
-        this.env = new Environment(100, 100);
+        this.env = new Environment(3000, 150);
 
+        threadRunning = true;
+        new Thread(() -> {
+            while (threadRunning) {
+                env.update(1/60f);
+//                System.out.println("hi");
+            }
+
+        }).start();
     }
 
     @Override
     public void render(float delta) {
 
-        env.update(delta);
+//        env.update(1/60f);
 
         worldViewport.apply();
         app.batch.setProjectionMatrix(worldCam.combined);
@@ -61,5 +73,7 @@ public class SimScreen implements Screen {
     @Override
     public void hide() {}
     @Override
-    public void dispose() {}
+    public void dispose() {
+        threadRunning = false;
+    }
 }
