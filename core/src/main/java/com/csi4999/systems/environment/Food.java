@@ -45,19 +45,6 @@ public class Food extends Circle {
 
     @Override
     public void handleColliders() {
-        // TODO: get pushed away? implement push system and use it here?
-//        if (collision.size() > 0) {
-//            radius -= 0.05f;
-//            color.r = 1f;
-//            color.g = 0f;
-//        } else {
-//            radius += 0.01f;
-//            color.r = 0f;
-//            color.g = 1f;
-//        }
-//        color.b -= 0.01f;
-//        color.b = Math.max(color.b, 0f);
-//        radius = Math.max(radius, 2f);
     }
 
     @Override

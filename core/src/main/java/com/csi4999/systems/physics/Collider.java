@@ -98,4 +98,8 @@ public abstract class Collider extends PhysicsObject implements Mutable {
         }
     }
 
+    public synchronized void addCollider(Collider c) {
+        collision.add(c);
+    }
+
 }

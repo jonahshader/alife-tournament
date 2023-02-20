@@ -8,6 +8,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.IntStream;
 
 public class PhysicsEngine {
     private List<Collider> colliders;
@@ -43,25 +44,41 @@ public class PhysicsEngine {
     private void runCollision() {
         insertionSort(colliders);
         // iterate through all colliders, comparing each to the surrounding colliders
-        for (int i = 0; i < colliders.size(); i++) {
-            // we are comparing the baseCollider to - and + neighbors in the sorted colliders list
+        IntStream.range(0, colliders.size()).parallel().forEach(i -> {
+            // we are comparing the baseCollider to (+) neighbors in the sorted colliders list
             Collider baseCollider = colliders.get(i);
             // check + possible collisions
             for (int j = i + 1; j < colliders.size(); j++) {
                 Collider nextCollider = colliders.get(j);
                 if (baseCollider.bounds.x + baseCollider.bounds.width >= nextCollider.bounds.x) {
                     if (nextCollider.collidable && baseCollider.collidesWith(nextCollider))
-                        baseCollider.collision.add(nextCollider);
+                        baseCollider.addCollider(nextCollider);
                     if (baseCollider.collidable && nextCollider.collidesWith(baseCollider))
-                        nextCollider.collision.add(baseCollider);
+                        nextCollider.addCollider(baseCollider);
                 } else {
                     break;
                 }
             }
-        }
+        });
+//        for (int i = 0; i < colliders.size(); i++) {
+//            // we are comparing the baseCollider to (+) neighbors in the sorted colliders list
+//            Collider baseCollider = colliders.get(i);
+//            // check + possible collisions
+//            for (int j = i + 1; j < colliders.size(); j++) {
+//                Collider nextCollider = colliders.get(j);
+//                if (baseCollider.bounds.x + baseCollider.bounds.width >= nextCollider.bounds.x) {
+//                    if (nextCollider.collidable && baseCollider.collidesWith(nextCollider))
+//                        baseCollider.addCollider(nextCollider);
+//                    if (baseCollider.collidable && nextCollider.collidesWith(baseCollider))
+//                        nextCollider.addCollider(baseCollider);
+//                } else {
+//                    break;
+//                }
+//            }
+//        }
 
         // parallelStream()?
-        colliders.forEach(Collider::handleColliders);
+        colliders.parallelStream().forEach(Collider::handleColliders);
         colliders.forEach(c -> c.collision.clear());
     }
 
@@ -88,9 +105,10 @@ public class PhysicsEngine {
 
 
     public void move(float dt) {
-        for (PhysicsObject o: objects) {
-            o.move(dt, null);
-        }
+//        for (PhysicsObject o: objects) {
+//            o.move(dt, null);
+//        }
+        objects.parallelStream().forEach(o -> o.move(dt, null));
     }
 
     public void addObject(PhysicsObject o) {
