@@ -64,6 +64,7 @@ public class Horn extends LineSegment implements Tool {
 
     @Override
     public void handleColliders() {
+        color.r = 1f;
         if (collision.size() <= 1) {
             color.r = 1f;
         } else {
@@ -73,6 +74,7 @@ public class Horn extends LineSegment implements Tool {
                     if (c instanceof Creature) {
                         Creature cr = (Creature) c;
                         cr.takeDamage(lastStrength * lastDt * MAX_DAMAGE_RATE);
+                        color.r = 0f;
                     }
                 }
             }
