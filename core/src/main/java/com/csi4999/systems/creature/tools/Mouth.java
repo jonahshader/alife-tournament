@@ -13,10 +13,10 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 import java.util.Random;
 
 public class Mouth extends Circle implements Tool {
-    private static final float ENERGY_CONSUMPTION_DYNAMIC = 0.8f; // units per strength squared per second
-    private static final float ENERGY_CONSUMPTION_STATIC = 0.1f; // units per second
-    private static final float MUTATE_ROTATION_STD = 0.3f;
-    private static final float MAX_CONSUME_RATE = 3f;
+    private static final float ENERGY_CONSUMPTION_DYNAMIC = 0.3f; // units per strength squared per second
+    private static final float ENERGY_CONSUMPTION_STATIC = 0.03f; // units per second
+    private static final float MUTATE_ROTATION_STD = 1f;
+    private static final float MAX_CONSUME_RATE = 30f;
 
     private Creature parent;
     private MouthPart left, right;
@@ -24,6 +24,23 @@ public class Mouth extends Circle implements Tool {
     private float animationProgress;
     private float lastStrength;
     private float lastDt;
+
+    // copy constructor
+    public Mouth(Mouth m) {
+        super(new Vector2(m.position), m.radius);
+        rotationDegrees = m.rotationDegrees;
+        left = new MouthPart();
+        left.scale.y = -1;
+        right = new MouthPart();
+        getChildren().add(left);
+        getChildren().add(right);
+        animationProgress = m.animationProgress;
+        lastStrength = m.lastStrength;
+        lastDt = m.lastDt;
+        collidable = false;
+
+        scale.set(1.5f, 1.5f);
+    }
 
     public Mouth() {}
 
@@ -40,10 +57,12 @@ public class Mouth extends Circle implements Tool {
         lastStrength = 0f;
         lastDt = 0f;
         collidable = false;
+        scale.set(1.5f, 1.5f);
     }
 
     @Override
     public void mutate(float amount, Random rand) {
+        super.mutate(amount, rand);
         float rotateAmount = (float) (rand.nextGaussian() * MUTATE_ROTATION_STD * amount);
         rotationDegrees += rotateAmount;
         position.rotateDeg(rotateAmount); // TODO: this can probably drift over time
@@ -70,8 +89,12 @@ public class Mouth extends Circle implements Tool {
     }
 
     @Override
-    public void remove(PhysicsEngine engine) {
-
+    public Tool copy(Creature newParent, PhysicsEngine engine) {
+        Mouth m = new Mouth(this);
+        m.parent = newParent;
+        newParent.getChildren().add(m);
+        engine.addCollider(m);
+        return m;
     }
 
     @Override

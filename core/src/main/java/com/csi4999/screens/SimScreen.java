@@ -1,16 +1,16 @@
 package com.csi4999.screens;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.ui.PanCam;
 
-public class SimScreen implements Screen {
+import java.util.concurrent.locks.ReentrantLock;
+
+public class SimScreen implements Screen, InputProcessor {
     public static final int GAME_WIDTH = 640;
     public static final int GAME_HEIGHT = 360;
     private final OrthographicCamera worldCam;
@@ -19,35 +19,48 @@ public class SimScreen implements Screen {
 
     private Environment env;
 
+    private boolean drawingEnabled = true;
+
+    private volatile boolean threadRunning;
+
     public SimScreen(ALifeApp app) {
         this.app = app;
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
-        Gdx.input.setInputProcessor(new PanCam(worldViewport, worldCam)); // TODO: use multiplexer
+        InputMultiplexer m = new InputMultiplexer();
+        m.addProcessor(new PanCam(worldViewport, worldCam));
+        m.addProcessor(this);
+        Gdx.input.setInputProcessor(m);
 
-        this.env = new Environment(100, 100);
+        this.env = new Environment(3000, 150);
 
+        threadRunning = true;
+        new Thread(() -> {
+            while (threadRunning) {
+                env.update(1/60f);
+//                System.out.println("hi");
+            }
+
+        }).start();
     }
 
     @Override
     public void render(float delta) {
-        Vector2 mousePos = worldViewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
-        env.creatureSpawner.allCreatures.get(0).position.set(mousePos);
+        if (drawingEnabled) {
+            worldViewport.apply();
+            app.batch.setProjectionMatrix(worldCam.combined);
 
-        env.update(delta);
+            // set clear color
+            Gdx.gl.glClearColor(.5f, .5f, .5f, 1f);
+            // apply clear color to screen
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        worldViewport.apply();
-        app.batch.setProjectionMatrix(worldCam.combined);
+            app.batch.begin();
+            env.draw(app.shapeDrawer, app.batch);
+            app.batch.end();
+        }
 
-        // set clear color
-        Gdx.gl.glClearColor(.5f, .5f, .5f, 1f);
-        // apply clear color to screen
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        app.batch.begin();
-        env.draw(app.shapeDrawer, app.batch);
-        app.batch.end();
     }
 
     @Override
@@ -64,5 +77,63 @@ public class SimScreen implements Screen {
     @Override
     public void hide() {}
     @Override
-    public void dispose() {}
+    public void dispose() {
+        threadRunning = false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.O) {
+            drawingEnabled = !drawingEnabled;
+            return true;
+        }
+        if (keycode == Input.Keys.P) {
+            threadRunning = !threadRunning;
+            if (threadRunning) {
+                new Thread(() -> {
+                    while (threadRunning) {
+                        env.update(1/60f);
+                    }
+
+                }).start();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return false;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        return false;
+    }
 }
