@@ -30,7 +30,7 @@ public class Creature extends Circle implements Mutable {
 
     private static final float COLOR_CHANGE_VELOCITY = 8f; // units per second
 
-    private static final int MISC_INPUTS = 2;
+    private static final int MISC_INPUTS = 4;
     private static final int MISC_OUTPUTS = 4;
     private static final float BASE_MAX_ENERGY_SCALAR = 1.5f;
     private static final float BASE_ENERGY = 50f;
@@ -135,6 +135,8 @@ public class Creature extends Circle implements Mutable {
         }
         inputs[inputIndex++] = energy / BASE_ENERGY;
         inputs[inputIndex++] = collidingWithFood ? 1 : -1;
+        inputs[inputIndex++] = (float) Math.cos(rotationDegrees * Math.PI / 180);
+        inputs[inputIndex++] = (float) Math.sin(rotationDegrees * Math.PI / 180);
 
         // run brain with inputs
         float[] output = brain.run(inputs);

@@ -11,7 +11,7 @@ import space.earlygrey.shapedrawer.ShapeDrawer;
 import java.util.Random;
 
 public class Flagella extends PhysicsObject implements Tool {
-    private static final float MUTATE_POS_STD = 0.15f;
+    private static final float MUTATE_POS_STD = 0.5f;
     private static final float MUTATE_ROT_STD = 1f;
     private static final float FORCE = 300f;
     private static final float ENERGY_CONSUMPTION_DYNAMIC = 0.2f; // units per strength squared per second
