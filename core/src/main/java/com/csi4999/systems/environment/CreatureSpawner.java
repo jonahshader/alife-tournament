@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Random;
 
 public class CreatureSpawner {
-        private List<Creature> allCreatures;
+        public List<Creature> allCreatures;
         public CreatureSpawner(int initialSize, Random r, PhysicsEngine physics, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders) {
             this.allCreatures = new ArrayList<>();
 

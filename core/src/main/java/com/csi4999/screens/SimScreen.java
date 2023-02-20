@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.environment.Environment;
@@ -31,6 +32,8 @@ public class SimScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        Vector2 mousePos = worldViewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+        env.creatureSpawner.allCreatures.get(0).position.set(mousePos);
 
         env.update(delta);
 

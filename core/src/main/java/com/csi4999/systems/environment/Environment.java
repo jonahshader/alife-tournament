@@ -2,6 +2,7 @@ package com.csi4999.systems.environment;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.RandomXS128;
+import com.badlogic.gdx.math.Vector3;
 import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
@@ -21,7 +22,7 @@ public class Environment {
     Random r;
 
     FoodSpawner foodSpawner;
-    CreatureSpawner creatureSpawner;
+    public CreatureSpawner creatureSpawner;
 
     List<SensorBuilder> sensorBuilders;
     List<ToolBuilder> toolBuilders;
