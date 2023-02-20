@@ -47,6 +47,7 @@ public class Environment {
 
     public void draw(ShapeDrawer drawer, Batch batch) {
         physics.draw(batch, drawer);
+//        physics.renderBounds(drawer);
     }
 
     public void update(float dt) {

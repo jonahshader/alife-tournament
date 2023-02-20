@@ -2,7 +2,6 @@ package com.csi4999.systems.physics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.csi4999.systems.PhysicsObject;
-import com.csi4999.systems.creature.Creature;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
@@ -15,7 +14,8 @@ public class PhysicsEngine {
 
     private List<PhysicsObject> objects;
 
-    private ReentrantLock l = new ReentrantLock();
+    private ReentrantLock drawLock = new ReentrantLock();
+    private ReentrantLock renderBoundsLock = new ReentrantLock();
 
     public PhysicsEngine() {
         colliders = new ArrayList<>();
@@ -23,7 +23,9 @@ public class PhysicsEngine {
     }
 
     public void addCollider(Collider c) {
+        renderBoundsLock.lock();
         colliders.add(c);
+        renderBoundsLock.unlock();
     }
 
     public void removeCollider(Collider c) {
@@ -35,14 +37,18 @@ public class PhysicsEngine {
         move(dt);
 
         // handle removal of things
+        renderBoundsLock.lock();
         colliders.removeIf(c -> c.removeQueued);
-        l.lock();
+        renderBoundsLock.unlock();
+        drawLock.lock();
         objects.removeIf(c -> c.removeQueued);
-        l.unlock();
+        drawLock.unlock();
     }
 
     private void runCollision() {
+        renderBoundsLock.lock();
         insertionSort(colliders);
+        renderBoundsLock.unlock();
         // iterate through all colliders, comparing each to the surrounding colliders
         IntStream.range(0, colliders.size()).parallel().forEach(i -> {
             // we are comparing the baseCollider to (+) neighbors in the sorted colliders list
@@ -78,8 +84,10 @@ public class PhysicsEngine {
 //        }
 
         // parallelStream()?
+        renderBoundsLock.lock();
         colliders.parallelStream().forEach(Collider::handleColliders);
         colliders.forEach(c -> c.collision.clear());
+        renderBoundsLock.unlock();
     }
 
     // using insertion sort because it performs well for nearly-sorted arrays
@@ -96,12 +104,21 @@ public class PhysicsEngine {
     }
 
     public void draw(Batch batch, ShapeDrawer shapeDrawer) {
-        l.lock();
+        drawLock.lock();
         for (PhysicsObject o: objects) {
             o.draw(batch, shapeDrawer, null, 1f);
         }
-        l.unlock();
+        drawLock.unlock();
     }
+
+    public void renderBounds(ShapeDrawer shapeDrawer) {
+        renderBoundsLock.lock();
+        for (Collider c: colliders) {
+            c.renderBounds(shapeDrawer);
+        }
+        renderBoundsLock.unlock();
+    }
+
 
 
     public void move(float dt) {
@@ -112,8 +129,8 @@ public class PhysicsEngine {
     }
 
     public void addObject(PhysicsObject o) {
-        l.lock();
+        drawLock.lock();
         objects.add(o);
-        l.unlock();
+        drawLock.unlock();
     }
 }
