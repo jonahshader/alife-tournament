@@ -13,9 +13,9 @@ import java.util.Random;
 
 public class Horn extends LineSegment implements Tool {
     private static final float MUTATE_ROT_STD = 1f;
-    private static final float MAX_DAMAGE_RATE = 10f;
-    private static final float ENERGY_CONSUMPTION_DYNAMIC = 0.8f;
-    private static final float ENERGY_CONSUMPTION_STATIC = 0.1f;
+    private static final float MAX_DAMAGE_RATE = 1f;
+    private static final float ENERGY_CONSUMPTION_DYNAMIC = 0.03f;
+    private static final float ENERGY_CONSUMPTION_STATIC = 0.003f;
 
     private Creature parent;
 
@@ -26,7 +26,7 @@ public class Horn extends LineSegment implements Tool {
     public Horn() {}
 
     public Horn(Horn h) {
-        super(h.position, h.lineLength);
+        super(new Vector2(h.position), h.lineLength);
         rotationDegrees = h.rotationDegrees;
         lastStrength = h.lastStrength;
         lastDt = h.lastDt;
@@ -43,6 +43,7 @@ public class Horn extends LineSegment implements Tool {
 
     @Override
     public void mutate(float amount, Random rand) {
+        super.mutate(amount, rand);
         float rotateAmount = (float) (rand.nextGaussian() * MUTATE_ROT_STD * amount);
         rotationDegrees += rotateAmount;
         position.rotateDeg(rotateAmount);

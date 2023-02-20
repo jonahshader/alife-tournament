@@ -186,6 +186,8 @@ public class Creature extends Circle implements Mutable {
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
         shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
         shapeDrawer.filledCircle(0f, 0f, this.radius);
+        shapeDrawer.setColor(-color.r, -color.g, -color.b, parentAlpha);
+        shapeDrawer.circle(0f, 0f, this.radius * (health/MAX_HEALTH));
     }
 
     public List<Creature> getNewOffspring(PhysicsEngine engine, Random rand, float mutateAmount) {
