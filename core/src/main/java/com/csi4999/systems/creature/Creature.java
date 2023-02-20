@@ -55,7 +55,7 @@ public class Creature extends Circle implements Mutable {
         super(new Vector2(c.position), new Vector2(c.velocity), new Vector2(c.acceleration), c.radius);
         transformedRadius = c.transformedRadius;
         similarityVector = c.similarityVector.clone();
-        maxHealth = c.maxHealth;
+        health = c.health;
         maxAccel = c.maxAccel;
         energy = c.energy;
 
@@ -250,6 +250,6 @@ public class Creature extends Circle implements Mutable {
     public void takeDamage(float damageAmount) {
         health -= damageAmount;
 
-        if (health <= 0) dead = true;
+        if (health <= 0) queueRemoval();
     }
 }

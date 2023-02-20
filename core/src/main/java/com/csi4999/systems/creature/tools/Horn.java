@@ -25,6 +25,13 @@ public class Horn extends LineSegment implements Tool {
 
     public Horn() {}
 
+    public Horn(Horn h) {
+        super(h.position, h.lineLength);
+        rotationDegrees = h.rotationDegrees;
+        lastStrength = h.lastStrength;
+        lastDt = h.lastDt;
+    }
+
     public Horn(Vector2 pos, float lineLength, float rotation, Creature parent) {
         super(pos, lineLength);
         this.rotationDegrees = rotation;
@@ -58,25 +65,23 @@ public class Horn extends LineSegment implements Tool {
     }
 
     @Override
-    public void remove(PhysicsEngine engine) {
-
+    public Tool copy(Creature newParent, PhysicsEngine engine) {
+        Horn h = new Horn(this);
+        h.parent = newParent;
+        newParent.getChildren().add(h);
+        engine.addCollider(h);
+        return h;
     }
+
 
     @Override
     public void handleColliders() {
         color.r = 1f;
-        if (collision.size() <= 1) {
-            color.r = 1f;
-        } else {
-            color.r = 0f;
-            for (Collider c : collision) {
-                if (c != parent) {
-                    if (c instanceof Creature) {
-                        Creature cr = (Creature) c;
-                        cr.takeDamage(lastStrength * lastDt * MAX_DAMAGE_RATE);
-                        color.r = 0f;
-                    }
-                }
+        for (Collider c : collision) {
+            if (c != parent && c instanceof Creature) {
+                Creature cr = (Creature) c;
+                cr.takeDamage(lastStrength * lastDt * MAX_DAMAGE_RATE);
+                color.r = 0f;
             }
         }
     }
