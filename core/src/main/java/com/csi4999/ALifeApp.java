@@ -41,5 +41,7 @@ public class ALifeApp extends Game {
     public void dispose() {
         batch.dispose();
         super.dispose();
+        if (screen != null)
+            screen.dispose();
     }
 }
