@@ -16,8 +16,8 @@ public class EyeBuilder implements SensorBuilder {
         float theta = (float) (rand.nextFloat() * 2 * Math.PI);
         pos.set((float) (Math.cos(theta) * r), (float) (Math.sin(theta) * r));
 
-        Eye eye = new Eye(pos, (float) Math.sqrt(rand.nextFloat()) * 60f + 10f, parent);
-        eye.rotationDegrees = rand.nextFloat() * 360;
+        Eye eye = new Eye(pos, (float) Math.sqrt(rand.nextFloat()) * 120f + 10f, parent);
+        eye.rotationDegrees = rand.nextFloat() * 90;
         engine.addCollider(eye);
         parent.getChildren().add(eye);
         return eye;

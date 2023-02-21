@@ -26,12 +26,22 @@ public class Eye extends LineSegment implements Sensor {
     private static final float MUTATE_LENGTH_STD = 0.15f;
     private static final float MUTATE_ROTATION_STD = 0.25f;
 
-    private static final float ENERGY_CONSUMPTION = 0.1f; // energy per second
+    private static final float ENERGY_CONSUMPTION = 0.025f; // energy per second
 
     private Color colorTransparent;
     private Collider parent;
 
     private float lastHitDist;
+
+    public Eye(Eye e) {
+        super(e.lineLength);
+        lastHitDist = e.lastHitDist;
+        position.set(e.position);
+        visionData = e.visionData.clone(); // clone is shallow but its fine because its floats
+        colorTransparent = new Color(e.colorTransparent);
+        rotationDegrees = e.rotationDegrees;
+
+    }
 
     public Eye() {} //Kryo
 
@@ -48,6 +58,7 @@ public class Eye extends LineSegment implements Sensor {
 
     @Override
     public void mutate(float amount, Random rand) {
+        super.mutate(amount, rand);
         // Wiggle vision line length
         lineLength += rand.nextGaussian() * MUTATE_LENGTH_STD;
         rotationDegrees += rand.nextGaussian() * MUTATE_ROTATION_STD;
@@ -59,8 +70,12 @@ public class Eye extends LineSegment implements Sensor {
     }
 
     @Override
-    public void remove(PhysicsEngine engine) {
-        engine.removeCollider(this);
+    public Sensor copy(Creature newParent, PhysicsEngine engine) {
+        Eye e = new Eye(this);
+        e.parent = newParent;
+        newParent.getChildren().add(e);
+        engine.addCollider(e);
+        return e;
     }
 
     @Override
@@ -91,7 +106,7 @@ public class Eye extends LineSegment implements Sensor {
             visionData[0] = nearest.color.r;
             visionData[1] = nearest.color.g;
             visionData[2] = nearest.color.b;
-            visionData[3] = nearest.getSimilarity(visionData);
+            visionData[3] = nearest.getSimilarity(parent);
         }
 
         // Line changes to color of seen object

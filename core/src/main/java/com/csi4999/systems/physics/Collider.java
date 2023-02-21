@@ -3,18 +3,22 @@ package com.csi4999.systems.physics;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.csi4999.systems.Mutable;
 import com.csi4999.systems.PhysicsObject;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
-public abstract class Collider extends PhysicsObject {
+public abstract class Collider extends PhysicsObject implements Mutable {
+    private static final float SIMILARITY_MUTATE_STD = 0.05f;
+    public static final int SIMILARITY_VECTOR_SIZE = 8;
 
     public List<Collider> collision;
     Rectangle bounds;
-    float[] similarityVector;
+    protected float[] similarityVector;
 
     public boolean collidable = true;
 
@@ -42,23 +46,17 @@ public abstract class Collider extends PhysicsObject {
     }
 
     // get similarity for another collider, dot product between both similarities, return -1 if one or both are null
-    public float getSimilarity(float[] other) {
+    public float getSimilarity(Collider c) {
         float res = -1f;
 
-        if (similarityVector != null && other != null) {
-            normalizeSimilarity(other);
-            normalizeSimilarity(similarityVector);
+        if (similarityVector != null && c.similarityVector != null) {
             res = 0;
             for (int i = 0; i < similarityVector.length; i++) {
-                res += similarityVector[i] * other[i];
+                res += similarityVector[i] * c.similarityVector[i];
             }
         }
 
         return res;
-    }
-
-    public void setSimilarity(float[] sim) {
-        similarityVector = sim;
     }
 
     public void renderBounds(ShapeDrawer d) {
@@ -77,12 +75,16 @@ public abstract class Collider extends PhysicsObject {
         computeBounds();
     }
 
-//    @Override
-//    public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
-//        renderBounds(shapeDrawer);
-//    }
+    @Override
+    public void mutate(float amount, Random rand) {
+        if (similarityVector != null) {
+            for (int i = 0; i < similarityVector.length; i++)
+                similarityVector[i] += rand.nextGaussian() * amount * SIMILARITY_MUTATE_STD;
+            normalizeSimilarity(similarityVector);
+        }
+    }
 
-    private void normalizeSimilarity(float[] sim) {
+    public void normalizeSimilarity(float[] sim) {
         float sumsq = 0.0f;
 
         for (float num : sim) {
@@ -95,4 +97,9 @@ public abstract class Collider extends PhysicsObject {
             sim[i] *= weight;
         }
     }
+
+    public synchronized void addCollider(Collider c) {
+        collision.add(c);
+    }
+
 }
