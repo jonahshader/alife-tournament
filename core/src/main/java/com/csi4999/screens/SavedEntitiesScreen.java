@@ -22,8 +22,10 @@ public class SavedEntitiesScreen implements Screen {
     private final ALifeApp app;
     private Stage stage;
 
+    // set to true if no DB implemented
     private final Boolean noDatabase = true;
 
+    // dummy data
     private String[] creatureNames;
     private  String[] envNames;
 
@@ -41,6 +43,7 @@ public class SavedEntitiesScreen implements Screen {
         stage = new Stage(savedEntitiesViewport, app.batch);
         Gdx.input.setInputProcessor(stage);
 
+        // fake creature names are created
         if (noDatabase) {
             creatureNames = new String[50];
             envNames = new String[50];
@@ -57,16 +60,19 @@ public class SavedEntitiesScreen implements Screen {
         Table mainTable = new Table();
         mainTable.setFillParent(true);
         mainTable.top().left();
-//        mainTable.align(Align.left);
-//        mainTable.setDebug(true);
+
+        //table for right side
+        //only holds label with creature name for right now
         Table rightSide = new Table();
 
+        //table of creatures
         Table creatures = new Table();
         for (String creature : creatureNames){
             TextButton creatureButton = new TextButton(creature, skin);
             creatureButton.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    // TO DO: design more complex layout for here
                     rightSide.clearChildren();
                     Label creatureName = new Label(creature, skin);
                     rightSide.add(creatureName).fill();
@@ -76,12 +82,14 @@ public class SavedEntitiesScreen implements Screen {
             creatures.row();
         }
 
+        //table of environments
         Table environments = new Table();
         for (String environment : envNames){
             TextButton envButton = new TextButton(environment, skin);
             envButton.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+                    // TO DO: design more complex layout for here
                     rightSide.clearChildren();
                     Label envName = new Label(environment, skin);
                     rightSide.add(envName).fill();
@@ -91,20 +99,21 @@ public class SavedEntitiesScreen implements Screen {
             environments.row();
         }
 
+        // provides scrolling for left side
         ScrollPane creatureList = new ScrollPane(creatures, skin);
         creatureList.setScrollBarPositions(true, false);
 
+        // provides scrolling for left side
         ScrollPane envList = new ScrollPane(environments, skin);
         envList.setScrollBarPositions(true, false);
 
+        //left side is stack of buttons
         Stack leftSide = new Stack();
         leftSide.addActor(creatureList);
         leftSide.addActor(envList);
 
 
-
-//        SplitPane test = new SplitPane(leftSide, new TextButton("jkdslhfkdjshf", skin), false, skin);
-        SplitPane test = new SplitPane(leftSide, rightSide, false, skin);
+        SplitPane screenDivider = new SplitPane(leftSide, rightSide, false, skin);
 
         TextButton backButton = new TextButton("Go Back", skin);
         backButton.addListener(new ClickListener(){
@@ -113,16 +122,21 @@ public class SavedEntitiesScreen implements Screen {
                 ((Game)Gdx.app.getApplicationListener()).setScreen(new MainMenuScreen(app));
             }
         });
+
+        //buttons for toggling view
         TextButton viewCreatures = new TextButton("Saved Creatures", skin);
         TextButton viewEnvironments = new TextButton("Saved Environments", skin);
+
+
         mainTable.add(viewCreatures).fill().uniform();
         mainTable.add(viewEnvironments).fill().uniform();
         mainTable.row();
         mainTable.center();
-        mainTable.add(test).fill().colspan(2);
+        mainTable.add(screenDivider).fill().colspan(2);
         mainTable.row();
         mainTable.add(backButton).fill().colspan(2);
 
+        //changes visibility on tabs
         ChangeListener tab_listener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -133,6 +147,7 @@ public class SavedEntitiesScreen implements Screen {
         viewCreatures.addListener(tab_listener);
         viewEnvironments.addListener(tab_listener);
 
+        // ensures only one of creatures / env is shown at a time
         ButtonGroup tabs = new ButtonGroup();
         tabs.setMinCheckCount(1);
         tabs.setMaxCheckCount(1);
@@ -140,30 +155,7 @@ public class SavedEntitiesScreen implements Screen {
         tabs.add(viewEnvironments);
 
 
-//        TextButton backButton = new TextButton("Go Back", skin);
-//        backButton.setColor(1f, 0f, 0f, 1f);
-//        TextButton option2 = new TextButton("Placeholder", skin);
-//
-//
-//        backButton.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                ((Game)Gdx.app.getApplicationListener()).setScreen(new MainMenuScreen(app));
-//            }
-//        });
-//
-//        option2.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
-//            }
-//        });
-//
-//
-//        mainTable.row().pad(0, 0, 50, 0);
-//        mainTable.add(option2).fill().uniform();
-//        mainTable.row().pad(0, 0, 10, 0);
-//        mainTable.add(backButton).fill().uniform();
+
 
         stage.addActor(mainTable);
     }
@@ -173,12 +165,7 @@ public class SavedEntitiesScreen implements Screen {
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-//        app.batch.setProjectionMatrix(savedEntitiesCam.combined);
-//        app.batch.begin();
-//        app.shapeDrawer.setColor(.18f, .2f, .28f, 1);
-//        app.shapeDrawer.line(savedEntitiesViewport.getWorldWidth() / 2, 0, savedEntitiesViewport.getWorldWidth() / 2, savedEntitiesViewport.getWorldHeight(), 2);
-//
-//        app.batch.end();
+
 
         stage.act();
         stage.draw();
