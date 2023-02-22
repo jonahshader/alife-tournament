@@ -1,9 +1,16 @@
 
 sprites.png
-size: 16, 16
+size: 128, 128
 format: RGBA8888
-filter: Nearest, Nearest
+filter: Linear, Linear
 repeat: none
+circle
+  rotate: false
+  xy: 1, 4
+  size: 64, 64
+  orig: 64, 64
+  offset: 0, 0
+  index: -1
 white_pixel
   rotate: false
   xy: 1, 1

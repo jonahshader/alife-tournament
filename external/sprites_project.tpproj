@@ -8,8 +8,8 @@ debug=false
 duplicatePadding=true
 edgePadding=true
 fast=false
-filterMag=Nearest
-filterMin=Nearest
+filterMag=Linear
+filterMin=Linear
 ignoreBlankImages=true
 maxHeight=2048
 maxWidth=2048
@@ -34,7 +34,7 @@ prettyPrint=false
 legacyOutput=true
 
 scaleFactors=[{suffix:"",factor:1,resampling:bicubic}]
-inputFiles=[{path:sprites_input/white_pixel.png,type:Input,regionName:null}]
+inputFiles=[{path:sprites_input/white_pixel.png,type:Input,regionName:null},{path:sprites_input,type:Input,dirFilePrefix:null,recursive:false,flattenPaths:false}]
 keepInputFileExtensions=false
 
 

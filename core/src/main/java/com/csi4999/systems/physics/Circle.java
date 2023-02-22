@@ -6,12 +6,13 @@ public abstract class Circle extends Collider {
     /**
      * Circle collider. Radius specifies the pre-transform radius.
      */
-    protected float radius;
-    float transformedRadius;
+    public float radius;
+    protected float transformedRadius;
 
     public Circle() {}
 
-    public Circle(float radius) {
+    public Circle(Vector2 pos, float radius) {
+        super(pos, new Vector2().setZero(), new Vector2().setZero());
         this.radius = radius;
         this.transformedRadius = 0;
     }

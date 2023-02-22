@@ -24,6 +24,8 @@ public class ALifeApp extends Game {
 
         // load assets
         CustomAssetManager.getInstance().loadImages();
+        CustomAssetManager.getInstance().loadFonts();
+        CustomAssetManager.getInstance().loadSkins();
         CustomAssetManager.getInstance().manager.finishLoading();
 
         // get white pixel necessary for ShapeDrawer to function
@@ -39,5 +41,7 @@ public class ALifeApp extends Game {
     public void dispose() {
         batch.dispose();
         super.dispose();
+        if (screen != null)
+            screen.dispose();
     }
 }

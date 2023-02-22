@@ -3,7 +3,10 @@ package com.csi4999.systems.creature;
 import com.csi4999.systems.Mutable;
 import com.csi4999.systems.physics.PhysicsEngine;
 
-public interface Tool extends Mutable {
-    void use(float strength);
-    void remove(PhysicsEngine engine);
+public interface Tool extends Mutable, CreatureComponent {
+    void use(float strength, float dt, Creature parent);
+
+    // copy is similar to ToolBuilder.buildTool
+    // needs to add it as a child and add to physics engine if applicable
+    Tool copy(Creature newParent, PhysicsEngine engine);
 }

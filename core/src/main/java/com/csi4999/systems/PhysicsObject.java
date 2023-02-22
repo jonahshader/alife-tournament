@@ -19,7 +19,7 @@ public abstract class PhysicsObject {
     public float rotationalVel;
     public float rotationalAccel;
 
-    private Matrix4 oldTransform;
+    protected Matrix4 oldTransform;
     protected Matrix4 computedTransform;
 
     public Vector3 transformedPos;
@@ -28,6 +28,8 @@ public abstract class PhysicsObject {
     public Color color;
 
     public Vector2 scale;
+
+    public boolean removeQueued;
 
 
 
@@ -51,18 +53,20 @@ public abstract class PhysicsObject {
 
     public PhysicsObject() {}
 
-    public void move(float dt) {
+    public void move(float dt, PhysicsObject parent) {
         // integrate vel, accel
         velocity.mulAdd(acceleration, dt);
         position.mulAdd(velocity, dt);
         rotationalVel += rotationalAccel * dt;
         rotationDegrees += rotationalVel * dt;
+        rotationDegrees %= 360;
+        computeTransform(parent);
         // move children
-        children.forEach(child -> child.move(dt));
+        children.forEach(child -> child.move(dt, this));
     }
 
     public void draw(Batch batch, ShapeDrawer shapeDrawer, PhysicsObject parent, float parentAlpha) {
-        applyTransform(batch, computeTransform(parent));
+        applyTransform(batch, computedTransform);
         // draw this
         draw(batch, shapeDrawer, parentAlpha);
         parentAlpha *= this.color.a;
@@ -97,6 +101,11 @@ public abstract class PhysicsObject {
         return children;
     }
 
+    public void queueRemoval() {
+        removeQueued = true;
+        children.forEach(PhysicsObject::queueRemoval);
+    }
+
     private void commonInit() {
         this.children = new ArrayList<>();
         this.worldTransform = new Affine2().idt();
@@ -109,6 +118,7 @@ public abstract class PhysicsObject {
         this.rotationDegrees = 0f;
         this.rotationalVel = 0;
         this.rotationalAccel = 0f;
+        this.removeQueued = false;
     }
 
     // assumes the parent's worldTransform is accurate
@@ -130,7 +140,7 @@ public abstract class PhysicsObject {
         batch.setTransformMatrix(transform);
     }
 
-    private void resetTransform (Batch batch) {
+    protected void resetTransform(Batch batch) {
         batch.setTransformMatrix(oldTransform);
     }
 

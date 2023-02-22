@@ -14,6 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
+import com.csi4999.singletons.CustomAssetManager;
+
+import static com.csi4999.singletons.CustomAssetManager.*;
 
 public class MainMenuScreen implements Screen {
     private Skin skin;
@@ -27,9 +30,9 @@ public class MainMenuScreen implements Screen {
     public MainMenuScreen(ALifeApp app) {
         this.app = app;
 
-        // Asset manager?
-        skin = new Skin(Gdx.files.internal("ui/neutralizer/skin/neutralizer-ui.json"));
-        titleFont = new BitmapFont(Gdx.files.internal("ui/neutralizer/raw/font-title-export.fnt"));
+        skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
+
+        titleFont = CustomAssetManager.getInstance().manager.get(UI_FONT);
         titleFontColor = new Color(1f, 1f, 1f, 1f);
 
         menuCam = new OrthographicCamera();
