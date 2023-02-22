@@ -12,7 +12,7 @@ public class MouthBuilder implements ToolBuilder {
     @Override
     public Tool buildTool(Creature parent, PhysicsEngine engine, Random rand) {
         float rot = rand.nextFloat() * 360;
-        Vector2 pos = new Vector2().set(parent.radius, 0f).rotateDeg(rot);
+        Vector2 pos = new Vector2().set(parent.radius * .75f, 0f).rotateDeg(rot);
         Mouth m = new Mouth(pos, rot, parent);
         parent.getChildren().add(m);
         engine.addCollider(m);

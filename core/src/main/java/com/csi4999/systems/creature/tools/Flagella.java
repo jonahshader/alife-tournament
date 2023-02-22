@@ -1,7 +1,9 @@
 package com.csi4999.systems.creature.tools;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.csi4999.singletons.CustomGraphics;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.creature.Tool;
@@ -43,16 +45,23 @@ public class Flagella extends PhysicsObject implements Tool {
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
-        shapeDrawer.filledCircle(0f, 0f, 3f, color);
+        Sprite circle = CustomGraphics.getInstance().circle;
+        circle.setScale(2 * 2f / circle.getWidth());
+        circle.setOriginBasedPosition(0f, 0f);
+        circle.setColor(color);
+        circle.draw(batch);
         shapeDrawer.setColor(0.5f, 0.5f, 0.5f, 1f);
-        shapeDrawer.circle(0f, 0f, 3f);
+        shapeDrawer.circle(0f, 0f, 2f, 0.5f);
         float str = Math.abs(lastStrength);
         int amount = (int) (10 * str);
         for (int i = 0; i < amount; i++) {
             float a = 1f - ((i + 1f) / amount);
-            shapeDrawer.setColor(color.r, color.g, color.b, a);
             float scl = (float)Math.pow(.6f + str * .2f, i);
-            shapeDrawer.ellipse((-i*3 - (animationProgress * 40f) % 3) * lastStrength, 0, 2f * scl, 3f * scl);
+//            shapeDrawer.ellipse((-i*3 - (animationProgress * 40f) % 3) * lastStrength, 0, 2f * scl, 3f * scl);
+            circle.setOriginBasedPosition((-i*3 - (animationProgress * 40f) % 3) * lastStrength, 0);
+            circle.setColor(color.r, color.g, color.b, a);
+            circle.setScale(2f * scl / circle.getWidth(), 3f * scl / circle.getWidth());
+            circle.draw(batch);
         }
 
     }

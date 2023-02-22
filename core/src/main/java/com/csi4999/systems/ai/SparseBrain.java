@@ -118,6 +118,31 @@ public class SparseBrain implements Brain {
             this.edges[i++] = edge[0];
             this.edges[i++] = edge[1];
         }
+
+        // for each neuron, compute the fan-in number and divide those weights by sqrt(fan-in) to change the variance
+        if (rand.nextBoolean()) {
+            for (int n = 0; n < neurons; n++) {
+                int fanIn = 1; // init 1 because bias
+                for (int edge = 0; edge < edges.length; edge += 2) {
+                    if (edges[edge+1] == n) fanIn++;
+                }
+                float scl = (float) (3 / Math.sqrt(fanIn));
+                bias[n] *= scl;
+                for (int edge = 0; edge < edges.length; edge += 2) {
+                    if (edges[edge+1] == n) this.weights[edge/2] *= scl;
+                }
+            }
+        } else {
+            float scl = rand.nextFloat();
+            for (int w = 0; w < this.weights.length; w++) {
+                this.weights[w] *= scl;
+            }
+            for (int b = 0; b < this.bias.length; b++) {
+                this.bias[b] *= scl;
+            }
+
+        }
+
     }
 
     /**

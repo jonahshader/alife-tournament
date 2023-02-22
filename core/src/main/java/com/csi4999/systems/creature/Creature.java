@@ -1,8 +1,10 @@
 package com.csi4999.systems.creature;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.csi4999.singletons.CustomGraphics;
 import com.csi4999.systems.Mutable;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.ai.Brain;
@@ -30,12 +32,12 @@ public class Creature extends Circle implements Mutable {
 
     private static final float COLOR_CHANGE_VELOCITY = 8f; // units per second
 
-    private static final int MISC_INPUTS = 4;
-    private static final int MISC_OUTPUTS = 4;
+    private static final int MISC_INPUTS = 7;
+    private static final int MISC_OUTPUTS = 1;
     private static final float BASE_MAX_ENERGY_SCALAR = 1.5f;
     private static final float BASE_ENERGY = 50f;
-    private static final float REPLICATE_DELAY = 2f;
-    private static final int REPLICATE_AMOUNT = 3;
+    private static final float REPLICATE_DELAY = 3f;
+    private static final int REPLICATE_AMOUNT = 2;
 
     private float health;
     public float energy;
@@ -48,6 +50,8 @@ public class Creature extends Circle implements Mutable {
     private List<Tool> tools;
     private Brain brain;
     private float[] inputs;
+
+    private Vector2 rotatedVelocity = new Vector2();
 
     public Creature() {}
 
@@ -137,6 +141,11 @@ public class Creature extends Circle implements Mutable {
         inputs[inputIndex++] = collidingWithFood ? 1 : -1;
         inputs[inputIndex++] = (float) Math.cos(rotationDegrees * Math.PI / 180);
         inputs[inputIndex++] = (float) Math.sin(rotationDegrees * Math.PI / 180);
+        rotatedVelocity.set(velocity).rotateDeg(-rotationDegrees);
+        inputs[inputIndex++] = (float) Math.tanh(rotatedVelocity.x / 10);
+        inputs[inputIndex++] = (float) Math.tanh(rotatedVelocity.y / 10);
+        inputs[inputIndex++] = (float) Math.tanh(rotationalVel / 100);
+
 
         // run brain with inputs
         float[] output = brain.run(inputs);
@@ -147,9 +156,9 @@ public class Creature extends Circle implements Mutable {
 
         // apply outputs to misc (just color for now)
         int miscOutputIndex = tools.size();
-        color.r = towardsValue(color.r, output[miscOutputIndex++] * .5f + .5f, COLOR_CHANGE_VELOCITY * dt);
-        color.g = towardsValue(color.g, output[miscOutputIndex++] * .5f + .5f, COLOR_CHANGE_VELOCITY * dt);
-        color.b = towardsValue(color.b, output[miscOutputIndex++] * .5f + .5f, COLOR_CHANGE_VELOCITY * dt);
+//        color.r = towardsValue(color.r, output[miscOutputIndex++] * .5f + .5f, COLOR_CHANGE_VELOCITY * dt);
+//        color.g = towardsValue(color.g, output[miscOutputIndex++] * .5f + .5f, COLOR_CHANGE_VELOCITY * dt);
+//        color.b = towardsValue(color.b, output[miscOutputIndex++] * .5f + .5f, COLOR_CHANGE_VELOCITY * dt);
         if (output[miscOutputIndex++] > 0) {
             replicateTimer -= dt * 2;
         }
@@ -184,9 +193,19 @@ public class Creature extends Circle implements Mutable {
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
-        shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
-        shapeDrawer.filledCircle(0f, 0f, this.radius);
-        shapeDrawer.setColor(-color.r, -color.g, -color.b, parentAlpha);
+        color.r = (float) (Math.tanh(similarityVector[0]) * .5f + .5f);
+        color.g = (float) (Math.tanh(similarityVector[1]) * .5f + .5f);
+        color.b = (float) (Math.tanh(similarityVector[2]) * .5f + .5f);
+//        shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
+//        shapeDrawer.filledCircle(0f, 0f, this.radius);
+//        // TODO: make this better
+        Sprite circle = CustomGraphics.getInstance().circle;
+        circle.setScale(radius * 2f / circle.getWidth());
+        circle.setOriginBasedPosition(0f, 0f);
+        circle.setColor(color);
+        circle.draw(batch);
+        float avgColor = (color.r + color.g + color.b) / 3;
+        shapeDrawer.setColor(avgColor * color.r, avgColor * color.g, avgColor * color.b, parentAlpha);
         shapeDrawer.circle(0f, 0f, this.radius * (health/MAX_HEALTH));
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Random;
 
 public class CreatureSpawner {
-    private static final int INITIAL_AMOUNT = 300;
+    private static final int INITIAL_AMOUNT = 200;
     private static final int MINIMUM_AMOUNT = 50;
     private static final float SPREAD_STD = 512f;
     private List<Creature> creatures = new ArrayList<>();
@@ -36,7 +36,7 @@ public class CreatureSpawner {
 
     private void addRandomCreature(Random r, PhysicsEngine physics, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders) {
         Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, SPREAD_STD), (float) r.nextGaussian(0f, SPREAD_STD)),
-            sensorBuilders, toolBuilders, 3, 4, physics, r);
+            sensorBuilders, toolBuilders, 4, 4, physics, r);
         physics.addObject(c);
         physics.addCollider(c);
         creatures.add(c);

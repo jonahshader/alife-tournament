@@ -36,7 +36,7 @@ public class Environment {
         this.toolBuilders = new ArrayList<>();
         this.sensorBuilders.add(new EyeBuilder());
         this.toolBuilders.add(new FlagellaBuilder());
-        this.toolBuilders.add(new HornBuilder());
+//        this.toolBuilders.add(new HornBuilder());
         this.toolBuilders.add(new MouthBuilder());
 
         this.physics = new PhysicsEngine();
