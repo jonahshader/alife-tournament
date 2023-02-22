@@ -14,6 +14,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
+import  com.csi4999.singletons.CustomAssetManager;
+
+import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 
 public class SavedEntitiesScreen implements Screen {
     private Skin skin;
@@ -32,7 +35,8 @@ public class SavedEntitiesScreen implements Screen {
     public SavedEntitiesScreen(ALifeApp app) {
         this.app = app;
 
-        skin = new Skin(Gdx.files.internal("ui/neutralizer/skin/neutralizer-ui.json"));
+
+        skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
         savedEntitiesCam = new OrthographicCamera();
         savedEntitiesViewport = new FitViewport(400, 400, savedEntitiesCam);
