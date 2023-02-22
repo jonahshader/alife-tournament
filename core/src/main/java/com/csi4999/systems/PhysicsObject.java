@@ -59,6 +59,7 @@ public abstract class PhysicsObject {
         position.mulAdd(velocity, dt);
         rotationalVel += rotationalAccel * dt;
         rotationDegrees += rotationalVel * dt;
+        rotationDegrees %= 360;
         computeTransform(parent);
         // move children
         children.forEach(child -> child.move(dt, this));

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public final class CustomAssetManager {
+    private CustomAssetManager() {}
     private static CustomAssetManager instance;
     public final AssetManager manager = new AssetManager();
 

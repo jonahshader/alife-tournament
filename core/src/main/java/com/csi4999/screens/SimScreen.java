@@ -60,7 +60,6 @@ public class SimScreen implements Screen, InputProcessor {
             env.draw(app.shapeDrawer, app.batch);
             app.batch.end();
         }
-
     }
 
     @Override

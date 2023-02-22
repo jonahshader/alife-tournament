@@ -2,7 +2,9 @@ package com.csi4999.systems.environment;
 
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.csi4999.singletons.CustomGraphics;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.physics.Circle;
 import com.csi4999.systems.physics.Collider;
@@ -14,7 +16,7 @@ import java.util.Random;
 public class Food extends Circle {
     private static final float BASE_ENERGY_TARGET = 60;
     private static final float BASE_ENERGY_TARGET_STD = 10f;
-    private static final float RADIUS_PER_ENERGY_SQRT = 1.25f;
+    private static final float RADIUS_PER_ENERGY_SQRT = 2f;
     private float targetEnergy;
     private float energy;
 
@@ -30,8 +32,13 @@ public class Food extends Circle {
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
-        shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
-        shapeDrawer.filledCircle(0f, 0f, this.radius);
+//        shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
+//        shapeDrawer.filledCircle(0f, 0f, this.radius);
+        Sprite circle = CustomGraphics.getInstance().circle;
+        circle.setScale(radius * 2f / circle.getWidth());
+        circle.setOriginBasedPosition(0f, 0f);
+        circle.setColor(color);
+        circle.draw(batch);
     }
 
     @Override

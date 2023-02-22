@@ -3,11 +3,15 @@ package com.csi4999.systems.creature.sensors;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.CustomGraphics;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.creature.Sensor;
+import com.csi4999.systems.environment.Food;
+import com.csi4999.systems.physics.Circle;
 import com.csi4999.systems.physics.Collider;
 import com.csi4999.systems.physics.LineSegment;
 import com.csi4999.systems.physics.PhysicsEngine;
@@ -23,8 +27,8 @@ import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
 
 public class Eye extends LineSegment implements Sensor {
     private float[] visionData;
-    private static final float MUTATE_LENGTH_STD = 0.15f;
-    private static final float MUTATE_ROTATION_STD = 0.25f;
+    private static final float MUTATE_LENGTH_STD = 0.5f;
+    private static final float MUTATE_ROTATION_STD = 0.5f;
 
     private static final float ENERGY_CONSUMPTION = 0.025f; // energy per second
 
@@ -51,8 +55,8 @@ public class Eye extends LineSegment implements Sensor {
         lastHitDist = lineLength;
         this.parent = parent;
         position.set(pos);
-        // r, g, b, similarity score
-        visionData = new float[] {0f, 0f, 0f, 0f};
+        // similarity score, isFood, distance
+        visionData = new float[] {0f, 0f, 0f};
         colorTransparent = new Color();
     }
 
@@ -84,7 +88,12 @@ public class Eye extends LineSegment implements Sensor {
         colorTransparent.set(color);
         colorTransparent.a = 0;
         shapeDrawer.filledRectangle(0f, -.5f, lastHitDist, 1f, colorTransparent, color);
-        shapeDrawer.filledCircle(0f,0f,3f);
+//        shapeDrawer.filledCircle(0f,0f,3f);
+        Sprite circle = CustomGraphics.getInstance().circle;
+        circle.setScale(2 * 2f / circle.getWidth());
+        circle.setOriginBasedPosition(0f, 0f);
+        circle.setColor(color);
+        circle.draw(batch);
     }
 
     @Override
@@ -93,6 +102,7 @@ public class Eye extends LineSegment implements Sensor {
         if (collision.size() <= 1) {
             Arrays.fill(visionData, 0f);
             lastHitDist = lineLength;
+            this.color.set(1f, 1f, 1f, 1f);
         } else {
             collision.sort((o1, o2) -> {
                 float d1 = getDistToCollider(o1);
@@ -103,16 +113,20 @@ public class Eye extends LineSegment implements Sensor {
             if (nearest == parent)
                 nearest = collision.get(1);
             lastHitDist = (float) Math.sqrt(getDistToCollider(nearest)) / parent.scale.x;
-            visionData[0] = nearest.color.r;
-            visionData[1] = nearest.color.g;
-            visionData[2] = nearest.color.b;
-            visionData[3] = nearest.getSimilarity(parent);
+            visionData[0] = nearest.getSimilarity(parent);
+            visionData[1] = nearest instanceof Food ? 1f : -1f;
+            if (nearest instanceof Circle) {
+                visionData[2] = lastHitDist - (((Circle) nearest).radius  / parent.scale.x);
+            } else {
+                visionData[2] = lastHitDist;
+            }
+            visionData[2] = (lineLength - visionData[2]) / lineLength;
+
+            // Line changes to color of seen object
+            this.color.set(nearest.color);
         }
 
-        // Line changes to color of seen object
-        this.color.r = visionData[0];
-        this.color.g = visionData[1];
-        this.color.b = visionData[2];
+
     }
 
     private float getDistToCollider(Collider c) {
