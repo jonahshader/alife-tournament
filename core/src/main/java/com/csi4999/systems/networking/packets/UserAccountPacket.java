@@ -4,7 +4,9 @@ import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import java.util.List;
 
-// this packet is sent (S -> C) on a successful login
+/**
+ * this packet is sent (S -> C) on a successful login
+ */
 public class UserAccountPacket {
     public long userID;
     public List<ToolBuilder> toolBuilders;
