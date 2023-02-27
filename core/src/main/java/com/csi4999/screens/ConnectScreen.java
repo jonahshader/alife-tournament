@@ -40,6 +40,7 @@ public class ConnectScreen implements Screen {
         stage = new Stage(viewport, app.batch);
         Gdx.input.setInputProcessor(stage);
     }
+
     @Override
     public void show() {
         Table mainTable = new Table();

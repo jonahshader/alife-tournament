@@ -24,8 +24,8 @@ public class HeadlessLauncher {
                 throw new RuntimeException(e);
             }
 
-            System.out.println("sending ExamplePacket with message " + p.message);
-            server.server.sendToAllTCP(p); // send to all connected clients
+//            System.out.println("sending ExamplePacket with message " + p.message);
+//            server.server.sendToAllTCP(p); // send to all connected clients
         }
     }
 

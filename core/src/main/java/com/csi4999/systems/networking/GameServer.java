@@ -1,22 +1,24 @@
 package com.csi4999.systems.networking;
 
-import com.csi4999.systems.networking.serverlisteners.ExampleServerListener;
+import com.csi4999.systems.networking.serverlisteners.LoginListener;
+import com.csi4999.systems.networking.serverlisteners.RegisterListener;
 import com.esotericsoftware.kryonet.Server;
 
 import java.io.IOException;
 
 public class GameServer {
     public Server server;
+    public Database db;
 
     public GameServer(int port) {
+        // create database
+        db = new Database();
         setupServer(port);
         // any packet that goes through Kryo/KryoNet must be registered. RegisterPackets.registerPackets is where we'll do that
         RegisterPackets.registerPackets(server.getKryo());
 
-        // example listener just prints out events and handles the ExamplePacket
-        // we should make different listeners for each packet class, although that isn't strictly necessary
-        ExampleServerListener l = new ExampleServerListener();
-        server.addListener(l);
+        server.addListener(new RegisterListener(db, server.getKryo()));
+        server.addListener(new LoginListener(db, server.getKryo()));
     }
 
     private void setupServer(int port) {

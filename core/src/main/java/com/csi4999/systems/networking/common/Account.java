@@ -5,7 +5,7 @@ public class Account {
     public String username;
     public String password;
 
-    public Account() {}; // empty constructor for Kryo
+    public Account() {} // empty constructor for Kryo
 
     public Account(String username, String password){
         this.username = username;

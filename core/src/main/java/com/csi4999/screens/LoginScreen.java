@@ -15,6 +15,13 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.systems.networking.GameClient;
+import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
+import com.csi4999.systems.networking.common.Account;
+import com.csi4999.systems.networking.packets.LoginPacket;
+import com.csi4999.systems.networking.packets.RegisterPacket;
+import com.csi4999.systems.networking.packets.UserAccountPacket;
+import com.esotericsoftware.kryonet.Client;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
@@ -27,6 +34,9 @@ public class LoginScreen implements Screen {
     private Stage stage;
     private BitmapFont titleFont;
     private Color titleFontColor;
+
+    public volatile boolean loginDoneQueue = false;
+    public UserAccountPacket user;
 
     public LoginScreen(ALifeApp app) {
         this.app = app;
@@ -167,6 +177,9 @@ public class LoginScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (loginDoneQueue && user != null) {
+            app.setScreen(new SimScreen(app, user));
+        }
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
