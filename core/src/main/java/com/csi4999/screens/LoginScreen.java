@@ -9,10 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -65,6 +62,14 @@ public class LoginScreen implements Screen {
         Label title = new Label("ALIFE TOURNAMENT", skin);
         title.setStyle(titleStyle);
 
+        TextField username = new TextField("username", skin);
+        TextField password = new TextField("password", skin);
+        Label accountResponse = new Label ("", skin);
+        RegisterFeedbackListener.getInstance().accountResponse = accountResponse;
+        RegisterFeedbackListener.getInstance().loginScreen = this;
+
+        TextButton registerButton = new TextButton("register", skin);
+        TextButton loginButton = new TextButton("login", skin);
 
         // Create buttons and their respective click listeners
         TextButton trainingButton = new TextButton("Training", skin);
@@ -74,19 +79,19 @@ public class LoginScreen implements Screen {
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
 
-        trainingButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
-            }
-        });
-
-        tournamentButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
-            }
-        });
+//        trainingButton.addListener(new ClickListener(){
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
+//            }
+//        });
+//
+//        tournamentButton.addListener(new ClickListener(){
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
+//            }
+//        });
 
         savedEntitiesButton.addListener(new ClickListener(){
             @Override
@@ -109,15 +114,45 @@ public class LoginScreen implements Screen {
             }
         });
 
+        loginButton.addListener(new ClickListener(){
 
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(trainingButton).fill().uniform();
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(tournamentButton).fill().uniform();
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(savedEntitiesButton).fill().uniform();
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(settingsButton).fill().uniform();
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                client.sendTCP(new LoginPacket(new Account(username.getText(), password.getText())));
+            }
+        });
+
+        registerButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                client.sendTCP(new RegisterPacket(new Account(username.getText(), password.getText())));
+            }
+        });
+
+
+//        buttonsTable.row().pad(0, 0, 10, 0);
+//        buttonsTable.add(trainingButton).fill().uniform();
+//        buttonsTable.row().pad(0, 0, 10, 0);
+//        buttonsTable.add(tournamentButton).fill().uniform();
+//        buttonsTable.row().pad(0, 0, 10, 0);
+//        buttonsTable.add(savedEntitiesButton).fill().uniform();
+//        buttonsTable.row().pad(0, 0, 10, 0);
+//        buttonsTable.add(settingsButton).fill().uniform();
+
+
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(username).fill().uniform();
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(password).fill().uniform();
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(loginButton).fill().uniform();
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(registerButton).fill().uniform();
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(accountResponse).fill().uniform();
+
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();
 

@@ -1,4 +1,4 @@
-package com.csi4999.systems.networking.wrappers;
+package com.csi4999.systems.networking.common;
 
 public class Account {
 

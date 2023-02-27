@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.csi4999.ALifeApp;
+import com.csi4999.systems.networking.Database;
 import com.csi4999.systems.networking.GameServer;
 import com.csi4999.systems.networking.packets.ExamplePacket;
 

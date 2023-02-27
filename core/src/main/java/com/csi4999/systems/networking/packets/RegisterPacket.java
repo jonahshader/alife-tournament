@@ -1,7 +1,7 @@
 package com.csi4999.systems.networking.packets;
 
 
-import com.csi4999.systems.networking.wrappers.Account;
+import com.csi4999.systems.networking.common.Account;
 
 /**
  * sent (c -> S) to create new account
