@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.csi4999.systems.ui.PanCam;
 
 import java.util.concurrent.locks.ReentrantLock;
@@ -23,8 +24,11 @@ public class SimScreen implements Screen, InputProcessor {
 
     private volatile boolean threadRunning;
 
-    public SimScreen(ALifeApp app) {
+    private UserAccountPacket user;
+
+    public SimScreen(ALifeApp app, UserAccountPacket user) {
         this.app = app;
+        this.user = user;
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);

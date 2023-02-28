@@ -4,10 +4,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Group;
-import com.csi4999.screens.FirstScreen;
+import com.csi4999.screens.ConnectScreen;
 import com.csi4999.screens.MainMenuScreen;
-import com.csi4999.screens.SimScreen;
 import com.csi4999.singletons.CustomAssetManager;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -34,7 +32,7 @@ public class ALifeApp extends Game {
         shapeDrawer = new ShapeDrawer(batch, pixel);
 
 
-        setScreen(new MainMenuScreen(this));
+        setScreen(new ConnectScreen(this));
     }
 
     @Override

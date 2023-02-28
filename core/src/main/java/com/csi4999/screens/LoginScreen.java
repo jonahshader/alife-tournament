@@ -15,11 +15,18 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.systems.networking.GameClient;
+import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
+import com.csi4999.systems.networking.common.Account;
+import com.csi4999.systems.networking.packets.LoginPacket;
+import com.csi4999.systems.networking.packets.RegisterPacket;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
+import com.esotericsoftware.kryonet.Client;
 
-import static com.csi4999.singletons.CustomAssetManager.*;
+import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
+import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
 
-public class MainMenuScreen implements Screen {
+public class LoginScreen implements Screen {
     private Skin skin;
     private final OrthographicCamera menuCam;
     private final FitViewport menuViewport;
@@ -28,7 +35,10 @@ public class MainMenuScreen implements Screen {
     private BitmapFont titleFont;
     private Color titleFontColor;
 
-    public MainMenuScreen(ALifeApp app) {
+    public volatile boolean loginDoneQueue = false;
+    public UserAccountPacket user;
+
+    public LoginScreen(ALifeApp app) {
         this.app = app;
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
@@ -62,6 +72,14 @@ public class MainMenuScreen implements Screen {
         Label title = new Label("ALIFE TOURNAMENT", skin);
         title.setStyle(titleStyle);
 
+        TextField username = new TextField("username", skin);
+        TextField password = new TextField("password", skin);
+        Label accountResponse = new Label ("", skin);
+        RegisterFeedbackListener.getInstance().accountResponse = accountResponse;
+        RegisterFeedbackListener.getInstance().loginScreen = this;
+
+        TextButton registerButton = new TextButton("register", skin);
+        TextButton loginButton = new TextButton("login", skin);
 
         // Create buttons and their respective click listeners
         TextButton trainingButton = new TextButton("Training", skin);
@@ -71,19 +89,19 @@ public class MainMenuScreen implements Screen {
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
 
-        trainingButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app, UserAccountPacket.createDefault(0)));
-            }
-        });
-
-        tournamentButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app, UserAccountPacket.createDefault(0)));
-            }
-        });
+//        trainingButton.addListener(new ClickListener(){
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
+//            }
+//        });
+//
+//        tournamentButton.addListener(new ClickListener(){
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
+//            }
+//        });
 
         savedEntitiesButton.addListener(new ClickListener(){
             @Override
@@ -106,15 +124,45 @@ public class MainMenuScreen implements Screen {
             }
         });
 
+        loginButton.addListener(new ClickListener(){
 
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(trainingButton).fill().uniform();
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(tournamentButton).fill().uniform();
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(savedEntitiesButton).fill().uniform();
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(settingsButton).fill().uniform();
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                client.sendTCP(new LoginPacket(new Account(username.getText(), password.getText())));
+            }
+        });
+
+        registerButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                client.sendTCP(new RegisterPacket(new Account(username.getText(), password.getText())));
+            }
+        });
+
+
+//        buttonsTable.row().pad(0, 0, 10, 0);
+//        buttonsTable.add(trainingButton).fill().uniform();
+//        buttonsTable.row().pad(0, 0, 10, 0);
+//        buttonsTable.add(tournamentButton).fill().uniform();
+//        buttonsTable.row().pad(0, 0, 10, 0);
+//        buttonsTable.add(savedEntitiesButton).fill().uniform();
+//        buttonsTable.row().pad(0, 0, 10, 0);
+//        buttonsTable.add(settingsButton).fill().uniform();
+
+
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(username).fill().uniform();
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(password).fill().uniform();
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(loginButton).fill().uniform();
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(registerButton).fill().uniform();
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(accountResponse).fill().uniform();
+
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();
 
@@ -129,6 +177,9 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (loginDoneQueue && user != null) {
+            app.setScreen(new SimScreen(app, user));
+        }
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
