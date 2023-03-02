@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csi4999.screens.ConnectScreen;
 import com.csi4999.screens.MainMenuScreen;
+import com.csi4999.screens.SimScreen;
 import com.csi4999.singletons.CustomAssetManager;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
@@ -32,7 +33,9 @@ public class ALifeApp extends Game {
         shapeDrawer = new ShapeDrawer(batch, pixel);
 
 
-        setScreen(new ConnectScreen(this));
+//        setScreen(new ConnectScreen(this));
+//        setScreen(new SimScreen(this, null));
+        setScreen(new MainMenuScreen(this));
     }
 
     @Override
