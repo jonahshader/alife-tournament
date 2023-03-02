@@ -3,12 +3,12 @@ package com.csi4999.screens;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.ui.FollowCam;
 import com.csi4999.systems.ui.PanCam;
-
-import java.util.concurrent.locks.ReentrantLock;
 
 public class SimScreen implements Screen, InputProcessor {
     public static final int GAME_WIDTH = 640;
@@ -20,6 +20,7 @@ public class SimScreen implements Screen, InputProcessor {
     private Environment env;
 
     private boolean drawingEnabled = true;
+    private FollowCam followCam;
 
     private volatile boolean threadRunning;
 
@@ -28,7 +29,9 @@ public class SimScreen implements Screen, InputProcessor {
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
+        followCam = new FollowCam(worldViewport, worldCam);
         InputMultiplexer m = new InputMultiplexer();
+        m.addProcessor(new FollowCam(worldViewport, worldCam));
         m.addProcessor(new PanCam(worldViewport, worldCam));
         m.addProcessor(this);
         Gdx.input.setInputProcessor(m);
@@ -39,7 +42,6 @@ public class SimScreen implements Screen, InputProcessor {
         new Thread(() -> {
             while (threadRunning) {
                 env.update(1/60f);
-//                System.out.println("hi");
             }
 
         }).start();
@@ -50,6 +52,7 @@ public class SimScreen implements Screen, InputProcessor {
         if (drawingEnabled) {
             worldViewport.apply();
             app.batch.setProjectionMatrix(worldCam.combined);
+            followCam.updateCamera();
 
             // set clear color
             Gdx.gl.glClearColor(.5f, .5f, .5f, 1f);
@@ -97,6 +100,16 @@ public class SimScreen implements Screen, InputProcessor {
                 }).start();
             }
             return true;
+        }
+        if (keycode == Input.Keys.C) {
+            Vector3 pos = worldCam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+            followCam.assignCreature(env.getCreature((int) pos.x, (int) pos.y));
+            return true;
+        }
+
+        if (keycode == Input.Keys.ESCAPE) {
+            followCam.unassign();
+            worldCam.position.set(0,0,0);
         }
         return false;
     }

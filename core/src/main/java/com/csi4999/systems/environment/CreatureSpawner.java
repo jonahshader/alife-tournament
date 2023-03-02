@@ -36,7 +36,7 @@ public class CreatureSpawner {
 
     private void addRandomCreature(Random r, PhysicsEngine physics, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders) {
         Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, SPREAD_STD), (float) r.nextGaussian(0f, SPREAD_STD)),
-            sensorBuilders, toolBuilders, 4, 4, physics, r);
+            sensorBuilders, toolBuilders, r.nextInt(1, 12), r.nextInt(4, 16), physics, r);
         physics.addObject(c);
         physics.addCollider(c);
         creatures.add(c);
