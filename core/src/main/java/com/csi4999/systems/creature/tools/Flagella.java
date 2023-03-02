@@ -22,6 +22,7 @@ public class Flagella extends PhysicsObject implements Tool {
     private float lastStrength = 0f;
     private float animationProgress = 0;
 
+    public Flagella(){}
     // copy constructor
     public Flagella(Flagella f) {
         super(new Vector2(f.position), new Vector2(f.velocity), new Vector2(f.acceleration));

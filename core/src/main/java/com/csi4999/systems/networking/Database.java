@@ -4,19 +4,26 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.*;
+import java.util.zip.DeflaterOutputStream;
 
 public class Database {
 
     private static final String serverPath = "Server";
     private static final String databasePath = "jdbc:sqlite:" + serverPath + "/database.db";
-    private static final String queryPath = serverPath + "/create_tables.sql";
+    private static final String userPath = serverPath + "/user_table.sql";
+
+    private static final String creaturePath = serverPath + "/creature_table.sql";
+    private static final String environmentPath = serverPath + "/environment_table.sql";
+
+    private static final String tournamentPath = serverPath + "/tournament_table.sql";
+
+    private static final String ctBridgePath = serverPath + "/ctBridge_table.sql";
+
+    private static final String leaderboardPath = serverPath + "/leaderboard.sql";
 
     public Connection con;
 
@@ -40,16 +47,33 @@ public class Database {
     }
 
     private void populate() {
-        String createTables;
+        String createUserTable;
+        String createCreatureTable;
+        String createEnvironmentTable;
+        String createTournamentTable;
+        String createBridgeTable;
+        String createLeaderboard;
+
         try {
-            createTables = new String(Files.readAllBytes(Paths.get(queryPath)));
+            createUserTable = new String(Files.readAllBytes(Paths.get(userPath)));
+            createCreatureTable = new String(Files.readAllBytes(Paths.get(creaturePath)));
+            createEnvironmentTable = new String(Files.readAllBytes(Paths.get(environmentPath)));
+            createTournamentTable = new String(Files.readAllBytes(Paths.get(tournamentPath)));
+            createBridgeTable = new String(Files.readAllBytes(Paths.get(ctBridgePath)));
+            createLeaderboard = new String(Files.readAllBytes(Paths.get(leaderboardPath)));
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         try {
             Statement statement = con.createStatement();
-            statement.execute(createTables);
+            statement.execute(createUserTable);
+            statement.execute(createCreatureTable);
+            statement.execute(createEnvironmentTable);
+            statement.execute(createTournamentTable);
+            statement.execute(createBridgeTable);
+            statement.execute(createLeaderboard);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -69,6 +93,8 @@ public class Database {
                 return "Creature";
             case USER_ACCOUNT:
                 return "UserAccount";
+            case ENVIRONMENT:
+                return "Environment";
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
         }

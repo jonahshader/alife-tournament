@@ -11,8 +11,10 @@ public final class GameClient {
     public final Client client;
 
     private GameClient() {
-        client = new Client();
+        client = new Client(3000000, 3000000);
+        client.getKryo().setReferences(true);
         RegisterPackets.registerPackets(client.getKryo());
+
         client.start();
 
         client.addListener(RegisterFeedbackListener.getInstance());

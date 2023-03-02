@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS creature (
 	creature_id INTEGER PRIMARY KEY,
 	wins INTEGER NOT NULL,
 	losses INTEGER NOT NULL,
-	creature_file_link TEXT NOT NULL,
 	user_id INTEGER NOT NULL,
 
 	FOREIGN KEY (user_id)
@@ -19,7 +18,6 @@ CREATE TABLE IF NOT EXISTS creature (
 
 CREATE TABLE IF NOT EXISTS environment(
 	environment_id INTEGER PRIMARY KEY,
-	env_file_link TEXT NOT NULL,
 	user_id INTEGER NOT NULL,
 
 	FOREIGN KEY (user_id)

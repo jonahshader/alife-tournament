@@ -23,12 +23,18 @@ import com.csi4999.systems.networking.packets.LoginPacket;
 import com.csi4999.systems.networking.packets.RegisterPacket;
 import com.csi4999.systems.networking.packets.SaveEnvironmentPacket;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryonet.Client;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
 
-public class LoginScreen implements Screen {
+public class SaveTestingScreen implements Screen {
+
     private Skin skin;
     private final OrthographicCamera menuCam;
     private final FitViewport menuViewport;
@@ -37,10 +43,10 @@ public class LoginScreen implements Screen {
     private BitmapFont titleFont;
     private Color titleFontColor;
 
-    public volatile boolean loginDoneQueue = false;
+
     public UserAccountPacket user;
 
-    public LoginScreen(ALifeApp app) {
+    public SaveTestingScreen(ALifeApp app){
         this.app = app;
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
@@ -57,7 +63,6 @@ public class LoginScreen implements Screen {
         stage = new Stage(menuViewport, app.batch);
         Gdx.input.setInputProcessor(stage);
     }
-
     @Override
     public void show() {
         // Main table that holds the title label at the top and a buttons table at the bottom
@@ -74,51 +79,39 @@ public class LoginScreen implements Screen {
         Label title = new Label("ALIFE TOURNAMENT", skin);
         title.setStyle(titleStyle);
 
-        TextField username = new TextField("username", skin);
-        TextField password = new TextField("password", skin);
-        Label accountResponse = new Label ("", skin);
-        RegisterFeedbackListener.getInstance().accountResponse = accountResponse;
-        RegisterFeedbackListener.getInstance().loginScreen = this;
 
-        TextButton registerButton = new TextButton("register", skin);
-        TextButton loginButton = new TextButton("login", skin);
 
         // Create buttons and their respective click listeners
-        TextButton trainingButton = new TextButton("Training", skin);
-        TextButton tournamentButton = new TextButton("Tournament", skin);
-        TextButton savedEntitiesButton = new TextButton("Saved", skin);
-        TextButton settingsButton = new TextButton("Settings", skin);
+
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
-        TextButton saveTestButton = new TextButton("Save Test", skin);
 
-//        trainingButton.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
-//            }
-//        });
-//
-//        tournamentButton.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
-//            }
-//        });
+        TextButton createAndSaveEnvButton = new TextButton("Create and Send new Environment", skin);
+        TextButton updateEnvButton = new TextButton("Update and Existing Environment", skin);
 
-        savedEntitiesButton.addListener(new ClickListener(){
+        createAndSaveEnvButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SavedEntitiesScreen(app));
+                Client client = GameClient.getInstance().client;
+                Environment environment = new Environment(10, 10);
+                environment.userID = 1;
+                client.sendTCP(new SaveEnvironmentPacket(environment));
             }
         });
 
-        settingsButton.addListener(new ClickListener(){
+        updateEnvButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SettingsScreen(app));
+                Client client = GameClient.getInstance().client;
+                Environment environment = new Environment(10, 11);
+                environment.userID = 1;
+                environment.EnvironmentID = 1;
+
+                client.sendTCP(new SaveEnvironmentPacket(environment));
+
             }
         });
+
 
         exitButton.addListener(new ClickListener(){
             @Override
@@ -127,30 +120,8 @@ public class LoginScreen implements Screen {
             }
         });
 
-        loginButton.addListener(new ClickListener(){
 
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Client client = GameClient.getInstance().client;
-                client.sendTCP(new LoginPacket(new Account(username.getText(), password.getText())));
-            }
-        });
 
-        registerButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Client client = GameClient.getInstance().client;
-                client.sendTCP(new RegisterPacket(new Account(username.getText(), password.getText())));
-            }
-        });
-
-        saveTestButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SaveTestingScreen(app));
-
-            }
-        });
 
 //        buttonsTable.row().pad(0, 0, 10, 0);
 //        buttonsTable.add(trainingButton).fill().uniform();
@@ -162,23 +133,25 @@ public class LoginScreen implements Screen {
 //        buttonsTable.add(settingsButton).fill().uniform();
 
 
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(username).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(password).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(loginButton).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(registerButton).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(saveTestButton).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(accountResponse).fill().uniform();
+//        buttonsTable.row().pad(30, 0, 0, 0);
+//        buttonsTable.add(username).fill().uniform();
+//        buttonsTable.row().pad(30, 0, 0, 0);
+//        buttonsTable.add(password).fill().uniform();
+//        buttonsTable.row().pad(30, 0, 0, 0);
+//        buttonsTable.add(loginButton).fill().uniform();
+//        buttonsTable.row().pad(30, 0, 0, 0);
+//        buttonsTable.add(registerButton).fill().uniform();
+//        buttonsTable.row().pad(30, 0, 0, 0);
+//        buttonsTable.add(accountResponse).fill().uniform();
 
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(createAndSaveEnvButton).fill().uniform();
+
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(updateEnvButton).fill().uniform();
 
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();
-
 
         mainTable.row().pad(40,0,50,0);
         mainTable.add(title);
@@ -191,9 +164,7 @@ public class LoginScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        if (loginDoneQueue && user != null) {
-            app.setScreen(new SimScreen(app, user));
-        }
+
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

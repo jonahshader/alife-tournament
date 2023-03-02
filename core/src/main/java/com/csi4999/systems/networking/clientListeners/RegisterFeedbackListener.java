@@ -44,6 +44,7 @@ public class RegisterFeedbackListener implements Listener {
                 accountResponse.setText("Login Failed\nIncorrect Username or Password");
                 accountResponse.setColor(1f, 0.8f, 0.8f, 1f);
             }
+
         }
 
     }
