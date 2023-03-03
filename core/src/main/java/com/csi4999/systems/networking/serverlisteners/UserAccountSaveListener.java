@@ -1,6 +1,7 @@
 package com.csi4999.systems.networking.serverlisteners;
 
 import com.csi4999.systems.networking.Database;
+import com.csi4999.systems.networking.SerializedType;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
@@ -21,6 +22,11 @@ public class UserAccountSaveListener implements Listener {
         if (o instanceof UserAccountPacket) {
             System.out.println("Received User Account Packet");
             UserAccountPacket p = (UserAccountPacket) o;
+
+            System.out.println("Updating account with id " + p.userID);
+            db.serializeObject(SerializedType.USER_ACCOUNT, p.userID, k, p);
+
         }
     }
+
 }

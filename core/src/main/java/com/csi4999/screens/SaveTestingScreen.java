@@ -1,6 +1,6 @@
 package com.csi4999.screens;
 
-import com.badlogic.gdx.Game;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -21,16 +21,13 @@ import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.GameClient;
-import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
-import com.csi4999.systems.networking.common.Account;
+
 import com.csi4999.systems.networking.packets.*;
 import com.csi4999.systems.physics.PhysicsEngine;
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.io.Output;
+
 import com.esotericsoftware.kryonet.Client;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -104,6 +101,8 @@ public class SaveTestingScreen implements Screen {
         TextButton createAndSaveCreatureButton = new TextButton("Create and Send New Creature", skin);
         TextButton updateCreatureButton = new TextButton("Update an Existing Creature", skin);
         TextButton bogusCreatureButton = new TextButton("Send Creature with bad id", skin);
+
+        TextButton updateAccountButton = new TextButton("Update an account", skin);
 
         createAndSaveEnvButton.addListener(new ClickListener(){
             @Override
@@ -180,6 +179,16 @@ public class SaveTestingScreen implements Screen {
             }
         });
 
+        updateAccountButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                UserAccountPacket user = UserAccountPacket.createDefault(1);
+                client.sendTCP(user);
+
+            }
+        });
+
 
         exitButton.addListener(new ClickListener(){
             @Override
@@ -193,25 +202,28 @@ public class SaveTestingScreen implements Screen {
 
 
 
-        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(createAndSaveEnvButton).fill().uniform();
 
-        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(updateEnvButton).fill().uniform();
 
-        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(bogusEnvButton).fill().uniform();
 
-        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(createAndSaveCreatureButton).fill().uniform();
 
-        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(updateCreatureButton).fill().uniform();
 
-        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(bogusCreatureButton).fill().uniform();
 
-        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.row().pad(5, 0, 0, 0);
+        buttonsTable.add(updateAccountButton).fill().uniform();
+
+        buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();
 
         mainTable.row().pad(40,0,50,0);
