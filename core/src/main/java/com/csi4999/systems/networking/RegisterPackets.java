@@ -68,5 +68,8 @@ public class RegisterPackets {
         k.register(EyeBuilder.class);
         k.register(FlagellaBuilder.class);
 
+        // classes for creature save
+        k.register(SaveCreaturePacket.class);
+
     }
 }

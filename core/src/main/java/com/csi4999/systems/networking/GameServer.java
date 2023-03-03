@@ -3,6 +3,7 @@ package com.csi4999.systems.networking;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.serverlisteners.LoginListener;
 import com.csi4999.systems.networking.serverlisteners.RegisterListener;
+import com.csi4999.systems.networking.serverlisteners.SaveCreatureListener;
 import com.csi4999.systems.networking.serverlisteners.SaveEnvironmentListener;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
@@ -29,6 +30,7 @@ public class GameServer {
         server.addListener(new RegisterListener(db, server.getKryo()));
         server.addListener(new LoginListener(db, server.getKryo()));
         server.addListener(new SaveEnvironmentListener(db, server.getKryo()));
+        server.addListener(new SaveCreatureListener(db, server.getKryo()));
 
     }
 

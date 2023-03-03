@@ -15,6 +15,10 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import  com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.systems.creature.Creature;
+import com.csi4999.systems.environment.Environment;
+
+import java.util.ArrayList;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 
@@ -26,13 +30,22 @@ public class SavedEntitiesScreen implements Screen {
     private Stage stage;
 
     // set to true if no DB implemented
-    private final Boolean noDatabase = true;
+    private final Boolean noDatabase = false;
 
     // dummy data
     private String[] creatureNames;
     private  String[] envNames;
 
+    public ArrayList<Creature> savedCreatures;
+
+    public ArrayList<Environment> savedEnvironments;
+
     public SavedEntitiesScreen(ALifeApp app) {
+
+        this.savedCreatures = new ArrayList<Creature>();
+        this.savedEnvironments = new ArrayList<Environment>();
+
+
         this.app = app;
 
 
@@ -47,7 +60,7 @@ public class SavedEntitiesScreen implements Screen {
         stage = new Stage(savedEntitiesViewport, app.batch);
         Gdx.input.setInputProcessor(stage);
 
-        // fake creature names are created
+        // fake data are created
         if (noDatabase) {
             creatureNames = new String[50];
             envNames = new String[50];

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -15,20 +16,24 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.systems.creature.Creature;
+import com.csi4999.systems.creature.SensorBuilder;
+import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.GameClient;
 import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
 import com.csi4999.systems.networking.common.Account;
-import com.csi4999.systems.networking.packets.LoginPacket;
-import com.csi4999.systems.networking.packets.RegisterPacket;
-import com.csi4999.systems.networking.packets.SaveEnvironmentPacket;
-import com.csi4999.systems.networking.packets.UserAccountPacket;
+import com.csi4999.systems.networking.packets.*;
+import com.csi4999.systems.physics.PhysicsEngine;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Output;
 import com.esotericsoftware.kryonet.Client;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
@@ -46,8 +51,14 @@ public class SaveTestingScreen implements Screen {
 
     public UserAccountPacket user;
 
+    private List<SensorBuilder> sensorBuilders = new ArrayList<>();
+    private List<ToolBuilder> toolBuilders = new ArrayList<>();
+    private Random r;
+
     public SaveTestingScreen(ALifeApp app){
         this.app = app;
+
+        this.r = new Random();
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
@@ -86,8 +97,13 @@ public class SaveTestingScreen implements Screen {
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
 
-        TextButton createAndSaveEnvButton = new TextButton("Create and Send new Environment", skin);
-        TextButton updateEnvButton = new TextButton("Update and Existing Environment", skin);
+        TextButton createAndSaveEnvButton = new TextButton("Create and Send New Environment", skin);
+        TextButton updateEnvButton = new TextButton("Update an Existing Environment", skin);
+        TextButton bogusEnvButton = new TextButton("Send Environment with bad id", skin);
+
+        TextButton createAndSaveCreatureButton = new TextButton("Create and Send New Creature", skin);
+        TextButton updateCreatureButton = new TextButton("Update an Existing Creature", skin);
+        TextButton bogusCreatureButton = new TextButton("Send Creature with bad id", skin);
 
         createAndSaveEnvButton.addListener(new ClickListener(){
             @Override
@@ -112,6 +128,58 @@ public class SaveTestingScreen implements Screen {
             }
         });
 
+        bogusEnvButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                Environment environment = new Environment(10, 11);
+                environment.userID = 1;
+                // since there is no env with this id to update should trigger logic to reassign id to next pk
+                environment.EnvironmentID = 1234;
+
+                client.sendTCP(new SaveEnvironmentPacket(environment));
+
+            }
+        });
+
+        createAndSaveCreatureButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                Creature creature = new Creature(new Vector2((float) r.nextGaussian(0f, 512f), (float) r.nextGaussian(0f, 512f)),
+                    sensorBuilders, toolBuilders, 4, 4, new PhysicsEngine(), r);
+                creature.userID=1;
+                client.sendTCP(new SaveCreaturePacket(creature));
+
+            }
+        });
+
+        updateCreatureButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                Creature creature = new Creature(new Vector2((float) r.nextGaussian(0f, 512f), (float) r.nextGaussian(0f, 512f)),
+                    sensorBuilders, toolBuilders, 4, 4, new PhysicsEngine(), r);
+                creature.userID=1;
+                creature.creatureID = 1;
+                client.sendTCP(new SaveCreaturePacket(creature));
+
+            }
+        });
+
+        bogusCreatureButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                Creature creature = new Creature(new Vector2((float) r.nextGaussian(0f, 512f), (float) r.nextGaussian(0f, 512f)),
+                    sensorBuilders, toolBuilders, 4, 4, new PhysicsEngine(), r);
+                creature.userID=1;
+                creature.creatureID = 1234;
+                client.sendTCP(new SaveCreaturePacket(creature));
+
+            }
+        });
+
 
         exitButton.addListener(new ClickListener(){
             @Override
@@ -123,32 +191,25 @@ public class SaveTestingScreen implements Screen {
 
 
 
-//        buttonsTable.row().pad(0, 0, 10, 0);
-//        buttonsTable.add(trainingButton).fill().uniform();
-//        buttonsTable.row().pad(0, 0, 10, 0);
-//        buttonsTable.add(tournamentButton).fill().uniform();
-//        buttonsTable.row().pad(0, 0, 10, 0);
-//        buttonsTable.add(savedEntitiesButton).fill().uniform();
-//        buttonsTable.row().pad(0, 0, 10, 0);
-//        buttonsTable.add(settingsButton).fill().uniform();
 
-
-//        buttonsTable.row().pad(30, 0, 0, 0);
-//        buttonsTable.add(username).fill().uniform();
-//        buttonsTable.row().pad(30, 0, 0, 0);
-//        buttonsTable.add(password).fill().uniform();
-//        buttonsTable.row().pad(30, 0, 0, 0);
-//        buttonsTable.add(loginButton).fill().uniform();
-//        buttonsTable.row().pad(30, 0, 0, 0);
-//        buttonsTable.add(registerButton).fill().uniform();
-//        buttonsTable.row().pad(30, 0, 0, 0);
-//        buttonsTable.add(accountResponse).fill().uniform();
 
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(createAndSaveEnvButton).fill().uniform();
 
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(updateEnvButton).fill().uniform();
+
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(bogusEnvButton).fill().uniform();
+
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(createAndSaveCreatureButton).fill().uniform();
+
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(updateCreatureButton).fill().uniform();
+
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(bogusCreatureButton).fill().uniform();
 
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();

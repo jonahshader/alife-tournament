@@ -63,7 +63,6 @@ public class SaveEnvironmentListener implements Listener {
             s.executeUpdate();
 
             ResultSet keys = s.getGeneratedKeys();
-            System.out.println(keys);
             keys.next();
             e.EnvironmentID = keys.getLong(1);
         }
