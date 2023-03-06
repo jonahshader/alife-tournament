@@ -15,9 +15,9 @@ public class SimScreen implements Screen, InputProcessor {
     public static final int GAME_HEIGHT = 360;
     private final OrthographicCamera worldCam;
     private final ExtendViewport worldViewport;
-    private final ALifeApp app;
+    public final ALifeApp app;
 
-    private Environment env;
+    public Environment env;
 
     public volatile boolean limitSpeed = true;
     public boolean renderingEnabled = true;

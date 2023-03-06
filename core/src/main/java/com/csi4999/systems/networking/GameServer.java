@@ -10,6 +10,8 @@ import com.esotericsoftware.minlog.Log;
 
 import java.io.IOException;
 
+import static com.csi4999.systems.networking.GameClient.BUFFER_SIZE;
+
 
 public class GameServer {
     public Server server;
@@ -31,7 +33,7 @@ public class GameServer {
     }
 
     private void setupServer(int port) {
-        server = new Server(3000000, 3000000);
+        server = new Server(BUFFER_SIZE, BUFFER_SIZE);
         server.getKryo().setReferences(true);
         server.start();
         try {

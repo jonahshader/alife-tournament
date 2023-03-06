@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
 
 import static com.csi4999.singletons.CustomAssetManager.*;
@@ -74,28 +75,28 @@ public class MainMenuScreen implements Screen {
         trainingButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app, UserAccountPacket.createDefault(0)));
+                ScreenStack.push(new SimScreen(app, UserAccountPacket.createDefault(0)));
             }
         });
 
         tournamentButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app, UserAccountPacket.createDefault(0)));
+                ScreenStack.push(new SimScreen(app, UserAccountPacket.createDefault(0)));
             }
         });
 
         savedEntitiesButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SavedEntitiesScreen(app));
+                ScreenStack.push(new SavedEntitiesScreen(app));
             }
         });
 
         settingsButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SettingsScreen(app));
+                ScreenStack.push(new SettingsScreen(app));
             }
         });
 

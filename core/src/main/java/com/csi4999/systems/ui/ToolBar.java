@@ -14,8 +14,12 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.csi4999.screens.NameDescriptionScreen;
 import com.csi4999.screens.SimScreen;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.networking.GameClient;
+import com.csi4999.systems.networking.packets.SaveEnvironmentPacket;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 
@@ -29,7 +33,6 @@ public class ToolBar implements InputProcessor, Disposable {
     public Stage stage;
 
     private Table mainTable;
-
 
     private SimScreen sim;
 
@@ -59,6 +62,12 @@ public class ToolBar implements InputProcessor, Disposable {
         saveButton.addListener(new ClickListener(){
            @Override
            public void clicked(InputEvent event, float x, float y) {
+               NameDescriptionScreen.NameDescriptionCallback c = (name, description) -> {
+                   sim.env.environmentName = name;
+                   sim.env.EnvironmentDescription = description;
+                   GameClient.getInstance().client.sendTCP(new SaveEnvironmentPacket(sim.env));
+               };
+               ScreenStack.push(new NameDescriptionScreen(sim.app, "Save Environment", "Save", c));
            }
         });
         pauseButton.addListener(new ClickListener(){

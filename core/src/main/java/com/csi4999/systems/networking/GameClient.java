@@ -10,8 +10,10 @@ public final class GameClient {
     private static GameClient instance = null;
     public final Client client;
 
+    public static final int BUFFER_SIZE = 80_000_000;
+
     private GameClient() {
-        client = new Client(3000000, 3000000);
+        client = new Client(BUFFER_SIZE, BUFFER_SIZE);
         client.getKryo().setReferences(true);
         RegisterPackets.registerPackets(client.getKryo());
 
