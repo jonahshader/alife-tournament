@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
+import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.AppPreferences;
 
 public class SettingsScreen extends AppPreferences implements Screen {
@@ -51,7 +52,7 @@ public class SettingsScreen extends AppPreferences implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenuScreen(app));
+                ScreenStack.pop();
             }
         });
 

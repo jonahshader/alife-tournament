@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.networking.GameClient;
 import com.sun.org.apache.xpath.internal.operations.Or;
 
@@ -66,8 +67,8 @@ public class ConnectScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 try {
                     GameClient.getInstance().tryConnect(ip.getText(), Integer.parseInt(port.getText()));
-//                    app.setScreen(new SimScreen(app)); // TODO: we need some kinda menu after mainmenu, or we need to rework stuff
-                    app.setScreen(new LoginScreen(app));
+                    // TODO: we need some kinda menu after mainmenu, or we need to rework stuff
+                    ScreenStack.switchTo(new LoginScreen(app));
                 } catch (IOException e) {
                     e.printStackTrace();
                     // TODO: put red text somewhere that says failed to connect

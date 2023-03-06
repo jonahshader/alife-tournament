@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.GameClient;
 import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
@@ -84,39 +85,23 @@ public class LoginScreen implements Screen {
         TextButton loginButton = new TextButton("login", skin);
 
         // Create buttons and their respective click listeners
-        TextButton trainingButton = new TextButton("Training", skin);
-        TextButton tournamentButton = new TextButton("Tournament", skin);
         TextButton savedEntitiesButton = new TextButton("Saved", skin);
         TextButton settingsButton = new TextButton("Settings", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
         TextButton saveTestButton = new TextButton("Save Test", skin);
 
-//        trainingButton.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
-//            }
-//        });
-//
-//        tournamentButton.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                ((Game)Gdx.app.getApplicationListener()).setScreen(new SimScreen(app));
-//            }
-//        });
-
         savedEntitiesButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SavedEntitiesScreen(app));
+                ScreenStack.push(new SavedEntitiesScreen(app));
             }
         });
 
         settingsButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SettingsScreen(app));
+                ScreenStack.push(new SettingsScreen(app));
             }
         });
 
@@ -147,19 +132,9 @@ public class LoginScreen implements Screen {
         saveTestButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new SaveTestingScreen(app));
-
+                ScreenStack.push(new SaveTestingScreen(app));
             }
         });
-
-//        buttonsTable.row().pad(0, 0, 10, 0);
-//        buttonsTable.add(trainingButton).fill().uniform();
-//        buttonsTable.row().pad(0, 0, 10, 0);
-//        buttonsTable.add(tournamentButton).fill().uniform();
-//        buttonsTable.row().pad(0, 0, 10, 0);
-//        buttonsTable.add(savedEntitiesButton).fill().uniform();
-//        buttonsTable.row().pad(0, 0, 10, 0);
-//        buttonsTable.add(settingsButton).fill().uniform();
 
 
         buttonsTable.row().pad(30, 0, 0, 0);
@@ -192,7 +167,7 @@ public class LoginScreen implements Screen {
     @Override
     public void render(float delta) {
         if (loginDoneQueue && user != null) {
-            app.setScreen(new SimScreen(app, user));
+            ScreenStack.push(new SimScreen(app, user));
         }
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

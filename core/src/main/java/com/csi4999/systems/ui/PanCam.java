@@ -37,7 +37,6 @@ public class PanCam implements InputProcessor {
         // zoom in/out, centered at mouse pos
         float zoomScalar = (float) Math.pow(1.125f, amountY);
         Vector2 translation = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY())).sub(new Vector2(cam.position.x, cam.position.y));
-
         cam.translate(translation);
         cam.update();
         cam.zoom *= zoomScalar;

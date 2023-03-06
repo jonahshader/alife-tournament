@@ -8,23 +8,25 @@ import com.csi4999.ALifeApp;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.csi4999.systems.ui.PanCam;
-
-import java.util.concurrent.locks.ReentrantLock;
+import com.csi4999.systems.ui.ToolBar;
 
 public class SimScreen implements Screen, InputProcessor {
     public static final int GAME_WIDTH = 640;
     public static final int GAME_HEIGHT = 360;
     private final OrthographicCamera worldCam;
     private final ExtendViewport worldViewport;
-    private final ALifeApp app;
+    public final ALifeApp app;
 
-    private Environment env;
+    public Environment env;
 
-    private boolean drawingEnabled = true;
-
-    private volatile boolean threadRunning;
+    public volatile boolean limitSpeed = true;
+    public boolean renderingEnabled = true;
+    public volatile boolean playing = true;
 
     private UserAccountPacket user;
+    private ToolBar toolBar;
+
+    private Thread simThread;
 
     public SimScreen(ALifeApp app, UserAccountPacket user) {
         this.app = app;
@@ -32,43 +34,62 @@ public class SimScreen implements Screen, InputProcessor {
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
+
+        toolBar = new ToolBar(app.batch, this);
+
         InputMultiplexer m = new InputMultiplexer();
+        m.addProcessor(toolBar.stage);
         m.addProcessor(new PanCam(worldViewport, worldCam));
         m.addProcessor(this);
         Gdx.input.setInputProcessor(m);
 
         this.env = new Environment(3000, 150);
-
-        threadRunning = true;
-        new Thread(() -> {
-            while (threadRunning) {
-                env.update(1/60f);
-//                System.out.println("hi");
-            }
-
-        }).start();
     }
+
+    private void tryLaunchSimThread() {
+        if (simThread == null || !simThread.isAlive()) {
+            simThread = new Thread(() -> {
+                while (!limitSpeed && playing) {
+                    env.update();
+                }
+            });
+            simThread.start();
+        }
+    }
+
 
     @Override
     public void render(float delta) {
-        if (drawingEnabled) {
-            worldViewport.apply();
-            app.batch.setProjectionMatrix(worldCam.combined);
+        if (playing) {
+            if (limitSpeed) {
+                env.update();
+            } else {
+                tryLaunchSimThread();
+            }
+        }
 
-            // set clear color
-            Gdx.gl.glClearColor(.5f, .5f, .5f, 1f);
-            // apply clear color to screen
-            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        worldViewport.apply();
+        app.batch.setProjectionMatrix(worldCam.combined);
+
+        // set clear color
+        Gdx.gl.glClearColor(.5f, .5f, .5f, 1f);
+        // apply clear color to screen
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (renderingEnabled) {
             app.batch.begin();
             env.draw(app.shapeDrawer, app.batch);
             app.batch.end();
         }
+
+        toolBar.render();
     }
 
     @Override
     public void resize(int width, int height) {
         worldViewport.update(width, height);
+        toolBar.resize(width, height);
     }
 
     @Override
@@ -81,27 +102,12 @@ public class SimScreen implements Screen, InputProcessor {
     public void hide() {}
     @Override
     public void dispose() {
-        threadRunning = false;
+        playing = false;
+        toolBar.dispose();
     }
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.O) {
-            drawingEnabled = !drawingEnabled;
-            return true;
-        }
-        if (keycode == Input.Keys.P) {
-            threadRunning = !threadRunning;
-            if (threadRunning) {
-                new Thread(() -> {
-                    while (threadRunning) {
-                        env.update(1/60f);
-                    }
-
-                }).start();
-            }
-            return true;
-        }
         return false;
     }
 

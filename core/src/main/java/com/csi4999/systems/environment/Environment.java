@@ -29,11 +29,13 @@ public class Environment {
 
     public float mutationRate = 1f;
 
+    private float dt = 1/60f;
+
     public String environmentName;
     public String EnvironmentDescription;
 
     public long userID; //for use in database
-    public long EnvironmentID; //populated by server, will be needed if user can alter and resave environment 
+    public long EnvironmentID; //populated by server, will be needed if user can alter and resave environment
 
     public Environment() {}
 
@@ -56,7 +58,7 @@ public class Environment {
 //        physics.renderBounds(drawer);
     }
 
-    public void update(float dt) {
+    public synchronized void update() {
         physics.run(dt);
         creatureSpawner.run(physics, r, mutationRate);
         foodSpawner.run(r, physics);
