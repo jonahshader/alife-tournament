@@ -37,12 +37,12 @@ public class SaveCreatureListener implements Listener {
 
             System.out.println("Received Save Creature packet");
             SaveCreaturePacket p = (SaveCreaturePacket) o;
-            trySave(c,p);
+            trySave(p);
         }
 
     }
 
-    private void trySave(Connection c, SaveCreaturePacket p) {
+    private void trySave(SaveCreaturePacket p) {
 
         if (p.creature.creatureID == 0) {
             //the creature is new and must be assigned an id

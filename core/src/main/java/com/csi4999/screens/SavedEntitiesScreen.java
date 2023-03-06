@@ -30,7 +30,7 @@ public class SavedEntitiesScreen implements Screen {
     private Stage stage;
 
     // set to true if no DB implemented
-    private final Boolean noDatabase = false;
+    private final boolean noDatabase = false;
 
     // dummy data
     private String[] creatureNames;
