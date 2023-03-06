@@ -17,6 +17,8 @@ import com.csi4999.ALifeApp;
 import  com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.networking.common.SavedCreatureDescription;
+import com.csi4999.systems.networking.common.SavedEnvironmentDescription;
 
 import java.util.ArrayList;
 
@@ -36,15 +38,15 @@ public class SavedEntitiesScreen implements Screen {
     private String[] creatureNames;
     private  String[] envNames;
 
-    public ArrayList<Creature> savedCreatures;
+    public java.util.List<SavedCreatureDescription> savedCreatures;
 
-    public ArrayList<Environment> savedEnvironments;
+    public java.util.List<SavedEnvironmentDescription> savedEnvironments;
 
-    public SavedEntitiesScreen(ALifeApp app) {
+    public SavedEntitiesScreen(ALifeApp app, java.util.List<SavedEnvironmentDescription> savedEnvironments, java.util.List<SavedCreatureDescription> savedCreatures) {
 
-        this.savedCreatures = new ArrayList<Creature>();
-        this.savedEnvironments = new ArrayList<Environment>();
 
+        this.savedEnvironments = savedEnvironments;
+        this.savedCreatures = savedCreatures;
 
         this.app = app;
 
@@ -71,6 +73,9 @@ public class SavedEntitiesScreen implements Screen {
 
         }
     }
+
+
+
     @Override
     public void show() {
         // main table for the screen
@@ -84,15 +89,32 @@ public class SavedEntitiesScreen implements Screen {
 
         //table of creatures
         Table creatures = new Table();
-        for (String creature : creatureNames){
-            TextButton creatureButton = new TextButton(creature, skin);
+//        for (String creature : creatureNames){
+//            TextButton creatureButton = new TextButton(creature, skin);
+//            creatureButton.addListener(new ClickListener(){
+//                @Override
+//                public void clicked(InputEvent event, float x, float y) {
+//                    // TO DO: design more complex layout for here
+//                    rightSide.clearChildren();
+//                    Label creatureName = new Label(creature, skin);
+//                    rightSide.add(creatureName).fill();
+//                }
+//            });
+//            creatures.add(creatureButton).expand().fillX();
+//            creatures.row();
+//        }
+
+        for (SavedCreatureDescription c : savedCreatures) {
+            TextButton creatureButton = new TextButton(c.name, skin);
             creatureButton.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     // TO DO: design more complex layout for here
                     rightSide.clearChildren();
-                    Label creatureName = new Label(creature, skin);
+                    Label creatureName = new Label(c.name, skin);
                     rightSide.add(creatureName).fill();
+                    rightSide.row().pad(0, 0, 50, 0);
+                    rightSide.add(new Label(c.description, skin)).fill();
                 }
             });
             creatures.add(creatureButton).expand().fillX();
@@ -101,18 +123,38 @@ public class SavedEntitiesScreen implements Screen {
 
         //table of environments
         Table environments = new Table();
-        for (String environment : envNames){
-            TextButton envButton = new TextButton(environment, skin);
+//        for (String environment : envNames){
+//            TextButton envButton = new TextButton(environment, skin);
+//            envButton.addListener(new ClickListener(){
+//                @Override
+//                public void clicked(InputEvent event, float x, float y) {
+//                    // TO DO: design more complex layout for here
+//                    rightSide.clearChildren();
+//                    Label envName = new Label(environment, skin);
+//                    rightSide.add(envName).fill();
+//                }
+//            });
+//            environments.add(envButton).expand().fillX();
+//            environments.row();
+//        }
+
+        for (SavedEnvironmentDescription e : savedEnvironments) {
+            TextButton envButton = new TextButton(e.name, skin);
             envButton.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     // TO DO: design more complex layout for here
                     rightSide.clearChildren();
-                    Label envName = new Label(environment, skin);
-                    rightSide.add(envName).fill();
+                    Label envName = new Label(e.name, skin);
+                    rightSide.add(envName).fill().top().center();
+                    rightSide.row().pad(200, 0, 0, 0);
+                    rightSide.row();
+                    rightSide.row();
+                    rightSide.row();
+                    rightSide.add(new Label(e.description, skin)).fill().bottom();
                 }
             });
-            environments.add(envButton).expand().fillX();
+            environments.add(envButton).fillX().uniform();
             environments.row();
         }
 
@@ -130,7 +172,7 @@ public class SavedEntitiesScreen implements Screen {
         leftSide.addActor(envList);
 
 
-        SplitPane screenDivider = new SplitPane(leftSide, rightSide, false, skin);
+//        SplitPane screenDivider = new SplitPane(leftSide, rightSide, false, skin);
 
         TextButton backButton = new TextButton("Go Back", skin);
         backButton.addListener(new ClickListener(){
@@ -148,8 +190,10 @@ public class SavedEntitiesScreen implements Screen {
         mainTable.add(viewCreatures).fill().uniform();
         mainTable.add(viewEnvironments).fill().uniform();
         mainTable.row();
+        mainTable.add(leftSide).expandY().top();
+        mainTable.add(rightSide).expandY().top();
         mainTable.center();
-        mainTable.add(screenDivider).fill().colspan(2);
+//        mainTable.add(screenDivider).colspan(2).expandY();
         mainTable.row();
         mainTable.add(backButton).fill().colspan(2);
 

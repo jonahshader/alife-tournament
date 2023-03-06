@@ -14,6 +14,8 @@ import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.environment.Food;
 import com.csi4999.systems.environment.FoodSpawner;
 import com.csi4999.systems.networking.common.Account;
+import com.csi4999.systems.networking.common.SavedCreatureDescription;
+import com.csi4999.systems.networking.common.SavedEnvironmentDescription;
 import com.csi4999.systems.networking.packets.*;
 import com.csi4999.systems.physics.PhysicsEngine;
 import com.esotericsoftware.kryo.Kryo;
@@ -21,7 +23,6 @@ import com.esotericsoftware.kryo.serializers.JavaSerializer;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class RegisterPackets {
@@ -70,6 +71,12 @@ public class RegisterPackets {
 
         // classes for creature save
         k.register(SaveCreaturePacket.class);
+
+        // classes for env load
+        k.register(RequestSavedEntityDataPacket.class);
+        k.register(SavedEnvironmentDescription.class);
+        k.register(SavedEntityDataPacket.class);
+        k.register(SavedCreatureDescription.class);
 
     }
 }

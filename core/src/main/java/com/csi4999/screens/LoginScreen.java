@@ -18,12 +18,10 @@ import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.GameClient;
+import com.csi4999.systems.networking.clientListeners.DescriptionListener;
 import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
 import com.csi4999.systems.networking.common.Account;
-import com.csi4999.systems.networking.packets.LoginPacket;
-import com.csi4999.systems.networking.packets.RegisterPacket;
-import com.csi4999.systems.networking.packets.SaveEnvironmentPacket;
-import com.csi4999.systems.networking.packets.UserAccountPacket;
+import com.csi4999.systems.networking.packets.*;
 import com.esotericsoftware.kryonet.Client;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
@@ -94,7 +92,12 @@ public class LoginScreen implements Screen {
         savedEntitiesButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SavedEntitiesScreen(app));
+//                ScreenStack.push(new SavedEntitiesScreen(app));
+                Client client = GameClient.getInstance().client;
+                client.sendTCP(new RequestSavedEntityDataPacket(1));
+                while(! DescriptionListener.getInstance().ready){}
+                ScreenStack.push(new SavedEntitiesScreen(app, DescriptionListener.getInstance().environmentDescriptions,
+                    DescriptionListener.getInstance().creatureDescriptions));
             }
         });
 
@@ -102,6 +105,8 @@ public class LoginScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ScreenStack.push(new SettingsScreen(app));
+
+
             }
         });
 
@@ -145,6 +150,8 @@ public class LoginScreen implements Screen {
         buttonsTable.add(loginButton).fill().uniform();
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(registerButton).fill().uniform();
+        buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(savedEntitiesButton).fill().uniform();
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(saveTestButton).fill().uniform();
         buttonsTable.row().pad(30, 0, 0, 0);

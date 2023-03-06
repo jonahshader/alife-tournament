@@ -75,21 +75,21 @@ public class MainMenuScreen implements Screen {
         trainingButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, UserAccountPacket.createDefault(0)));
+                ScreenStack.push(new SimScreen(app, UserAccountPacket.createDefault(1)));
             }
         });
 
         tournamentButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, UserAccountPacket.createDefault(0)));
+                ScreenStack.push(new SimScreen(app, UserAccountPacket.createDefault(1)));
             }
         });
 
         savedEntitiesButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SavedEntitiesScreen(app));
+//                ScreenStack.push(new SavedEntitiesScreen(app));
             }
         });
 

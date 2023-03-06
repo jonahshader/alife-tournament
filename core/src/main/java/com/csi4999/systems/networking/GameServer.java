@@ -29,6 +29,7 @@ public class GameServer {
         server.addListener(new SaveEnvironmentListener(db, server.getKryo()));
         server.addListener(new SaveCreatureListener(db, server.getKryo()));
         server.addListener(new UserAccountSaveListener(db, server.getKryo()));
+        server.addListener(new SavedEntityListListener(db, server.getKryo()));
 
     }
 
