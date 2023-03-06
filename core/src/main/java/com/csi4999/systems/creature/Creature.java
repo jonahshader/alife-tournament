@@ -53,6 +53,12 @@ public class Creature extends Circle implements Mutable {
 
     private Vector2 rotatedVelocity = new Vector2();
 
+    //Creature Data for user
+    public long userID;
+    public long creatureID;
+    public String creatureName;
+    public String creatureDescription;
+
     public Creature() {}
 
     public Creature(Creature c, PhysicsEngine engine) {

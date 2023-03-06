@@ -29,6 +29,12 @@ public class Environment {
 
     public float mutationRate = 1f;
 
+    public String environmentName;
+    public String EnvironmentDescription;
+
+    public long userID; //for use in database
+    public long EnvironmentID; //populated by server, will be needed if user can alter and resave environment 
+
     public Environment() {}
 
     public Environment(int initialFood, int initalCreatures) {

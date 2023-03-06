@@ -15,11 +15,13 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.GameClient;
 import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
 import com.csi4999.systems.networking.common.Account;
 import com.csi4999.systems.networking.packets.LoginPacket;
 import com.csi4999.systems.networking.packets.RegisterPacket;
+import com.csi4999.systems.networking.packets.SaveEnvironmentPacket;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.esotericsoftware.kryonet.Client;
 
@@ -88,6 +90,7 @@ public class LoginScreen implements Screen {
         TextButton settingsButton = new TextButton("Settings", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
+        TextButton saveTestButton = new TextButton("Save Test", skin);
 
 //        trainingButton.addListener(new ClickListener(){
 //            @Override
@@ -141,6 +144,13 @@ public class LoginScreen implements Screen {
             }
         });
 
+        saveTestButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ((Game)Gdx.app.getApplicationListener()).setScreen(new SaveTestingScreen(app));
+
+            }
+        });
 
 //        buttonsTable.row().pad(0, 0, 10, 0);
 //        buttonsTable.add(trainingButton).fill().uniform();
@@ -161,10 +171,14 @@ public class LoginScreen implements Screen {
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(registerButton).fill().uniform();
         buttonsTable.row().pad(30, 0, 0, 0);
+        buttonsTable.add(saveTestButton).fill().uniform();
+        buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(accountResponse).fill().uniform();
+
 
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();
+
 
         mainTable.row().pad(40,0,50,0);
         mainTable.add(title);
