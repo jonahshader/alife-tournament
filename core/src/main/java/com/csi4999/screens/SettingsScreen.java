@@ -2,6 +2,7 @@ package com.csi4999.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -23,6 +24,7 @@ public class SettingsScreen extends AppPreferences implements Screen {
     private final FitViewport settingsViewport;
     private final ALifeApp app;
     private Stage stage;
+    private InputProcessor oldInputProcessor;
 
     public SettingsScreen(ALifeApp app) {
         this.app = app;
@@ -36,6 +38,7 @@ public class SettingsScreen extends AppPreferences implements Screen {
         settingsCam.update();
 
         stage = new Stage(settingsViewport, app.batch);
+        oldInputProcessor = Gdx.input.getInputProcessor();
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -52,6 +55,7 @@ public class SettingsScreen extends AppPreferences implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                Gdx.input.setInputProcessor(oldInputProcessor);
                 ScreenStack.pop();
             }
         });

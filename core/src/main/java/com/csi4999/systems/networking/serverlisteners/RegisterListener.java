@@ -34,7 +34,7 @@ public class RegisterListener implements Listener {
     @Override
     public void received(Connection c, Object o) {
         if (o instanceof RegisterPacket) {
-            System.out.println("received registerPacket from " + c.toString());
+            System.out.println("SERVER: received registerPacket from " + c.toString());
             RegisterPacket p = (RegisterPacket) o;
 
             tryRegisterAccount(c, p);

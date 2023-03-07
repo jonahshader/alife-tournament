@@ -14,6 +14,8 @@ import static com.csi4999.systems.networking.GameClient.BUFFER_SIZE;
 
 
 public class GameServer {
+
+    public static final int OFFLINE_PORT = 25721;
     public Server server;
     public Database db;
 

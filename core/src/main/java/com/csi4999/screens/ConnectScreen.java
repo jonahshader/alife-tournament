@@ -6,10 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -44,18 +41,18 @@ public class ConnectScreen implements Screen {
 
     @Override
     public void show() {
-        Table mainTable = new Table();
-        Table ipTable = new Table();
-        Table portTable = new Table();
-        ipTable.setFillParent(true);
-        portTable.setFillParent(true);
-        mainTable.setFillParent(true);
-        mainTable.top();
-        ipTable.top();
-        portTable.top();
-        mainTable.align(Align.center);
-        ipTable.align(Align.center);
-        portTable.align(Align.center);
+        Table t = new Table();
+        Table body = new Table();
+        t.setFillParent(true);
+        t.top();
+
+        body.align(Align.center);
+        t.align(Align.center);
+
+        Label screenLabel = new Label("Connect To Server", skin);
+        Label ipLabel = new Label("IP", skin);
+        Label portLabel = new Label("Port", skin);
+
 
         TextField ip = new TextField("localhost", skin);
         TextField port = new TextField("25565", skin);
@@ -76,14 +73,24 @@ public class ConnectScreen implements Screen {
             }
         });
 
-        ipTable.add(ip);
-        portTable.add(port);
+        int vPadAmount = 10;
+        int hPadAmount = 3;
+        body.row().pad(0, hPadAmount, vPadAmount, hPadAmount);
+        body.add(ipLabel).fill();
+        body.add(ip).fill();
+        body.row().pad(0, hPadAmount, vPadAmount, hPadAmount);
+        body.add(portLabel).fill();
+        body.add(port).fill();
+        body.row().pad(0, hPadAmount, vPadAmount, hPadAmount);
 
-        mainTable.add(ipTable);
-        mainTable.add(portTable);
-        mainTable.add(connect);
+        t.row().pad(0, hPadAmount, vPadAmount, hPadAmount);
+        t.add(screenLabel).center();
+        t.row();
+        t.add(body).fill();
+        t.row();
+        t.add(connect).center();
 
-        stage.addActor(mainTable);
+        stage.addActor(t);
     }
 
     @Override
