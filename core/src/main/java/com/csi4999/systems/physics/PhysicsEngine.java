@@ -2,6 +2,8 @@ package com.csi4999.systems.physics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.csi4999.systems.PhysicsObject;
+import com.csi4999.systems.creature.Creature;
+import jdk.vm.ci.meta.Constant;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
@@ -119,8 +121,6 @@ public class PhysicsEngine {
         renderBoundsLock.unlock();
     }
 
-
-
     public void move(float dt) {
 //        for (PhysicsObject o: objects) {
 //            o.move(dt, null);
@@ -132,5 +132,20 @@ public class PhysicsEngine {
         drawLock.lock();
         objects.add(o);
         drawLock.unlock();
+    }
+    public Creature getCreature(int x, int y) {
+        int nearestIndex = 0;
+        int closest = Integer.MAX_VALUE;
+        for (int i = 0; i < objects.size(); i++) {
+            if (objects.get(i) instanceof Creature) {
+
+                int distToCreature = (int) Math.sqrt(((x - objects.get(i).getX())) * (x - objects.get(i).getX()) + ((y - objects.get(i).getY()) * (y - objects.get(i).getY())));
+                if (distToCreature <= closest) {
+                    closest = distToCreature;
+                    nearestIndex = i;
+                }
+            }
+        }
+        return (Creature) objects.get(nearestIndex);
     }
 }
