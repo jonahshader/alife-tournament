@@ -13,6 +13,8 @@ public class FoodSpawner {
     private static final float SPREAD_STD = 1024f;
     private List<Food> food = new ArrayList<>();
 
+    public FoodSpawner(){}
+
     public FoodSpawner(Random r, PhysicsEngine physics) {
         for (int i = 0; i < INITIAL_AMOUNT; i++) {
             addRandomFood(r, physics, true);

@@ -16,11 +16,18 @@ import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.networking.GameClient;
+import com.csi4999.systems.networking.GameServer;
+import com.csi4999.systems.networking.common.Account;
+import com.csi4999.systems.networking.packets.LoginPacket;
+import com.csi4999.systems.networking.packets.RegisterPacket;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
 
-import static com.csi4999.singletons.CustomAssetManager.*;
+import java.io.IOException;
 
-public class MainMenuScreen implements Screen {
+import static com.csi4999.singletons.CustomAssetManager.*;
+import static com.csi4999.systems.networking.GameServer.OFFLINE_PORT;
+
+public class SingleMultiScreen implements Screen {
     private Skin skin;
     private final OrthographicCamera menuCam;
     private final FitViewport menuViewport;
@@ -29,7 +36,7 @@ public class MainMenuScreen implements Screen {
     private BitmapFont titleFont;
     private Color titleFontColor;
 
-    public MainMenuScreen(ALifeApp app) {
+    public SingleMultiScreen(ALifeApp app) {
         this.app = app;
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
@@ -65,38 +72,35 @@ public class MainMenuScreen implements Screen {
 
 
         // Create buttons and their respective click listeners
-        TextButton trainingButton = new TextButton("Training", skin);
-        TextButton tournamentButton = new TextButton("Tournament", skin);
-        TextButton savedEntitiesButton = new TextButton("Saved", skin);
-        TextButton settingsButton = new TextButton("Settings", skin);
+        TextButton onlineButton = new TextButton("Online", skin);
+        TextButton offlineButton = new TextButton("Offline", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
 
-        trainingButton.addListener(new ClickListener(){
+        onlineButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user));
+                ScreenStack.switchTo(new ConnectScreen(app));
             }
         });
 
-        tournamentButton.addListener(new ClickListener(){
+        offlineButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user));
-            }
-        });
+                new GameServer(OFFLINE_PORT); // server doesn't need to be stored
+                // mimic login procedure
+                try {
+                    GameClient.getInstance().tryConnect("localhost", OFFLINE_PORT);
+                    Thread.sleep(100);
+                    Account account = new Account("", "");
+                    GameClient.getInstance().client.sendTCP(new RegisterPacket(account));
+                    Thread.sleep(100);
+                    GameClient.getInstance().client.sendTCP(new LoginPacket(account));
+                } catch (IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
-        savedEntitiesButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SavedEntitiesScreen(app));
-            }
-        });
-
-        settingsButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SettingsScreen(app));
+//                ScreenStack.push(new SimScreen(app, UserAccountPacket.createDefault(0)));
             }
         });
 
@@ -109,13 +113,9 @@ public class MainMenuScreen implements Screen {
 
 
         buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(trainingButton).fill().uniform();
+        buttonsTable.add(onlineButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(tournamentButton).fill().uniform();
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(savedEntitiesButton).fill().uniform();
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(settingsButton).fill().uniform();
+        buttonsTable.add(offlineButton).fill().uniform();
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();
 
@@ -130,6 +130,9 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (GameClient.getInstance().user != null) {
+            ScreenStack.switchTo(new MainMenuScreen(app));
+        }
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

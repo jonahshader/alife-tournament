@@ -53,10 +53,19 @@ public class Creature extends Circle implements Mutable {
 
     private Vector2 rotatedVelocity = new Vector2();
 
+    //Creature Data for user
+    public long userID;
+    public long creatureID;
+    public String creatureName;
+    public String creatureDescription;
+
     public Creature() {}
 
     public Creature(Creature c, PhysicsEngine engine) {
         super(new Vector2(c.position), new Vector2(c.velocity), new Vector2(c.acceleration), c.radius);
+        computedTransform.set(c.computedTransform);
+        oldTransform.set(c.oldTransform);
+        worldTransform.set(c.worldTransform);
         transformedRadius = c.transformedRadius;
         similarityVector = c.similarityVector.clone();
         health = MAX_HEALTH;
@@ -79,6 +88,7 @@ public class Creature extends Circle implements Mutable {
 
     public Creature(Vector2 pos, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders, int initialSensors, int initialTools, PhysicsEngine engine, Random rand) {
         super(pos, new Vector2().setZero(), new Vector2().setZero(), BASE_RADIUS);
+
         // these may change based on passives the creatures has, but initially they are the base values
         health = MAX_HEALTH;
         maxAccel = BASE_MAX_ACCEL;

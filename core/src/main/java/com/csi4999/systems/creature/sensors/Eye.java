@@ -56,7 +56,7 @@ public class Eye extends LineSegment implements Sensor {
         this.parent = parent;
         position.set(pos);
         // similarity score, isFood, distance
-        visionData = new float[] {0f, 0f, 0f};
+        visionData = new float[] {-1f, 0f, 0f};
         colorTransparent = new Color();
     }
 
@@ -101,6 +101,7 @@ public class Eye extends LineSegment implements Sensor {
 
         if (collision.size() <= 1) {
             Arrays.fill(visionData, 0f);
+            visionData[0] = -1; // similarity defaults to 0
             lastHitDist = lineLength;
             this.color.set(1f, 1f, 1f, 1f);
         } else {

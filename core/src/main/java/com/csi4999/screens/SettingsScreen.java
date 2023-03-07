@@ -2,6 +2,7 @@ package com.csi4999.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
+import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.AppPreferences;
 
 public class SettingsScreen extends AppPreferences implements Screen {
@@ -22,6 +24,7 @@ public class SettingsScreen extends AppPreferences implements Screen {
     private final FitViewport settingsViewport;
     private final ALifeApp app;
     private Stage stage;
+    private InputProcessor oldInputProcessor;
 
     public SettingsScreen(ALifeApp app) {
         this.app = app;
@@ -35,6 +38,7 @@ public class SettingsScreen extends AppPreferences implements Screen {
         settingsCam.update();
 
         stage = new Stage(settingsViewport, app.batch);
+        oldInputProcessor = Gdx.input.getInputProcessor();
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -51,7 +55,8 @@ public class SettingsScreen extends AppPreferences implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenuScreen(app));
+                Gdx.input.setInputProcessor(oldInputProcessor);
+                ScreenStack.pop();
             }
         });
 
