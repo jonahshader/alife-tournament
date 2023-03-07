@@ -1,97 +1,106 @@
 package com.csi4999.systems.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FillViewport;
+import com.csi4999.ALifeApp;
+import com.csi4999.screens.NameDescriptionScreen;
 import com.csi4999.screens.SimScreen;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.creature.Sensor;
 import com.csi4999.systems.creature.Tool;
+import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.networking.GameClient;
+import com.csi4999.systems.networking.packets.SaveCreaturePacket;
 
 import java.util.HashMap;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 
 public class CreatureHud implements InputProcessor, Screen {
+    private static final int WIDTH = 640;
+    private static final int HEIGHT = 360;
+
     private Skin skin;
-    private Stage stage;
+    private OrthographicCamera myCam;
+    private OrthographicCamera worldCam;
+    private ExtendViewport myViewport;
 
-    private ExtendViewport viewport;
-    private OrthographicCamera cam;
-    private Creature c;
-
+    public Stage stage;
     private Table mainTable;
+    private Creature c;
+    private ALifeApp app;
+    private Environment env;
 
-    private SimScreen sim;
 
-    public CreatureHud(ExtendViewport viewport, OrthographicCamera cam, Batch batch) {
-        this.viewport = viewport;
-        this.cam = cam;
-
-        //this.cam = new OrthographicCamera();
-        //this.viewport = new ExtendViewport(360, 360, this.cam);
-
-        this.skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
-
-        stage = new Stage(viewport, batch);
-    }
-
-    public CreatureHud(SimScreen sim, Batch batch) {
-        this.sim = sim;
+    public CreatureHud(Batch batch, OrthographicCamera worldCam, ALifeApp app, Environment env) {
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
-        cam = new OrthographicCamera();
-        viewport = new ExtendViewport(450, 450, cam);
-        stage = new Stage(viewport, batch);
-        cam.position.set(0, 0, 0);
-        cam.update();
+        this.app = app;
+        this.worldCam = worldCam;
+        this.env = env;
+
+        myCam = new OrthographicCamera();
+        myViewport = new ExtendViewport(640, 360, myCam);
+
+        stage = new Stage(myViewport, batch);
     }
 
     public void updateCamera() {
         if (this.c != null) {
-            cam.position.set(c.position, 0);
-            cam.update();
-            mainTable.setPosition(c.position.x + 50, c.position.y - 75);
+            worldCam.position.set(c.position, 0);
+            worldCam.update();
         }
     }
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        // zoom in/out, centered at creature
-        float zoomScalar = (float) Math.pow(1.125f, amountY);
-        Vector2 translation = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY())).sub(new Vector2(cam.position.x, cam.position.y));
-
-        cam.translate(translation);
-        cam.update();
-        cam.zoom *= zoomScalar;
-        cam.update();
-        cam.translate(translation.scl(-1f * zoomScalar));
-        return true;
+        return false;
     }
 
     @Override
     public void show() {
+        stage.clear();
         mainTable = new Table();
 
-        mainTable.setSize(150, 150);
-        mainTable.setPosition(300, -80 + viewport.getWorldHeight()/2);
-        mainTable.align(Align.right);
+        mainTable.setSize(100, 100);
+        mainTable.setPosition(0, 0);
+
+        mainTable.align(Align.bottomLeft);
 
         Label title = new Label("Creature info", skin);
 
         TextButton saveButton = new TextButton("Save Creature", skin);
 
-        //TODO: Need a click listener for save button and save creature functionality
+
+        saveButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                NameDescriptionScreen.NameDescriptionCallback n = (name, description) -> {
+                    c.creatureName = name;
+                    c.creatureDescription = description;
+                    GameClient.getInstance().client.sendTCP(new SaveCreaturePacket(c));
+                };
+                ScreenStack.push(new NameDescriptionScreen(app, "Save Creature", "Save", n));
+            }
+        });
+
+
 
         HashMap<String, Integer> tools = new HashMap<>();
         HashMap<String, Integer> sensors = new HashMap<>();
@@ -122,31 +131,39 @@ public class CreatureHud implements InputProcessor, Screen {
         Label toolsLabel = new Label(toolsInfo.toString(), skin);
         Label sensorsLabel = new Label(sensorsInfo.toString(), skin);
 
+        int pad = 4;
         mainTable.row().center();
-        mainTable.add(title).pad(0, 0, 10, 0).fill();
+        mainTable.add(title).fill().uniformX().pad(pad);
         mainTable.row().center();
-        mainTable.add(toolsLabel).fill();
+        mainTable.add(toolsLabel).fill().uniformX().pad(pad);
         mainTable.row().center();
-        mainTable.add(sensorsLabel).fill();
+        mainTable.add(sensorsLabel).fill().uniformX().pad(pad);
         mainTable.row().center();
-        mainTable.add(saveButton).pad(10, 0, 0, 0).fill();
+        mainTable.add(saveButton).fill().uniformX().pad(pad);
 
         stage.addActor(mainTable);
     }
 
     @Override
     public void render(float delta) {
-        viewport.apply();
-        stage.getBatch().setProjectionMatrix(cam.combined);
-        stage.act();
-        stage.draw();
+        if (c != null) {
+            myViewport.apply();
+            stage.getBatch().setProjectionMatrix(myCam.combined);
+            stage.act();
+            stage.draw();
+            if (c.removeQueued) {
+                stage.clear();
+                c = null;
+            }
+        }
     }
 
     @Override
     public void resize(int width, int height) {
-        cam.update();
-        viewport.update(width, height);
-        mainTable.setPosition(c.position.x,c.position.y);
+        myViewport.update(width, height, true);
+        if (c != null) {
+            mainTable.setPosition(0, 0);
+        }
     }
 
     @Override
@@ -154,15 +171,25 @@ public class CreatureHud implements InputProcessor, Screen {
     @Override
     public void resume() {}
     @Override
-    public void hide() {}
+    public void hide() {
+    }
     @Override
     public void dispose() {stage.dispose();}
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        if (button == Input.Buttons.LEFT) {
+            Vector3 pos = worldCam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+            assignCreature(env.getCreature((int) pos.x, (int) pos.y));
+            return true;
+        }
         return false;
     }
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.ESCAPE) {
+            unassignCreature();
+            return true;
+        }
         return false;
     }
     @Override
@@ -171,22 +198,20 @@ public class CreatureHud implements InputProcessor, Screen {
     public boolean keyTyped(char character) { return false; }
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
+        return c != null;
     }
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) { return false; }
     @Override
     public boolean mouseMoved(int screenX, int screenY) { return false; }
 
-
-
     public void assignCreature(Creature c) {
         this.c = c;
-        cam.position.set(c.position, 0);
+        myCam.position.set(myCam.viewportWidth/2, myCam.viewportHeight/2, 0);
+        show();
     }
 
     public void unassignCreature() {
         this.c = null;
-        stage.dispose();
     }
 }
