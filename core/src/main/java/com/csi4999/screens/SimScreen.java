@@ -3,10 +3,12 @@ package com.csi4999.screens;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
+import com.csi4999.systems.ui.CreatureHud;
 import com.csi4999.systems.ui.PanCam;
 import com.csi4999.systems.ui.ToolBar;
 
@@ -25,25 +27,28 @@ public class SimScreen implements Screen, InputProcessor {
 
     public UserAccountPacket user;
     private ToolBar toolBar;
+    private CreatureHud creatureHud;
 
     private Thread simThread;
 
     public SimScreen(ALifeApp app, UserAccountPacket user) {
         this.app = app;
         this.user = user;
+        this.env = new Environment(3000, 150);
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
+        creatureHud = new CreatureHud(app.batch, worldCam, app, env);
 
         toolBar = new ToolBar(app.batch, this);
 
         InputMultiplexer m = new InputMultiplexer();
         m.addProcessor(toolBar.stage);
+        m.addProcessor(creatureHud.stage);
+        m.addProcessor(creatureHud);
         m.addProcessor(new PanCam(worldViewport, worldCam));
         m.addProcessor(this);
         Gdx.input.setInputProcessor(m);
-
-        this.env = new Environment(3000, 150);
     }
 
     public SimScreen(ALifeApp app, UserAccountPacket user, Environment environment) {
@@ -101,6 +106,8 @@ public class SimScreen implements Screen, InputProcessor {
             app.batch.end();
         }
 
+        creatureHud.updateCamera();
+        creatureHud.render(delta);
         toolBar.render();
     }
 
@@ -108,6 +115,7 @@ public class SimScreen implements Screen, InputProcessor {
     public void resize(int width, int height) {
         worldViewport.update(width, height);
         toolBar.resize(width, height);
+        creatureHud.resize(width, height);
     }
 
     @Override

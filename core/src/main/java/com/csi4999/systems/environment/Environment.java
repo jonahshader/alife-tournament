@@ -3,6 +3,7 @@ package com.csi4999.systems.environment;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector3;
+import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
@@ -62,5 +63,8 @@ public class Environment {
         physics.run(dt);
         creatureSpawner.run(physics, r, mutationRate);
         foodSpawner.run(r, physics);
+    }
+    public Creature getCreature(int x, int y) {
+        return physics.getCreature(x, y);
     }
 }
