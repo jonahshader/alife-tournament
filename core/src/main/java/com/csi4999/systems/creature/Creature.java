@@ -273,4 +273,12 @@ public class Creature extends Circle implements Mutable {
 
         if (health <= 0) queueRemoval();
     }
+
+    public List<Tool> getTools() {
+        return tools;
+    }
+
+    public List<Sensor> getSensors() {
+        return sensors;
+    }
 }

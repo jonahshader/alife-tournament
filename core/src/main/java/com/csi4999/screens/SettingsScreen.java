@@ -56,7 +56,6 @@ public class SettingsScreen extends AppPreferences implements Screen {
         });
 
         // Sliders and checkboxes for various settings
-        // TODO: Figure out if these preference changes actually work
         final CheckBox fullscreenCheckbox = new CheckBox(null, skin);
 
         final Slider masterSlider = new Slider(0f, 1f, 0.1f, false, skin);

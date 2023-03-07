@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.systems.environment.Environment;
-import com.csi4999.systems.ui.FollowCam;
+import com.csi4999.systems.ui.CreatureHud;
 import com.csi4999.systems.ui.PanCam;
 
 public class SimScreen implements Screen, InputProcessor {
@@ -20,7 +20,7 @@ public class SimScreen implements Screen, InputProcessor {
     private Environment env;
 
     private boolean drawingEnabled = true;
-    private FollowCam followCam;
+    private CreatureHud creatureHud;
 
     private volatile boolean threadRunning;
 
@@ -29,9 +29,11 @@ public class SimScreen implements Screen, InputProcessor {
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
-        followCam = new FollowCam(worldViewport, worldCam);
+        //creatureHud = new CreatureHud(worldViewport, worldCam, app.batch);
+        creatureHud = new CreatureHud(this, app.batch);
         InputMultiplexer m = new InputMultiplexer();
-        m.addProcessor(new FollowCam(worldViewport, worldCam));
+        //m.addProcessor(new CreatureHud(worldViewport, worldCam, app.batch));
+        m.addProcessor(new CreatureHud(this, app.batch));
         m.addProcessor(new PanCam(worldViewport, worldCam));
         m.addProcessor(this);
         Gdx.input.setInputProcessor(m);
@@ -52,16 +54,21 @@ public class SimScreen implements Screen, InputProcessor {
         if (drawingEnabled) {
             worldViewport.apply();
             app.batch.setProjectionMatrix(worldCam.combined);
-            followCam.updateCamera();
 
             // set clear color
             Gdx.gl.glClearColor(.5f, .5f, .5f, 1f);
             // apply clear color to screen
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+            creatureHud.updateCamera();
+            creatureHud.render(delta);
+
             app.batch.begin();
             env.draw(app.shapeDrawer, app.batch);
             app.batch.end();
+
+            creatureHud.updateCamera();
+            creatureHud.render(delta);
         }
     }
 
@@ -103,13 +110,16 @@ public class SimScreen implements Screen, InputProcessor {
         }
         if (keycode == Input.Keys.C) {
             Vector3 pos = worldCam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            followCam.assignCreature(env.getCreature((int) pos.x, (int) pos.y));
+            creatureHud.assignCreature(env.getCreature((int) pos.x, (int) pos.y));
+            creatureHud.dispose();
+            creatureHud.show();
             return true;
         }
 
         if (keycode == Input.Keys.ESCAPE) {
-            followCam.unassign();
+            creatureHud.unassignCreature();
             worldCam.position.set(0,0,0);
+            return true;
         }
         return false;
     }
