@@ -90,7 +90,7 @@ public class LoginScreen implements Screen {
         savedEntitiesButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SavedEntitiesScreen(app));
+//                ScreenStack.push(new SavedEntitiesScreen(app));
             }
         });
 

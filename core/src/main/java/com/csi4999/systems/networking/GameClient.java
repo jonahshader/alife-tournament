@@ -1,6 +1,7 @@
 package com.csi4999.systems.networking;
 
 import com.csi4999.systems.networking.clientListeners.DescriptionListener;
+import com.csi4999.systems.networking.clientListeners.LoadListener;
 import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.esotericsoftware.kryonet.Client;
@@ -25,6 +26,7 @@ public final class GameClient {
 
         client.addListener(RegisterFeedbackListener.getInstance());
         client.addListener(DescriptionListener.getInstance());
+        client.addListener(LoadListener.getInstance());
     }
 
     /**

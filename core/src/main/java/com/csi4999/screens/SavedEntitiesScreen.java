@@ -15,10 +15,16 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import  com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.networking.GameClient;
+import com.csi4999.systems.networking.clientListeners.LoadListener;
 import com.csi4999.systems.networking.common.SavedCreatureDescription;
 import com.csi4999.systems.networking.common.SavedEnvironmentDescription;
+import com.csi4999.systems.networking.packets.RequestEnvironmentPacket;
+import com.csi4999.systems.networking.packets.UserAccountPacket;
+import com.esotericsoftware.kryonet.Client;
 
 import java.util.ArrayList;
 
@@ -32,7 +38,7 @@ public class SavedEntitiesScreen implements Screen {
     private Stage stage;
 
     // set to true if no DB implemented
-    private final boolean noDatabase = false;
+    private final boolean noDatabase = true;
 
     // dummy data
     private String[] creatureNames;
@@ -42,9 +48,13 @@ public class SavedEntitiesScreen implements Screen {
 
     public java.util.List<SavedEnvironmentDescription> savedEnvironments;
 
-    public SavedEntitiesScreen(ALifeApp app, java.util.List<SavedEnvironmentDescription> savedEnvironments, java.util.List<SavedCreatureDescription> savedCreatures) {
+    public UserAccountPacket user;
+
+    public SavedEntitiesScreen(ALifeApp app, java.util.List<SavedEnvironmentDescription> savedEnvironments,
+                               java.util.List<SavedCreatureDescription> savedCreatures, UserAccountPacket user) {
 
 
+        this.user = user;
         this.savedEnvironments = savedEnvironments;
         this.savedCreatures = savedCreatures;
 
@@ -76,6 +86,8 @@ public class SavedEntitiesScreen implements Screen {
 
 
 
+
+
     @Override
     public void show() {
         // main table for the screen
@@ -89,37 +101,37 @@ public class SavedEntitiesScreen implements Screen {
 
         //table of creatures
         Table creatures = new Table();
-//        for (String creature : creatureNames){
-//            TextButton creatureButton = new TextButton(creature, skin);
-//            creatureButton.addListener(new ClickListener(){
-//                @Override
-//                public void clicked(InputEvent event, float x, float y) {
-//                    // TO DO: design more complex layout for here
-//                    rightSide.clearChildren();
-//                    Label creatureName = new Label(creature, skin);
-//                    rightSide.add(creatureName).fill();
-//                }
-//            });
-//            creatures.add(creatureButton).expand().fillX();
-//            creatures.row();
-//        }
-
-        for (SavedCreatureDescription c : savedCreatures) {
-            TextButton creatureButton = new TextButton(c.name, skin);
+        for (String creature : creatureNames){
+            TextButton creatureButton = new TextButton(creature, skin);
             creatureButton.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     // TO DO: design more complex layout for here
                     rightSide.clearChildren();
-                    Label creatureName = new Label(c.name, skin);
+                    Label creatureName = new Label(creature, skin);
                     rightSide.add(creatureName).fill();
-                    rightSide.row().pad(0, 0, 50, 0);
-                    rightSide.add(new Label(c.description, skin)).fill();
                 }
             });
             creatures.add(creatureButton).expand().fillX();
             creatures.row();
         }
+
+//        for (SavedCreatureDescription c : savedCreatures) {
+//            TextButton creatureButton = new TextButton(c.name, skin);
+//            creatureButton.addListener(new ClickListener(){
+//                @Override
+//                public void clicked(InputEvent event, float x, float y) {
+//                    // TO DO: design more complex layout for here
+//                    rightSide.clearChildren();
+//                    Label creatureName = new Label(c.name, skin);
+//                    rightSide.add(creatureName).fill();
+//                    rightSide.row().pad(0, 0, 50, 0);
+//                    rightSide.add(new Label(c.description, skin)).fill();
+//                }
+//            });
+//            creatures.add(creatureButton).expand().fillX();
+//            creatures.row();
+//        }
 
         //table of environments
         Table environments = new Table();
@@ -152,6 +164,26 @@ public class SavedEntitiesScreen implements Screen {
                     rightSide.row();
                     rightSide.row();
                     rightSide.add(new Label(e.description, skin)).fill().bottom();
+
+                    TextButton loadButton = new TextButton("Load Environment" ,skin);
+                    loadButton.addListener(new ClickListener(){
+
+
+
+
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            Client client = GameClient.getInstance().client;
+                            client.sendTCP(new RequestEnvironmentPacket(e.environmentID));
+                            while (!LoadListener.getInstance().ready){}
+
+                            ScreenStack.push(new SimScreen(app, GameClient.getInstance().user, LoadListener.getInstance().environment));
+                            LoadListener.getInstance().environment = null;
+                            LoadListener.getInstance().ready = false;
+                        }
+                    });
+                    rightSide.row();
+                    rightSide.add(loadButton).uniform();
                 }
             });
             environments.add(envButton).fillX().uniform();

@@ -77,6 +77,7 @@ public class RegisterPackets {
         k.register(SavedEnvironmentDescription.class);
         k.register(SavedEntityDataPacket.class);
         k.register(SavedCreatureDescription.class);
+        k.register(RequestEnvironmentPacket.class);
 
     }
 }

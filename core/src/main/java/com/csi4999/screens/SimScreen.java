@@ -23,7 +23,7 @@ public class SimScreen implements Screen, InputProcessor {
     public boolean renderingEnabled = true;
     public volatile boolean playing = true;
 
-    private UserAccountPacket user;
+    public UserAccountPacket user;
     private ToolBar toolBar;
 
     private Thread simThread;
@@ -44,6 +44,24 @@ public class SimScreen implements Screen, InputProcessor {
         Gdx.input.setInputProcessor(m);
 
         this.env = new Environment(3000, 150);
+    }
+
+    public SimScreen(ALifeApp app, UserAccountPacket user, Environment environment) {
+        this.app = app;
+        this.user = user;
+
+        worldCam = new OrthographicCamera();
+        worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
+
+        toolBar = new ToolBar(app.batch, this);
+
+        InputMultiplexer m = new InputMultiplexer();
+        m.addProcessor(toolBar.stage);
+        m.addProcessor(new PanCam(worldViewport, worldCam));
+        m.addProcessor(this);
+        Gdx.input.setInputProcessor(m);
+
+        this.env = environment;
     }
 
     private void tryLaunchSimThread() {
