@@ -1,6 +1,5 @@
 package com.csi4999.screens;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -16,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.networking.GameClient;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
 
 import static com.csi4999.singletons.CustomAssetManager.*;
@@ -75,14 +75,14 @@ public class MainMenuScreen implements Screen {
         trainingButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, UserAccountPacket.createDefault(0)));
+                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user));
             }
         });
 
         tournamentButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, UserAccountPacket.createDefault(0)));
+                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user));
             }
         });
 
