@@ -2,6 +2,7 @@ package com.csi4999.systems.networking;
 
 import com.csi4999.systems.networking.clientListeners.DescriptionListener;
 import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
+import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.esotericsoftware.kryonet.Client;
 
 import java.io.IOException;
@@ -12,6 +13,8 @@ public final class GameClient {
     public final Client client;
 
     public static final int BUFFER_SIZE = 80_000_000;
+
+    public volatile UserAccountPacket user;
 
     private GameClient() {
         client = new Client(BUFFER_SIZE, BUFFER_SIZE);

@@ -30,7 +30,7 @@ public class LoginListener implements Listener {
     @Override
     public void received(Connection c, Object o) {
         if (o instanceof LoginPacket) {
-            System.out.println("received registerPacket from " + c.toString());
+            System.out.println("SERVER: received LoginPacket from " + c.toString());
             LoginPacket p = (LoginPacket) o;
 
             tryLogin(c, p);

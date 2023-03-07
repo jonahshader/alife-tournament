@@ -16,17 +16,18 @@ import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.networking.GameClient;
-import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
+import com.csi4999.systems.networking.GameServer;
 import com.csi4999.systems.networking.common.Account;
 import com.csi4999.systems.networking.packets.LoginPacket;
 import com.csi4999.systems.networking.packets.RegisterPacket;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
-import com.esotericsoftware.kryonet.Client;
 
-import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
-import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
+import java.io.IOException;
 
-public class LoginScreen implements Screen {
+import static com.csi4999.singletons.CustomAssetManager.*;
+import static com.csi4999.systems.networking.GameServer.OFFLINE_PORT;
+
+public class SingleMultiScreen implements Screen {
     private Skin skin;
     private final OrthographicCamera menuCam;
     private final FitViewport menuViewport;
@@ -35,7 +36,7 @@ public class LoginScreen implements Screen {
     private BitmapFont titleFont;
     private Color titleFontColor;
 
-    public LoginScreen(ALifeApp app) {
+    public SingleMultiScreen(ALifeApp app) {
         this.app = app;
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
@@ -69,35 +70,37 @@ public class LoginScreen implements Screen {
         Label title = new Label("ALIFE TOURNAMENT", skin);
         title.setStyle(titleStyle);
 
-        TextField username = new TextField("username", skin);
-        TextField password = new TextField("password", skin);
-        password.setPasswordMode(true);
-        password.setPasswordCharacter('*');
-        Label accountResponse = new Label ("", skin);
-        RegisterFeedbackListener.getInstance().accountResponse = accountResponse;
-        RegisterFeedbackListener.getInstance().loginScreen = this;
-
-        TextButton registerButton = new TextButton("register", skin);
-        TextButton loginButton = new TextButton("login", skin);
 
         // Create buttons and their respective click listeners
-        TextButton savedEntitiesButton = new TextButton("Saved", skin);
-        TextButton settingsButton = new TextButton("Settings", skin);
+        TextButton onlineButton = new TextButton("Online", skin);
+        TextButton offlineButton = new TextButton("Offline", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
-        TextButton saveTestButton = new TextButton("Save Test", skin);
 
-        savedEntitiesButton.addListener(new ClickListener(){
+        onlineButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SavedEntitiesScreen(app));
+                ScreenStack.switchTo(new ConnectScreen(app));
             }
         });
 
-        settingsButton.addListener(new ClickListener(){
+        offlineButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SettingsScreen(app));
+                new GameServer(OFFLINE_PORT); // server doesn't need to be stored
+                // mimic login procedure
+                try {
+                    GameClient.getInstance().tryConnect("localhost", OFFLINE_PORT);
+                    Thread.sleep(100);
+                    Account account = new Account("", "");
+                    GameClient.getInstance().client.sendTCP(new RegisterPacket(account));
+                    Thread.sleep(100);
+                    GameClient.getInstance().client.sendTCP(new LoginPacket(account));
+                } catch (IOException | InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+//                ScreenStack.push(new SimScreen(app, UserAccountPacket.createDefault(0)));
             }
         });
 
@@ -108,48 +111,13 @@ public class LoginScreen implements Screen {
             }
         });
 
-        loginButton.addListener(new ClickListener(){
 
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Client client = GameClient.getInstance().client;
-                client.sendTCP(new LoginPacket(new Account(username.getText(), password.getText())));
-            }
-        });
-
-        registerButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Client client = GameClient.getInstance().client;
-                client.sendTCP(new RegisterPacket(new Account(username.getText(), password.getText())));
-            }
-        });
-
-        saveTestButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SaveTestingScreen(app));
-            }
-        });
-
-
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(username).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(password).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(loginButton).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(registerButton).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(saveTestButton).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(accountResponse).fill().uniform();
-
-
+        buttonsTable.row().pad(0, 0, 10, 0);
+        buttonsTable.add(onlineButton).fill().uniform();
+        buttonsTable.row().pad(0, 0, 10, 0);
+        buttonsTable.add(offlineButton).fill().uniform();
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();
-
 
         mainTable.row().pad(40,0,50,0);
         mainTable.add(title);
