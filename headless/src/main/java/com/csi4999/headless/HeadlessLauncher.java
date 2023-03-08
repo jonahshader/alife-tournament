@@ -4,11 +4,29 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.backends.headless.HeadlessApplication;
 import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.csi4999.ALifeApp;
+import com.csi4999.systems.networking.Database;
+import com.csi4999.systems.networking.GameServer;
+import com.csi4999.systems.networking.packets.ExamplePacket;
+
+import java.util.Scanner;
 
 /** Launches the headless application. Can be converted into a utilities project or a server application. */
 public class HeadlessLauncher {
     public static void main(String[] args) {
-        createApplication();
+//        createApplication();
+        GameServer server = new GameServer(25565); // TODO: use args
+        while (true) {
+            ExamplePacket p = new ExamplePacket();
+            p.message = "hi lol";
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+//            System.out.println("sending ExamplePacket with message " + p.message);
+//            server.server.sendToAllTCP(p); // send to all connected clients
+        }
     }
 
     private static Application createApplication() {
