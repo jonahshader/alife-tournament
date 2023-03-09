@@ -27,8 +27,9 @@ import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
 
 public class Eye extends LineSegment implements Sensor {
     private float[] visionData;
+    private static final float MUTATE_POS_STD = 0.5f;
     private static final float MUTATE_LENGTH_STD = 0.5f;
-    private static final float MUTATE_ROTATION_STD = 0.5f;
+    private static final float MUTATE_ROTATION_STD = 1f;
 
     private static final float ENERGY_CONSUMPTION = 0.025f; // energy per second
 
@@ -66,6 +67,9 @@ public class Eye extends LineSegment implements Sensor {
         // Wiggle vision line length
         lineLength += rand.nextGaussian() * MUTATE_LENGTH_STD;
         rotationDegrees += rand.nextGaussian() * MUTATE_ROTATION_STD;
+
+        position.x += rand.nextGaussian() * MUTATE_POS_STD;
+        position.y += rand.nextGaussian() * MUTATE_POS_STD;
     }
 
     @Override

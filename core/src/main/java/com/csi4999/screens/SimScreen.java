@@ -100,13 +100,15 @@ public class SimScreen implements Screen, InputProcessor {
         // apply clear color to screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        creatureHud.updateCamera();
+
         if (renderingEnabled) {
             app.batch.begin();
             env.draw(app.shapeDrawer, app.batch);
             app.batch.end();
         }
 
-        creatureHud.updateCamera();
+
         creatureHud.render(delta);
         toolBar.render();
     }

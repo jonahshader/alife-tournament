@@ -134,6 +134,7 @@ public class PhysicsEngine {
         drawLock.unlock();
     }
     public Creature getCreature(int x, int y) {
+        renderBoundsLock.lock();
         int nearestIndex = 0;
         int closest = Integer.MAX_VALUE;
         for (int i = 0; i < objects.size(); i++) {
@@ -146,6 +147,7 @@ public class PhysicsEngine {
                 }
             }
         }
+        renderBoundsLock.unlock();
         return (Creature) objects.get(nearestIndex);
     }
 }

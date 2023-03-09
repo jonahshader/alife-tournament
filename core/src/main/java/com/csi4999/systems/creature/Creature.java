@@ -23,16 +23,16 @@ import java.util.Random;
 
 public class Creature extends Circle implements Mutable {
 
-    private static final float BASE_RADIUS = 10f;
+    private static final float BASE_RADIUS = 12f;
     private static final float MIN_SCALE = 0.5f;
     private static final float MAX_HEALTH = 10f;
     private static final float BASE_MAX_ACCEL = 10f; // units per second. meters?
-    private static final float DRAG = 6f; // accel per velocity
-    private static final float ANGULAR_DRAG = 15f; // accel per velocity (degrees)
+    private static final float DRAG = 3f; // accel per velocity
+    private static final float ANGULAR_DRAG = 25f; // accel per velocity (degrees)
 
     private static final float COLOR_CHANGE_VELOCITY = 8f; // units per second
 
-    private static final int MISC_INPUTS = 7;
+    private static final int MISC_INPUTS = 9;
     private static final int MISC_OUTPUTS = 1;
     private static final float BASE_MAX_ENERGY_SCALAR = 1.5f;
     private static final float BASE_ENERGY = 50f;
@@ -52,6 +52,7 @@ public class Creature extends Circle implements Mutable {
     private float[] inputs;
 
     private Vector2 rotatedVelocity = new Vector2();
+    private Vector2 positionNormed = new Vector2();
 
     //Creature Data for user
     public long userID;
@@ -120,8 +121,14 @@ public class Creature extends Circle implements Mutable {
             }
         }
 
-        brain = new SparseBrain(inputSize, tools.size() + MISC_OUTPUTS, inputSize + tools.size() + MISC_OUTPUTS + 20,
-            .33f, .1f, .25f, .5f, rand);
+//        brain = new SparseBrain(inputSize, tools.size() + MISC_OUTPUTS, inputSize + tools.size() + MISC_OUTPUTS + 20,
+//            .33f, .1f, .25f, .5f, rand);
+//        brain = new SparseBrain(inputSize, tools.size() + MISC_OUTPUTS, 0,
+//            .0f, .5f, .0f, .0f, rand);
+//                brain = new SparseBrain(inputSize, tools.size() + MISC_OUTPUTS, 20,
+//            .33f, .5f, .25f, .5f, rand);
+                brain = new SparseBrain(inputSize, tools.size() + MISC_OUTPUTS, (int) ((inputSize + tools.size() + MISC_OUTPUTS + 20) * rand.nextFloat()),
+            rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), rand);
 
         similarityVector = new float[SIMILARITY_VECTOR_SIZE];
         for (int i = 0; i < similarityVector.length; i++)
@@ -156,6 +163,10 @@ public class Creature extends Circle implements Mutable {
         inputs[inputIndex++] = (float) Math.tanh(rotatedVelocity.y / 10);
         inputs[inputIndex++] = (float) Math.tanh(rotationalVel / 100);
 
+        positionNormed.set(position).nor();
+        inputs[inputIndex++] = positionNormed.x;
+        inputs[inputIndex++] = positionNormed.y;
+
 
         // run brain with inputs
         float[] output = brain.run(inputs);
@@ -187,6 +198,7 @@ public class Creature extends Circle implements Mutable {
         float scl = ((float)Math.sqrt(energy / BASE_ENERGY) + MIN_SCALE) / (1 + MIN_SCALE);
         scl = Math.min(scl, BASE_MAX_ENERGY_SCALAR);
         scale.set(scl, scl);
+
 
 
 
@@ -252,8 +264,8 @@ public class Creature extends Circle implements Mutable {
     }
 
     public float getMass() {
-        // TODO: maybe base this off of surface area, or "volume"?
-        return 1f;
+//        return 1f;
+        return (scale.x + 1) / 2;
     }
 
     // TODO: unit test
