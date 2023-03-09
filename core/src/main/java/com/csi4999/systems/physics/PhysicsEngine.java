@@ -6,8 +6,7 @@ import com.csi4999.systems.creature.Creature;
 import jdk.vm.ci.meta.Constant;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
 
@@ -18,6 +17,9 @@ public class PhysicsEngine {
 
     private ReentrantLock drawLock = new ReentrantLock();
     private ReentrantLock renderBoundsLock = new ReentrantLock();
+    private long age = 1;
+    private long quickSortTotalTime = 0;
+    private long insertSortTotalTime = 0;
 
     public PhysicsEngine() {
         colliders = new ArrayList<>();
@@ -45,11 +47,34 @@ public class PhysicsEngine {
         drawLock.lock();
         objects.removeIf(c -> c.removeQueued);
         drawLock.unlock();
+        age++;
     }
 
     private void runCollision() {
+        Comparator<Collider> colliderComparator = Comparator.comparingDouble(it -> it.bounds.x);
+//        Arrays.parallelSort(colliders, colliderComparator);
+
         renderBoundsLock.lock();
-        insertionSort(colliders);
+//        if (age % 2 == 0) {
+//            long tStart = System.nanoTime();
+//            insertionSort(colliders);
+//            long tEnd = System.nanoTime();
+//            insertSortTotalTime += (tEnd - tStart);
+//
+//        } else {
+//            long tStart = System.nanoTime();
+//            colliders.sort(colliderComparator);
+//            long tEnd = System.nanoTime();
+//            quickSortTotalTime += (tEnd - tStart);
+//
+//        }
+//
+//        if (age % 1000 == 0) {
+//            System.out.println("Insertion sort time (nanos): " + ((2 * insertSortTotalTime) / age));
+//            System.out.println("Quick sort time (nanos): " + ((2 * quickSortTotalTime) / age));
+//        }
+        colliders.sort(colliderComparator);
+
         renderBoundsLock.unlock();
         // iterate through all colliders, comparing each to the surrounding colliders
         IntStream.range(0, colliders.size()).parallel().forEach(i -> {
@@ -105,6 +130,33 @@ public class PhysicsEngine {
         }
     }
 
+    private static void parallelEvenOddSort(List<Collider> arr) {
+        int maxIndex = arr.size()/2;
+        IntStream.range(0, maxIndex).parallel().forEach(i -> {
+            if (arr.get(i*2).bounds.x > arr.get((i*2)+1).bounds.x) {
+                Collider c = arr.get(i*2);
+                arr.set(i*2, arr.get((i*2)+1));
+                arr.set((i*2)+1, c);
+            }
+        });
+        if (arr.size() % 2 == 0) maxIndex--;
+        IntStream.range(0, maxIndex).parallel().forEach(i -> {
+            if (arr.get((i*2)+1).bounds.x > arr.get((i*2)+2).bounds.x) {
+                Collider c = arr.get((i*2)+1);
+                arr.set((i*2)+1, arr.get((i*2)+2));
+                arr.set((i*2)+2, c);
+            }
+        });
+    }
+
+    private boolean isSorted(List<Collider> arr) {
+        for (int i = 0; i < arr.size()-1; i++) {
+            if (arr.get(i).bounds.x > arr.get(i+1).bounds.x)
+                return false;
+        }
+        return true;
+    }
+
     public void draw(Batch batch, ShapeDrawer shapeDrawer) {
         drawLock.lock();
         for (PhysicsObject o: objects) {
@@ -133,6 +185,8 @@ public class PhysicsEngine {
         objects.add(o);
         drawLock.unlock();
     }
+
+
     public Creature getCreature(int x, int y) {
         renderBoundsLock.lock();
         int nearestIndex = 0;
