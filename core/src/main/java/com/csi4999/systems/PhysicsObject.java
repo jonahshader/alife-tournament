@@ -1,5 +1,6 @@
 package com.csi4999.systems;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.*;
@@ -65,15 +66,18 @@ public abstract class PhysicsObject {
         children.forEach(child -> child.move(dt, this));
     }
 
-    public void draw(Batch batch, ShapeDrawer shapeDrawer, PhysicsObject parent, float parentAlpha) {
-        applyTransform(batch, computedTransform);
-        // draw this
-        draw(batch, shapeDrawer, parentAlpha);
-        parentAlpha *= this.color.a;
-        float finalParentAlpha = parentAlpha;
-        // draw children
-        children.forEach(child -> child.draw(batch, shapeDrawer, this, finalParentAlpha));
-        resetTransform(batch);
+    public void draw(Batch batch, ShapeDrawer shapeDrawer, Camera cam, float parentAlpha) {
+
+        if (cam.frustum.pointInFrustum(transformedPos)) {
+            applyTransform(batch, computedTransform);
+            // draw this
+            draw(batch, shapeDrawer, parentAlpha);
+            parentAlpha *= this.color.a;
+            float finalParentAlpha = parentAlpha;
+            // draw children
+            children.forEach(child -> child.draw(batch, shapeDrawer, cam, finalParentAlpha));
+            resetTransform(batch);
+        }
     }
 
     // this is for rendering this object. transformations are applied prior to this method call,

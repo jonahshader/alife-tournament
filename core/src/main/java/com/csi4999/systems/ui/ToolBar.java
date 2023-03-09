@@ -68,6 +68,11 @@ public class ToolBar implements InputProcessor, Disposable {
                    sim.env.userID = GameClient.getInstance().user.userID;
                    GameClient.getInstance().client.sendTCP(new SaveEnvironmentPacket(sim.env));
                };
+               // TODO: reduce duplicate code
+               // pause the sim to prevent ConcurrentModification during serialization
+               sim.playing = false;
+               pauseButton.setText("Play");
+               pauseButton.setChecked(true);
                ScreenStack.push(new NameDescriptionScreen(sim.app, "Save Environment", "Save", c));
            }
         });

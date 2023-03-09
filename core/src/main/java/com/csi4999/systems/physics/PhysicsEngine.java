@@ -1,13 +1,13 @@
 package com.csi4999.systems.physics;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.creature.Creature;
 import jdk.vm.ci.meta.Constant;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
 
@@ -48,8 +48,9 @@ public class PhysicsEngine {
     }
 
     private void runCollision() {
+        Comparator<Collider> colliderComparator = Comparator.comparingDouble(it -> it.bounds.x);
         renderBoundsLock.lock();
-        insertionSort(colliders);
+        colliders.sort(colliderComparator);
         renderBoundsLock.unlock();
         // iterate through all colliders, comparing each to the surrounding colliders
         IntStream.range(0, colliders.size()).parallel().forEach(i -> {
@@ -68,27 +69,10 @@ public class PhysicsEngine {
                 }
             }
         });
-//        for (int i = 0; i < colliders.size(); i++) {
-//            // we are comparing the baseCollider to (+) neighbors in the sorted colliders list
-//            Collider baseCollider = colliders.get(i);
-//            // check + possible collisions
-//            for (int j = i + 1; j < colliders.size(); j++) {
-//                Collider nextCollider = colliders.get(j);
-//                if (baseCollider.bounds.x + baseCollider.bounds.width >= nextCollider.bounds.x) {
-//                    if (nextCollider.collidable && baseCollider.collidesWith(nextCollider))
-//                        baseCollider.addCollider(nextCollider);
-//                    if (baseCollider.collidable && nextCollider.collidesWith(baseCollider))
-//                        nextCollider.addCollider(baseCollider);
-//                } else {
-//                    break;
-//                }
-//            }
-//        }
 
-        // parallelStream()?
         renderBoundsLock.lock();
         colliders.parallelStream().forEach(Collider::handleColliders);
-        colliders.forEach(c -> c.collision.clear());
+        colliders.parallelStream().forEach(c -> c.collision.clear());
         renderBoundsLock.unlock();
     }
 
@@ -105,10 +89,37 @@ public class PhysicsEngine {
         }
     }
 
-    public void draw(Batch batch, ShapeDrawer shapeDrawer) {
+    private static void parallelEvenOddSort(List<Collider> arr) {
+        int maxIndex = arr.size()/2;
+        IntStream.range(0, maxIndex).parallel().forEach(i -> {
+            if (arr.get(i*2).bounds.x > arr.get((i*2)+1).bounds.x) {
+                Collider c = arr.get(i*2);
+                arr.set(i*2, arr.get((i*2)+1));
+                arr.set((i*2)+1, c);
+            }
+        });
+        if (arr.size() % 2 == 0) maxIndex--;
+        IntStream.range(0, maxIndex).parallel().forEach(i -> {
+            if (arr.get((i*2)+1).bounds.x > arr.get((i*2)+2).bounds.x) {
+                Collider c = arr.get((i*2)+1);
+                arr.set((i*2)+1, arr.get((i*2)+2));
+                arr.set((i*2)+2, c);
+            }
+        });
+    }
+
+    private boolean isSorted(List<Collider> arr) {
+        for (int i = 0; i < arr.size()-1; i++) {
+            if (arr.get(i).bounds.x > arr.get(i+1).bounds.x)
+                return false;
+        }
+        return true;
+    }
+
+    public void draw(Batch batch, ShapeDrawer shapeDrawer, Camera cam) {
         drawLock.lock();
         for (PhysicsObject o: objects) {
-            o.draw(batch, shapeDrawer, null, 1f);
+            o.draw(batch, shapeDrawer, cam, 1f);
         }
         drawLock.unlock();
     }
@@ -133,7 +144,10 @@ public class PhysicsEngine {
         objects.add(o);
         drawLock.unlock();
     }
+
+
     public Creature getCreature(int x, int y) {
+        renderBoundsLock.lock();
         int nearestIndex = 0;
         int closest = Integer.MAX_VALUE;
         for (int i = 0; i < objects.size(); i++) {
@@ -146,6 +160,7 @@ public class PhysicsEngine {
                 }
             }
         }
+        renderBoundsLock.unlock();
         return (Creature) objects.get(nearestIndex);
     }
 }

@@ -27,8 +27,9 @@ import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
 
 public class Eye extends LineSegment implements Sensor {
     private float[] visionData;
+    private static final float MUTATE_POS_STD = 0.5f;
     private static final float MUTATE_LENGTH_STD = 0.5f;
-    private static final float MUTATE_ROTATION_STD = 0.5f;
+    private static final float MUTATE_ROTATION_STD = 1f;
 
     private static final float ENERGY_CONSUMPTION = 0.025f; // energy per second
 
@@ -66,6 +67,9 @@ public class Eye extends LineSegment implements Sensor {
         // Wiggle vision line length
         lineLength += rand.nextGaussian() * MUTATE_LENGTH_STD;
         rotationDegrees += rand.nextGaussian() * MUTATE_ROTATION_STD;
+
+        position.x += rand.nextGaussian() * MUTATE_POS_STD;
+        position.y += rand.nextGaussian() * MUTATE_POS_STD;
     }
 
     @Override
@@ -98,21 +102,21 @@ public class Eye extends LineSegment implements Sensor {
 
     @Override
     public void handleColliders() {
+        collision.sort((o1, o2) -> {
+            float d1 = getDistToCollider(o1);
+            float d2 = getDistToCollider(o2);
+            return Float.compare(d1, d2);
+        });
 
-        if (collision.size() <= 1) {
-            Arrays.fill(visionData, 0f);
-            visionData[0] = -1; // similarity defaults to 0
-            lastHitDist = lineLength;
-            this.color.set(1f, 1f, 1f, 1f);
-        } else {
-            collision.sort((o1, o2) -> {
-                float d1 = getDistToCollider(o1);
-                float d2 = getDistToCollider(o2);
-                return Float.compare(d1, d2);
-            });
-            Collider nearest = collision.get(0);
-            if (nearest == parent)
-                nearest = collision.get(1);
+        Collider nearest = null;
+        for (Collider c : collision) {
+            if (c != parent) {
+                nearest = c;
+                break;
+            }
+        }
+
+        if (nearest != null) {
             lastHitDist = (float) Math.sqrt(getDistToCollider(nearest)) / parent.scale.x;
             visionData[0] = nearest.getSimilarity(parent);
             visionData[1] = nearest instanceof Food ? 1f : -1f;
@@ -125,9 +129,12 @@ public class Eye extends LineSegment implements Sensor {
 
             // Line changes to color of seen object
             this.color.set(nearest.color);
+        } else {
+            Arrays.fill(visionData, 0f);
+            visionData[0] = -1f; // similarity defaults to 0
+            lastHitDist = lineLength;
+            this.color.set(1f, 1f, 1f, 1f);
         }
-
-
     }
 
     private float getDistToCollider(Collider c) {

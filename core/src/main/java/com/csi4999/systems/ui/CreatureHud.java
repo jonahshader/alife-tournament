@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector3;
@@ -34,8 +35,8 @@ import java.util.HashMap;
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 
 public class CreatureHud implements InputProcessor, Screen {
-    private static final int WIDTH = 640;
-    private static final int HEIGHT = 360;
+    private static final int WIDTH = (int) (640 * 1.5f);
+    private static final int HEIGHT = (int) (360 * 1.5f);
 
     private Skin skin;
     private OrthographicCamera myCam;
@@ -56,14 +57,16 @@ public class CreatureHud implements InputProcessor, Screen {
         this.env = env;
 
         myCam = new OrthographicCamera();
-        myViewport = new ExtendViewport(640, 360, myCam);
+        myViewport = new ExtendViewport(WIDTH, HEIGHT, myCam);
 
         stage = new Stage(myViewport, batch);
     }
 
     public void updateCamera() {
         if (this.c != null) {
+//            worldCam.setToOrtho(false);
             worldCam.position.set(c.position, 0);
+//            worldCam.rotate(-c.rotationDegrees);
             worldCam.update();
         }
     }
@@ -78,12 +81,12 @@ public class CreatureHud implements InputProcessor, Screen {
         stage.clear();
         mainTable = new Table();
 
-        mainTable.setSize(100, 100);
+        mainTable.setSize(120, 150);
         mainTable.setPosition(0, 0);
 
         mainTable.align(Align.bottomLeft);
 
-        Label title = new Label("Creature info", skin);
+        Label title = new Label("Creature Info", skin);
 
         TextButton saveButton = new TextButton("Save Creature", skin);
 
@@ -149,6 +152,9 @@ public class CreatureHud implements InputProcessor, Screen {
         if (c != null) {
             myViewport.apply();
             stage.getBatch().setProjectionMatrix(myCam.combined);
+            app.batch.begin();
+            app.shapeDrawer.filledRectangle(0f, 0f, 120f, 150f, new Color(0f, 0f, 0f, 0.5f));
+            app.batch.end();
             stage.act();
             stage.draw();
             if (c.removeQueued) {
@@ -177,10 +183,12 @@ public class CreatureHud implements InputProcessor, Screen {
     public void dispose() {stage.dispose();}
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.LEFT) {
+        if (button == Input.Buttons.MIDDLE) {
             Vector3 pos = worldCam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             assignCreature(env.getCreature((int) pos.x, (int) pos.y));
             return true;
+        } else if (button == Input.Buttons.LEFT) {
+            unassignCreature();
         }
         return false;
     }

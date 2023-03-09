@@ -218,7 +218,9 @@ public class SparseBrain implements Brain {
         } else if (rn < (ADD_EDGE_CHANCE + REMOVE_EDGE_CHANCE + ADD_NEURON_CHANCE) * amount) {
             // add (hidden) neuron
             int hiddenNeurons = neuronValues.length - currentInputSize - output.length;
-            int toAdd = rand.nextInt(hiddenNeurons) + currentInputSize;
+//            int toAdd = rand.nextInt(hiddenNeurons) + currentInputSize;
+            // TODO: does the insert index even matter? the neuron is disconnected anyway
+            int toAdd = currentInputSize;
             insertNeuron(toAdd, (float) rand.nextGaussian());
 //            System.out.println("Added neuron " + toAdd);
         } else if (rn < (ADD_EDGE_CHANCE + REMOVE_EDGE_CHANCE + ADD_NEURON_CHANCE + REMOVE_NEURON_CHANCE) * amount) {
