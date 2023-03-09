@@ -231,6 +231,8 @@ public class Creature extends Circle implements Mutable {
         shapeDrawer.circle(0f, 0f, this.radius * (health/MAX_HEALTH));
     }
 
+
+
     public List<Creature> getNewOffspring(PhysicsEngine engine, Random rand, float mutateAmount) {
         if (replicateTimer < 0) {
 //            System.out.println("tryna replicate");

@@ -102,21 +102,21 @@ public class Eye extends LineSegment implements Sensor {
 
     @Override
     public void handleColliders() {
+        collision.sort((o1, o2) -> {
+            float d1 = getDistToCollider(o1);
+            float d2 = getDistToCollider(o2);
+            return Float.compare(d1, d2);
+        });
 
-        if (collision.size() <= 1) {
-            Arrays.fill(visionData, 0f);
-            visionData[0] = -1; // similarity defaults to 0
-            lastHitDist = lineLength;
-            this.color.set(1f, 1f, 1f, 1f);
-        } else {
-            collision.sort((o1, o2) -> {
-                float d1 = getDistToCollider(o1);
-                float d2 = getDistToCollider(o2);
-                return Float.compare(d1, d2);
-            });
-            Collider nearest = collision.get(0);
-            if (nearest == parent)
-                nearest = collision.get(1);
+        Collider nearest = null;
+        for (Collider c : collision) {
+            if (c != parent) {
+                nearest = c;
+                break;
+            }
+        }
+
+        if (nearest != null) {
             lastHitDist = (float) Math.sqrt(getDistToCollider(nearest)) / parent.scale.x;
             visionData[0] = nearest.getSimilarity(parent);
             visionData[1] = nearest instanceof Food ? 1f : -1f;
@@ -129,9 +129,12 @@ public class Eye extends LineSegment implements Sensor {
 
             // Line changes to color of seen object
             this.color.set(nearest.color);
+        } else {
+            Arrays.fill(visionData, 0f);
+            visionData[0] = -1f; // similarity defaults to 0
+            lastHitDist = lineLength;
+            this.color.set(1f, 1f, 1f, 1f);
         }
-
-
     }
 
     private float getDistToCollider(Collider c) {

@@ -1,5 +1,6 @@
 package com.csi4999.systems.environment;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Vector3;
@@ -54,8 +55,8 @@ public class Environment {
         this.creatureSpawner = new CreatureSpawner(this.r, this.physics, sensorBuilders, toolBuilders);
     }
 
-    public void draw(ShapeDrawer drawer, Batch batch) {
-        physics.draw(batch, drawer);
+    public void draw(ShapeDrawer drawer, Batch batch, Camera cam) {
+        physics.draw(batch, drawer, cam);
 //        physics.renderBounds(drawer);
     }
 

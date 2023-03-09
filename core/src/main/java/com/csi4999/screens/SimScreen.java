@@ -104,7 +104,7 @@ public class SimScreen implements Screen, InputProcessor {
 
         if (renderingEnabled) {
             app.batch.begin();
-            env.draw(app.shapeDrawer, app.batch);
+            env.draw(app.shapeDrawer, app.batch, worldCam);
             app.batch.end();
         }
 

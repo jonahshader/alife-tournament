@@ -1,5 +1,6 @@
 package com.csi4999.systems.physics;
 
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.creature.Creature;
@@ -17,9 +18,6 @@ public class PhysicsEngine {
 
     private ReentrantLock drawLock = new ReentrantLock();
     private ReentrantLock renderBoundsLock = new ReentrantLock();
-    private long age = 1;
-    private long quickSortTotalTime = 0;
-    private long insertSortTotalTime = 0;
 
     public PhysicsEngine() {
         colliders = new ArrayList<>();
@@ -47,34 +45,12 @@ public class PhysicsEngine {
         drawLock.lock();
         objects.removeIf(c -> c.removeQueued);
         drawLock.unlock();
-        age++;
     }
 
     private void runCollision() {
         Comparator<Collider> colliderComparator = Comparator.comparingDouble(it -> it.bounds.x);
-//        Arrays.parallelSort(colliders, colliderComparator);
-
         renderBoundsLock.lock();
-//        if (age % 2 == 0) {
-//            long tStart = System.nanoTime();
-//            insertionSort(colliders);
-//            long tEnd = System.nanoTime();
-//            insertSortTotalTime += (tEnd - tStart);
-//
-//        } else {
-//            long tStart = System.nanoTime();
-//            colliders.sort(colliderComparator);
-//            long tEnd = System.nanoTime();
-//            quickSortTotalTime += (tEnd - tStart);
-//
-//        }
-//
-//        if (age % 1000 == 0) {
-//            System.out.println("Insertion sort time (nanos): " + ((2 * insertSortTotalTime) / age));
-//            System.out.println("Quick sort time (nanos): " + ((2 * quickSortTotalTime) / age));
-//        }
         colliders.sort(colliderComparator);
-
         renderBoundsLock.unlock();
         // iterate through all colliders, comparing each to the surrounding colliders
         IntStream.range(0, colliders.size()).parallel().forEach(i -> {
@@ -93,27 +69,10 @@ public class PhysicsEngine {
                 }
             }
         });
-//        for (int i = 0; i < colliders.size(); i++) {
-//            // we are comparing the baseCollider to (+) neighbors in the sorted colliders list
-//            Collider baseCollider = colliders.get(i);
-//            // check + possible collisions
-//            for (int j = i + 1; j < colliders.size(); j++) {
-//                Collider nextCollider = colliders.get(j);
-//                if (baseCollider.bounds.x + baseCollider.bounds.width >= nextCollider.bounds.x) {
-//                    if (nextCollider.collidable && baseCollider.collidesWith(nextCollider))
-//                        baseCollider.addCollider(nextCollider);
-//                    if (baseCollider.collidable && nextCollider.collidesWith(baseCollider))
-//                        nextCollider.addCollider(baseCollider);
-//                } else {
-//                    break;
-//                }
-//            }
-//        }
 
-        // parallelStream()?
         renderBoundsLock.lock();
         colliders.parallelStream().forEach(Collider::handleColliders);
-        colliders.forEach(c -> c.collision.clear());
+        colliders.parallelStream().forEach(c -> c.collision.clear());
         renderBoundsLock.unlock();
     }
 
@@ -157,10 +116,10 @@ public class PhysicsEngine {
         return true;
     }
 
-    public void draw(Batch batch, ShapeDrawer shapeDrawer) {
+    public void draw(Batch batch, ShapeDrawer shapeDrawer, Camera cam) {
         drawLock.lock();
         for (PhysicsObject o: objects) {
-            o.draw(batch, shapeDrawer, null, 1f);
+            o.draw(batch, shapeDrawer, cam, 1f);
         }
         drawLock.unlock();
     }
