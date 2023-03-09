@@ -8,28 +8,27 @@ import java.util.List;
 import java.util.Random;
 
 public class FoodSpawner {
-    private static final int INITIAL_AMOUNT = 200;
-    private static final int MINIMUM_AMOUNT = 1000;
-    private static final float SPREAD_STD = 1024f;
     private List<Food> food = new ArrayList<>();
+    private EnvProperties properties;
 
     public FoodSpawner(){}
 
-    public FoodSpawner(Random r, PhysicsEngine physics) {
-        for (int i = 0; i < INITIAL_AMOUNT; i++) {
+    public FoodSpawner(Random r, PhysicsEngine physics, EnvProperties properties) {
+        this.properties = properties;
+        for (int i = 0; i < properties.initialFood; i++) {
             addRandomFood(r, physics, true);
         }
     }
 
     public void run(Random r, PhysicsEngine physics) {
         food.removeIf(f -> f.removeQueued);
-        if (food.size() < MINIMUM_AMOUNT) {
+        if (food.size() < properties.minFood) {
             addRandomFood(r, physics, false);
         }
     }
 
     private void addRandomFood(Random r, PhysicsEngine physics, boolean growFully) {
-        Food f = new Food(new Vector2((float) r.nextGaussian(0f, SPREAD_STD), (float) r.nextGaussian(0f, SPREAD_STD)), r);
+        Food f = new Food(new Vector2((float) r.nextGaussian(0f, properties.foodSpawnStd), (float) r.nextGaussian(0f, properties.foodSpawnStd)), r);
         if (growFully) f.growFully();
         physics.addCollider(f);
         physics.addObject(f);

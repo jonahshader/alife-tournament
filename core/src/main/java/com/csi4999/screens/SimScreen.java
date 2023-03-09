@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
+import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.csi4999.systems.ui.CreatureHud;
@@ -34,7 +35,7 @@ public class SimScreen implements Screen, InputProcessor {
     public SimScreen(ALifeApp app, UserAccountPacket user) {
         this.app = app;
         this.user = user;
-        this.env = new Environment(3000, 150);
+        this.env = new Environment(EnvProperties.makeTestDefault());
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);

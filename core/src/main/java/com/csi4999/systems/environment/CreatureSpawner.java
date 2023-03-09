@@ -11,14 +11,14 @@ import java.util.List;
 import java.util.Random;
 
 public class CreatureSpawner {
-    private static final int INITIAL_AMOUNT = 200;
-    private static final int MINIMUM_AMOUNT = 50;
-    private static final float SPREAD_STD = 512f;
     private List<Creature> creatures = new ArrayList<>();
+
+    private EnvProperties properties;
     public CreatureSpawner() {}
-    public CreatureSpawner(Random r, PhysicsEngine physics, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders) {
-        for (int i = 0; i < INITIAL_AMOUNT; i++) {
-            addRandomCreature(r, physics, sensorBuilders, toolBuilders);
+    public CreatureSpawner(Random r, PhysicsEngine physics, EnvProperties properties) {
+        this.properties = properties;
+        for (int i = 0; i < properties.initialCreatures; i++) {
+            addRandomCreature(r, physics, properties.sensorBuilders, properties.toolBuilders);
         }
     }
 
@@ -35,8 +35,8 @@ public class CreatureSpawner {
     }
 
     private void addRandomCreature(Random r, PhysicsEngine physics, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders) {
-        Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, SPREAD_STD), (float) r.nextGaussian(0f, SPREAD_STD)),
-            sensorBuilders, toolBuilders, r.nextInt(1, 12), r.nextInt(4, 16), physics, r);
+        Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, properties.creatureSpawnStd), (float) r.nextGaussian(0f, properties.creatureSpawnStd)),
+            sensorBuilders, toolBuilders, r.nextInt(properties.minSensors, properties.maxSensors), r.nextInt(properties.minTools, properties.maxTools), physics, r);
         physics.addObject(c);
         physics.addCollider(c);
         creatures.add(c);

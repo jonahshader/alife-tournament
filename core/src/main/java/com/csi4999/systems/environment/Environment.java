@@ -26,10 +26,7 @@ public class Environment {
     FoodSpawner foodSpawner;
     public CreatureSpawner creatureSpawner;
 
-    List<SensorBuilder> sensorBuilders;
-    List<ToolBuilder> toolBuilders;
-
-    public float mutationRate = 1f;
+    private EnvProperties properties;
 
     private float dt = 1/60f;
 
@@ -41,18 +38,12 @@ public class Environment {
 
     public Environment() {}
 
-    public Environment(int initialFood, int initalCreatures) {
-        this.sensorBuilders = new ArrayList<>();
-        this.toolBuilders = new ArrayList<>();
-        this.sensorBuilders.add(new EyeBuilder());
-        this.toolBuilders.add(new FlagellaBuilder());
-//        this.toolBuilders.add(new HornBuilder());
-        this.toolBuilders.add(new MouthBuilder());
-
+    public Environment(EnvProperties properties) {
+        this.properties = properties;
         this.physics = new PhysicsEngine();
         this.r = new RandomXS128();
-        this.foodSpawner = new FoodSpawner(this.r, this.physics);
-        this.creatureSpawner = new CreatureSpawner(this.r, this.physics, sensorBuilders, toolBuilders);
+        this.foodSpawner = new FoodSpawner(this.r, this.physics, properties);
+        this.creatureSpawner = new CreatureSpawner(this.r, this.physics, properties);
     }
 
     public void draw(ShapeDrawer drawer, Batch batch, Camera cam) {
@@ -62,7 +53,7 @@ public class Environment {
 
     public synchronized void update() {
         physics.run(dt);
-        creatureSpawner.run(physics, r, mutationRate);
+        creatureSpawner.run(physics, r, properties.mutationRate);
         foodSpawner.run(r, physics);
     }
     public Creature getCreature(int x, int y) {
