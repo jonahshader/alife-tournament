@@ -103,6 +103,15 @@ public class SaveTestingScreen implements Screen {
         TextButton bogusCreatureButton = new TextButton("Send Creature with bad id", skin);
 
         TextButton updateAccountButton = new TextButton("Update an account", skin);
+        TextButton getSaved = new TextButton("Get Saved", skin);
+
+        getSaved.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                client.sendTCP(new RequestSavedEntityDataPacket(0));
+            }
+        });
 
         createAndSaveEnvButton.addListener(new ClickListener(){
             @Override
@@ -201,9 +210,13 @@ public class SaveTestingScreen implements Screen {
 
 
 
+        buttonsTable.row().pad(5, 0, 0, 0);
+        buttonsTable.add(getSaved).fill().uniform();
 
         buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(createAndSaveEnvButton).fill().uniform();
+
+
 
         buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(updateEnvButton).fill().uniform();

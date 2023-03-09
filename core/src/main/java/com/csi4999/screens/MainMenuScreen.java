@@ -16,7 +16,10 @@ import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.networking.GameClient;
+import com.csi4999.systems.networking.clientListeners.DescriptionListener;
+import com.csi4999.systems.networking.packets.RequestSavedEntityDataPacket;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
+import com.esotericsoftware.kryonet.Client;
 
 import static com.csi4999.singletons.CustomAssetManager.*;
 
@@ -89,7 +92,12 @@ public class MainMenuScreen implements Screen {
         savedEntitiesButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SavedEntitiesScreen(app));
+                Client client = GameClient.getInstance().client;
+                client.sendTCP(new RequestSavedEntityDataPacket(GameClient.getInstance().user.userID));
+                while (! DescriptionListener.getInstance().ready){}
+                System.out.println(DescriptionListener.getInstance().environmentDescriptions.size());
+                ScreenStack.push(new SavedEntitiesScreen(app, DescriptionListener.getInstance().environmentDescriptions,
+                    DescriptionListener.getInstance().creatureDescriptions, GameClient.getInstance().user));
             }
         });
 

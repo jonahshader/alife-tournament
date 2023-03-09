@@ -65,6 +65,7 @@ public class ToolBar implements InputProcessor, Disposable {
                NameDescriptionScreen.NameDescriptionCallback c = (name, description) -> {
                    sim.env.environmentName = name;
                    sim.env.EnvironmentDescription = description;
+                   sim.env.userID = GameClient.getInstance().user.userID;
                    GameClient.getInstance().client.sendTCP(new SaveEnvironmentPacket(sim.env));
                };
                ScreenStack.push(new NameDescriptionScreen(sim.app, "Save Environment", "Save", c));
