@@ -27,6 +27,13 @@ public class FoodSpawner {
         }
     }
 
+    public float getAllFoodEnergy() {
+        float totalEnergy = 0;
+        for (Food f : food)
+            totalEnergy += f.getEnergy();
+        return totalEnergy;
+    }
+
     private void addRandomFood(Random r, PhysicsEngine physics, boolean growFully) {
         Food f = new Food(new Vector2((float) r.nextGaussian(0f, properties.foodSpawnStd), (float) r.nextGaussian(0f, properties.foodSpawnStd)), r);
         if (growFully) f.growFully();

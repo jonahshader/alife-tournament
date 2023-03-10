@@ -32,7 +32,7 @@ public class Creature extends Circle implements Mutable {
 
     private static final float COLOR_CHANGE_VELOCITY = 8f; // units per second
 
-    private static final int MISC_INPUTS = 9;
+    private static final int MISC_INPUTS = 7;
     private static final int MISC_OUTPUTS = 1;
     private static final float BASE_MAX_ENERGY_SCALAR = 1.5f;
     private static final float BASE_ENERGY = 50f;
@@ -52,7 +52,6 @@ public class Creature extends Circle implements Mutable {
     private float[] inputs;
 
     private Vector2 rotatedVelocity = new Vector2();
-    private Vector2 positionNormed = new Vector2();
 
     //Creature Data for user
     public long userID;
@@ -163,10 +162,6 @@ public class Creature extends Circle implements Mutable {
         inputs[inputIndex++] = (float) Math.tanh(rotatedVelocity.y / 10);
         inputs[inputIndex++] = (float) Math.tanh(rotationalVel / 100);
 
-        positionNormed.set(position).nor();
-        inputs[inputIndex++] = positionNormed.x;
-        inputs[inputIndex++] = positionNormed.y;
-
 
         // run brain with inputs
         float[] output = brain.run(inputs);
@@ -270,27 +265,7 @@ public class Creature extends Circle implements Mutable {
         return (scale.x + 1) / 2;
     }
 
-    // TODO: unit test
-    /**
-     * takes a step towards desired from current, changing at most 'rate'
-     * @param current - the current value we want to move
-     * @param desired - the value we want to move towards
-     * @param rate - the amount to change desired by to move towards current
-     * @return - the moved value
-     */
-    private float towardsValue(float current, float desired, float rate) {
-        if (desired > current + rate) {
-            current += rate;
-        } else if (desired > current) {
-            current = desired;
-        } else if (desired < current - rate) {
-            current -= rate;
-        } else if (desired < current) {
-            current = desired;
-        }
 
-        return current;
-    }
 
     public void takeDamage(float damageAmount) {
         health -= damageAmount;

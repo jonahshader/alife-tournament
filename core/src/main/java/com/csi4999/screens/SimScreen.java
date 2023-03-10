@@ -6,11 +6,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
+import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.csi4999.systems.ui.CreatureHud;
 import com.csi4999.systems.ui.PanCam;
+import com.csi4999.systems.ui.StatsHud;
 import com.csi4999.systems.ui.ToolBar;
 
 public class SimScreen implements Screen, InputProcessor {
@@ -29,45 +31,25 @@ public class SimScreen implements Screen, InputProcessor {
     public UserAccountPacket user;
     private ToolBar toolBar;
     private CreatureHud creatureHud;
+    private StatsHud statsHud;
 
     private Thread simThread;
 
     public SimScreen(ALifeApp app, UserAccountPacket user) {
-        this.app = app;
-        this.user = user;
-        this.env = new Environment(EnvProperties.makeTestDefault());
-
-        worldCam = new OrthographicCamera();
-        worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
-        creatureHud = new CreatureHud(app.batch, worldCam, app, env);
-
-        toolBar = new ToolBar(app.batch, this);
-
-        InputMultiplexer m = new InputMultiplexer();
-        m.addProcessor(toolBar.stage);
-        m.addProcessor(creatureHud.stage);
-        m.addProcessor(creatureHud);
-        m.addProcessor(new PanCam(worldViewport, worldCam));
-        m.addProcessor(this);
-        Gdx.input.setInputProcessor(m);
+        this(app, user, new Environment(EnvProperties.makeTestDefault()));
     }
 
     public SimScreen(ALifeApp app, UserAccountPacket user, Environment environment) {
         this.app = app;
         this.user = user;
+        this.env = environment;
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
+        creatureHud = new CreatureHud(app.batch, worldCam, app, env);
+        statsHud = new StatsHud(env.creatureSpawner, env.foodSpawner);
 
         toolBar = new ToolBar(app.batch, this);
-
-        InputMultiplexer m = new InputMultiplexer();
-        m.addProcessor(toolBar.stage);
-        m.addProcessor(new PanCam(worldViewport, worldCam));
-        m.addProcessor(this);
-        Gdx.input.setInputProcessor(m);
-
-        this.env = environment;
     }
 
     private void tryLaunchSimThread() {
@@ -75,6 +57,7 @@ public class SimScreen implements Screen, InputProcessor {
             simThread = new Thread(() -> {
                 while (!limitSpeed && playing) {
                     env.update();
+                    statsHud.update();
                 }
             });
             simThread.start();
@@ -87,6 +70,7 @@ public class SimScreen implements Screen, InputProcessor {
         if (playing) {
             if (limitSpeed) {
                 env.update();
+                statsHud.update();
             } else {
                 tryLaunchSimThread();
             }
@@ -112,6 +96,7 @@ public class SimScreen implements Screen, InputProcessor {
 
         creatureHud.render(delta);
         toolBar.render();
+        statsHud.render(app.shapeDrawer);
     }
 
     @Override
@@ -119,10 +104,21 @@ public class SimScreen implements Screen, InputProcessor {
         worldViewport.update(width, height);
         toolBar.resize(width, height);
         creatureHud.resize(width, height);
+        statsHud.resize(width, height);
     }
 
     @Override
-    public void show() {}
+    public void show() {
+        InputMultiplexer m = new InputMultiplexer();
+        m.addProcessor(statsHud);
+        m.addProcessor(toolBar.stage);
+        m.addProcessor(creatureHud.stage);
+        m.addProcessor(creatureHud);
+        m.addProcessor(new PanCam(worldViewport, worldCam));
+        m.addProcessor(this);
+        Gdx.input.setInputProcessor(m);
+    }
+
     @Override
     public void pause() {}
     @Override
@@ -137,6 +133,10 @@ public class SimScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.ESCAPE) {
+            playing = false;
+            ScreenStack.pop();
+        }
         return false;
     }
 

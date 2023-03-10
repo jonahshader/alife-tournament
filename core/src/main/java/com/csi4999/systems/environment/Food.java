@@ -18,6 +18,9 @@ public class Food extends Circle {
     private static final float BASE_ENERGY_TARGET_STD = 10f;
     private static final float RADIUS_PER_ENERGY_SQRT = 2f;
     private float targetEnergy;
+
+
+
     private float energy;
 
 
@@ -28,6 +31,7 @@ public class Food extends Circle {
         targetEnergy = (float) Math.max(1.0, rand.nextGaussian(BASE_ENERGY_TARGET, BASE_ENERGY_TARGET_STD));
         energy = 1f;
         color.set(rand.nextFloat() * .2f, rand.nextFloat() * .2f + .8f, rand.nextFloat() * .2f, 1f);
+        computeTransform(null);
     }
 
     @Override
@@ -78,5 +82,9 @@ public class Food extends Circle {
 
     public void growFully() {
         energy = targetEnergy;
+    }
+
+    public float getEnergy() {
+        return energy;
     }
 }

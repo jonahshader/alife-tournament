@@ -194,10 +194,6 @@ public class CreatureHud implements InputProcessor, Screen {
     }
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE) {
-            unassignCreature();
-            return true;
-        }
         return false;
     }
     @Override

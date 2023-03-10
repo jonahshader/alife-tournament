@@ -20,11 +20,10 @@ import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
 import com.csi4999.systems.networking.common.Account;
 import com.csi4999.systems.networking.packets.LoginPacket;
 import com.csi4999.systems.networking.packets.RegisterPacket;
-import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.esotericsoftware.kryonet.Client;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
-import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
+import static com.csi4999.singletons.CustomAssetManager.TITLE_FONT;
 
 public class LoginScreen implements Screen {
     private Skin skin;
@@ -40,7 +39,7 @@ public class LoginScreen implements Screen {
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
-        titleFont = CustomAssetManager.getInstance().manager.get(UI_FONT);
+        titleFont = CustomAssetManager.getInstance().manager.get(TITLE_FONT);
         titleFontColor = new Color(1f, 1f, 1f, 1f);
 
         menuCam = new OrthographicCamera();
@@ -50,11 +49,11 @@ public class LoginScreen implements Screen {
         menuCam.update();
 
         stage = new Stage(menuViewport, app.batch);
-        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         // Main table that holds the title label at the top and a buttons table at the bottom
         Table mainTable = new Table();
         Table buttonsTable = new Table();

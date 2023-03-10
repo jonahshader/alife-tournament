@@ -2,11 +2,8 @@ package com.csi4999.systems.creature.sensors;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.CustomGraphics;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.creature.Sensor;
@@ -18,12 +15,7 @@ import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Random;
-
-import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
-import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
 
 public class Eye extends LineSegment implements Sensor {
     private float[] visionData;

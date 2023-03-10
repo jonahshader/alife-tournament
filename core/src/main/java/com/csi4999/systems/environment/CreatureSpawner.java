@@ -34,6 +34,17 @@ public class CreatureSpawner {
         creatures.addAll(newCreatures);
     }
 
+    public int getCreatureCount() {
+        return creatures.size();
+    }
+
+    public float getAllCreatureEnergy() {
+        float totalEnergy = 0;
+        for (Creature c : creatures)
+            totalEnergy += c.energy;
+        return totalEnergy;
+    }
+
     private void addRandomCreature(Random r, PhysicsEngine physics, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders) {
         Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, properties.creatureSpawnStd), (float) r.nextGaussian(0f, properties.creatureSpawnStd)),
             sensorBuilders, toolBuilders, r.nextInt(properties.minSensors, properties.maxSensors), r.nextInt(properties.minTools, properties.maxTools), physics, r);

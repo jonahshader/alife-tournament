@@ -36,11 +36,11 @@ public class ConnectScreen implements Screen {
         cam.position.set(cam.viewportWidth/2, cam.viewportHeight/2, 0);
         cam.update();
         stage = new Stage(viewport, app.batch);
-        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         Table t = new Table();
         Table body = new Table();
         t.setFillParent(true);

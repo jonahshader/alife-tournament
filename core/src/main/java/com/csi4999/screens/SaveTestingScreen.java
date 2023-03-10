@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Random;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
-import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
+import static com.csi4999.singletons.CustomAssetManager.TITLE_FONT;
 
 public class SaveTestingScreen implements Screen {
 
@@ -60,7 +60,7 @@ public class SaveTestingScreen implements Screen {
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
-        titleFont = CustomAssetManager.getInstance().manager.get(UI_FONT);
+        titleFont = CustomAssetManager.getInstance().manager.get(TITLE_FONT);
         titleFontColor = new Color(1f, 1f, 1f, 1f);
 
         menuCam = new OrthographicCamera();
@@ -70,10 +70,10 @@ public class SaveTestingScreen implements Screen {
         menuCam.update();
 
         stage = new Stage(menuViewport, app.batch);
-        Gdx.input.setInputProcessor(stage);
     }
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         // Main table that holds the title label at the top and a buttons table at the bottom
         Table mainTable = new Table();
         Table buttonsTable = new Table();

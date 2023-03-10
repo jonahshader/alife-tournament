@@ -1,5 +1,7 @@
 package com.csi4999.singletons;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.csi4999.ALifeApp;
 

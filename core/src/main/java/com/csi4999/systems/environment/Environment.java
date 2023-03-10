@@ -23,7 +23,7 @@ public class Environment {
     PhysicsEngine physics;
     Random r;
 
-    FoodSpawner foodSpawner;
+    public FoodSpawner foodSpawner;
     public CreatureSpawner creatureSpawner;
 
     private EnvProperties properties;
