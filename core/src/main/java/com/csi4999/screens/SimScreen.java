@@ -47,7 +47,6 @@ public class SimScreen implements Screen, InputProcessor {
         creatureHud = new CreatureHud(app.batch, worldCam, app, env);
         statsHud = new StatsHud(env.creatureSpawner, env.foodSpawner);
         chunkSelector = new ChunkSelector(worldViewport, worldCam, this);
-        chunkSelector.activate();
 
         toolBar = new ToolBar(app.batch, this);
     }
