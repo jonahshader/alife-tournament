@@ -11,19 +11,19 @@ import java.util.List;
 
 public class EnvProperties {
     // for environment
-    public float mutationRate = 1f;
+    public float globalMutationRate = 1f;
 
 
     // for food spawner
-    public int initialFood = 200;
-    public int minFood = 1000;
-    public float foodSpawnStd = 512f;
+    public int initialFood = 400;
+    public int minFood = 600;
+    public float foodSpawnStd = 2048f;
 
 
     // for creature spawner
-    public int initialCreatures = 150;
+    public int initialCreatures = 600;
     public int minCreatures = 0;
-    public float creatureSpawnStd = 512f;
+    public float creatureSpawnStd = 2048f;
     public List<SensorBuilder> sensorBuilders = new ArrayList<>();
     public List<ToolBuilder> toolBuilders = new ArrayList<>();
     public int minSensors = 1;

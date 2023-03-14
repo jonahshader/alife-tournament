@@ -10,10 +10,7 @@ import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
-import com.csi4999.systems.ui.CreatureHud;
-import com.csi4999.systems.ui.PanCam;
-import com.csi4999.systems.ui.StatsHud;
-import com.csi4999.systems.ui.ToolBar;
+import com.csi4999.systems.ui.*;
 
 public class SimScreen implements Screen, InputProcessor {
     public static final int GAME_WIDTH = 640;
@@ -32,6 +29,7 @@ public class SimScreen implements Screen, InputProcessor {
     private ToolBar toolBar;
     private CreatureHud creatureHud;
     private StatsHud statsHud;
+    private ChunkSelector chunkSelector;
 
     private Thread simThread;
 
@@ -48,6 +46,8 @@ public class SimScreen implements Screen, InputProcessor {
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
         creatureHud = new CreatureHud(app.batch, worldCam, app, env);
         statsHud = new StatsHud(env.creatureSpawner, env.foodSpawner);
+        chunkSelector = new ChunkSelector(worldViewport, worldCam, env);
+        chunkSelector.activate();
 
         toolBar = new ToolBar(app.batch, this);
     }
@@ -81,7 +81,7 @@ public class SimScreen implements Screen, InputProcessor {
         app.batch.setProjectionMatrix(worldCam.combined);
 
         // set clear color
-        Gdx.gl.glClearColor(.5f, .5f, .5f, 1f);
+        Gdx.gl.glClearColor(.21f, .2f, .21f, 1f);
         // apply clear color to screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -97,6 +97,7 @@ public class SimScreen implements Screen, InputProcessor {
         creatureHud.render(delta);
         toolBar.render();
         statsHud.render(app.shapeDrawer);
+        chunkSelector.render(app.shapeDrawer, delta);
     }
 
     @Override
@@ -115,6 +116,7 @@ public class SimScreen implements Screen, InputProcessor {
         m.addProcessor(creatureHud.stage);
         m.addProcessor(creatureHud);
         m.addProcessor(new PanCam(worldViewport, worldCam));
+        m.addProcessor(chunkSelector);
         m.addProcessor(this);
         Gdx.input.setInputProcessor(m);
     }

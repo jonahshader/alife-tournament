@@ -14,9 +14,10 @@ import java.util.List;
 import java.util.Random;
 
 public class Food extends Circle {
-    private static final float BASE_ENERGY_TARGET = 60;
+    private static final float BASE_ENERGY_TARGET = 100;
     private static final float BASE_ENERGY_TARGET_STD = 10f;
-    private static final float RADIUS_PER_ENERGY_SQRT = 2f;
+    private static final float RADIUS_PER_ENERGY_SQRT = 1.5f;
+    private static final float GROW_RATE = 2f;
     private float targetEnergy;
 
 
@@ -48,7 +49,7 @@ public class Food extends Circle {
     @Override
     public void move(float dt, PhysicsObject parent) {
         if (!removeQueued) {
-            energy += Math.tanh(targetEnergy - energy) * dt;
+            energy += Math.tanh(targetEnergy - energy) * dt * GROW_RATE;
             radius = energyToRadius(energy);
             super.move(dt, parent);
         }
