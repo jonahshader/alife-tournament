@@ -2,6 +2,7 @@ package com.csi4999.systems.physics;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Rectangle;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.creature.Creature;
 import jdk.vm.ci.meta.Constant;
@@ -145,6 +146,19 @@ public class PhysicsEngine {
         drawLock.unlock();
     }
 
+    public void removeOutsideOfRectangle(Rectangle rectangle) {
+        for (PhysicsObject o : objects) {
+            if (!rectangle.contains(o.position)) o.queueRemoval();
+        }
+
+        // handle removal of things
+        renderBoundsLock.lock();
+        colliders.removeIf(c -> c.removeQueued);
+        renderBoundsLock.unlock();
+        drawLock.lock();
+        objects.removeIf(c -> c.removeQueued);
+        drawLock.unlock();
+    }
 
     public Creature getCreature(int x, int y) {
         renderBoundsLock.lock();

@@ -23,7 +23,7 @@ public class CreatureSpawner {
     }
 
     public void run(PhysicsEngine engine, Random rand, float mutateAmount) {
-        creatures.removeIf(c -> c.removeQueued);
+        handleRemoval();
         List<Creature> newCreatures = new ArrayList<>();
         for (Creature c : creatures) {
             List<Creature> newOffspring = c.getNewOffspring(engine, rand, mutateAmount);
@@ -32,6 +32,10 @@ public class CreatureSpawner {
             }
         }
         creatures.addAll(newCreatures);
+    }
+
+    public void handleRemoval() {
+        creatures.removeIf(c -> c.removeQueued);
     }
 
     public int getCreatureCount() {

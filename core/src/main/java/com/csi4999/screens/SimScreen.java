@@ -29,7 +29,7 @@ public class SimScreen implements Screen, InputProcessor {
     private ToolBar toolBar;
     private CreatureHud creatureHud;
     private StatsHud statsHud;
-    private ChunkSelector chunkSelector;
+    public ChunkSelector chunkSelector;
 
     private Thread simThread;
 
@@ -46,7 +46,7 @@ public class SimScreen implements Screen, InputProcessor {
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
         creatureHud = new CreatureHud(app.batch, worldCam, app, env);
         statsHud = new StatsHud(env.creatureSpawner, env.foodSpawner);
-        chunkSelector = new ChunkSelector(worldViewport, worldCam, env);
+        chunkSelector = new ChunkSelector(worldViewport, worldCam, this);
         chunkSelector.activate();
 
         toolBar = new ToolBar(app.batch, this);

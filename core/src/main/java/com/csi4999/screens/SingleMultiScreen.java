@@ -79,7 +79,7 @@ public class SingleMultiScreen implements Screen {
         onlineButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.switchTo(new ConnectScreen(app));
+                ScreenStack.push(new ConnectScreen(app));
             }
         });
 

@@ -21,10 +21,14 @@ public class FoodSpawner {
     }
 
     public void run(Random r, PhysicsEngine physics) {
-        food.removeIf(f -> f.removeQueued);
+        handleRemoval();
         if (food.size() < properties.minFood) {
             addRandomFood(r, physics, false);
         }
+    }
+
+    public void handleRemoval() {
+        food.removeIf(f -> f.removeQueued);
     }
 
     public float getAllFoodEnergy() {

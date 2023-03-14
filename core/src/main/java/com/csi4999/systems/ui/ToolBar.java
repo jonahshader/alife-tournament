@@ -55,6 +55,7 @@ public class ToolBar implements InputProcessor, Disposable {
         mainTable.align(Align.center);
 
         TextButton saveButton = new TextButton("Save", skin);
+        TextButton tournamentButton = new TextButton("Tournament", skin);
         TextButton pauseButton = new TextButton("Pause", skin);
         TextButton noDrawButton = new TextButton("No Render", skin);
         TextButton limitSpeedButton = new TextButton("Unlock Speed", skin);
@@ -73,8 +74,17 @@ public class ToolBar implements InputProcessor, Disposable {
                sim.playing = false;
                pauseButton.setText("Play");
                pauseButton.setChecked(true);
-               ScreenStack.push(new NameDescriptionScreen(sim.app, "Save Environment", "Save", c));
+
            }
+        });
+        tournamentButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                sim.playing = false;
+                pauseButton.setText("Play");
+                pauseButton.setChecked(true);
+                sim.chunkSelector.activate();
+            }
         });
         pauseButton.addListener(new ClickListener(){
             @Override
@@ -113,9 +123,10 @@ public class ToolBar implements InputProcessor, Disposable {
         });
 
         int w = 105;
-        int pad = 4;
+        int pad = 2;
         mainTable.row().center();
         mainTable.add(saveButton).fill().width(w).pad(pad);
+        mainTable.add(tournamentButton).fill().width(w).pad(pad);
         mainTable.add(pauseButton).fill().width(w).pad(pad);
         mainTable.add(noDrawButton).fill().width(w).pad(pad);
         mainTable.add(limitSpeedButton).fill().width(w).pad(pad);
