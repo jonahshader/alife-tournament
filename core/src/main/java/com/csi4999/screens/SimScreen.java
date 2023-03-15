@@ -32,10 +32,10 @@ public class SimScreen implements Screen, InputProcessor {
 
     private Thread simThread;
 
-    public SimScreen(ALifeApp app, UserAccountPacket user) {
+    public SimScreen(ALifeApp app, UserAccountPacket user, EnvProperties properties) {
         this.app = app;
         this.user = user;
-        this.env = new Environment(EnvProperties.makeTestDefault());
+        this.env = new Environment(properties);
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
