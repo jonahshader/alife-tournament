@@ -20,10 +20,11 @@ public class Database {
     private static final String environmentPath = serverPath + "/environment_table.sql";
 
     private static final String tournamentPath = serverPath + "/tournament_table.sql";
+    private static final String chunkPath = serverPath + "/chunk_table.sql";
 
     private static final String ctBridgePath = serverPath + "/ctBridge_table.sql";
 
-    private static final String leaderboardPath = serverPath + "/leaderboard.sql";
+
 
     public Connection con;
 
@@ -51,16 +52,16 @@ public class Database {
         String createCreatureTable;
         String createEnvironmentTable;
         String createTournamentTable;
+        String createChunkTable;
         String createBridgeTable;
-        String createLeaderboard;
 
         try {
             createUserTable = new String(Files.readAllBytes(Paths.get(userPath)));
             createCreatureTable = new String(Files.readAllBytes(Paths.get(creaturePath)));
             createEnvironmentTable = new String(Files.readAllBytes(Paths.get(environmentPath)));
             createTournamentTable = new String(Files.readAllBytes(Paths.get(tournamentPath)));
+            createChunkTable = new String(Files.readAllBytes(Paths.get(chunkPath)));
             createBridgeTable = new String(Files.readAllBytes(Paths.get(ctBridgePath)));
-            createLeaderboard = new String(Files.readAllBytes(Paths.get(leaderboardPath)));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -72,8 +73,8 @@ public class Database {
             statement.execute(createCreatureTable);
             statement.execute(createEnvironmentTable);
             statement.execute(createTournamentTable);
+            statement.execute(createChunkTable);
             statement.execute(createBridgeTable);
-            statement.execute(createLeaderboard);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

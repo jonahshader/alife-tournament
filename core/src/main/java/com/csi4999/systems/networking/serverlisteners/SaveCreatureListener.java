@@ -22,7 +22,7 @@ public class SaveCreatureListener implements Listener {
     private Kryo k;
     private Database db;
 
-    private final String saveCreatureQuery = "INSERT INTO creature (wins,losses,user_id) VALUES(?,?,?);";
+    private final String saveCreatureQuery = "INSERT INTO creature (user_id) VALUES(?);";
     private final String creatureListQuery = "SELECT * FROM creature;";
 
     public SaveCreatureListener(Database db, Kryo k) {
@@ -57,9 +57,7 @@ public class SaveCreatureListener implements Listener {
 
     private void saveNewCreature(Creature c) {
         try (PreparedStatement s = db.con.prepareStatement(saveCreatureQuery, new String[] {"creature_id"})) {
-            s.setInt(1,0);
-            s.setInt(2,0);
-            s.setLong(3, c.userID);
+            s.setLong(1, c.userID);
             s.executeUpdate();
 
             ResultSet keys = s.getGeneratedKeys();
