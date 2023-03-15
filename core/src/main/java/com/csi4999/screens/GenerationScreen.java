@@ -91,7 +91,7 @@ public class GenerationScreen implements Screen {
 
         mutationRateSlider.addListener(event -> {
             float mutationRate = mutationRateSlider.getValue();
-            properties.mutationRate = mutationRate;
+            properties.globalMutationRate = mutationRate;
             mutationRateValueLabel.setText(String.valueOf(((int)(mutationRate * 100))/ 100f));
             return false;
         });
