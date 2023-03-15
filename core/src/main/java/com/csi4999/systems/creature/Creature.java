@@ -32,12 +32,14 @@ public class Creature extends Circle implements Mutable {
 
     private static final float COLOR_CHANGE_VELOCITY = 8f; // units per second
 
-    private static final int MISC_INPUTS = 9;
+    private static final int MISC_INPUTS = 5;
     private static final int MISC_OUTPUTS = 1;
     private static final float BASE_MAX_ENERGY_SCALAR = 1.5f;
     private static final float BASE_ENERGY = 50f;
     private static final float REPLICATE_DELAY = 3f;
     private static final int REPLICATE_AMOUNT = 2;
+    private static final float REPLICATE_COST = 1;
+    private static final float COMPONENT_ENERGY_CONSUMPTION_SCALAR = 0.8f;
 
     private float health;
     public float energy;
@@ -52,7 +54,6 @@ public class Creature extends Circle implements Mutable {
     private float[] inputs;
 
     private Vector2 rotatedVelocity = new Vector2();
-    private Vector2 positionNormed = new Vector2();
 
     //Creature Data for user
     public long userID;
@@ -156,16 +157,12 @@ public class Creature extends Circle implements Mutable {
         }
         inputs[inputIndex++] = energy / BASE_ENERGY;
         inputs[inputIndex++] = collidingWithFood ? 1 : -1;
-        inputs[inputIndex++] = (float) Math.cos(rotationDegrees * Math.PI / 180);
-        inputs[inputIndex++] = (float) Math.sin(rotationDegrees * Math.PI / 180);
+//        inputs[inputIndex++] = (float) Math.cos(rotationDegrees * Math.PI / 180);
+//        inputs[inputIndex++] = (float) Math.sin(rotationDegrees * Math.PI / 180);
         rotatedVelocity.set(velocity).rotateDeg(-rotationDegrees);
         inputs[inputIndex++] = (float) Math.tanh(rotatedVelocity.x / 10);
         inputs[inputIndex++] = (float) Math.tanh(rotatedVelocity.y / 10);
         inputs[inputIndex++] = (float) Math.tanh(rotationalVel / 100);
-
-        positionNormed.set(position).nor();
-        inputs[inputIndex++] = positionNormed.x;
-        inputs[inputIndex++] = positionNormed.y;
 
 
         // run brain with inputs
@@ -189,7 +186,7 @@ public class Creature extends Circle implements Mutable {
         for (Tool t : tools) energyLoss += t.getEnergyConsumption();
         for (Sensor s : sensors) energyLoss += s.getEnergyConsumption();
         energyLoss += brain.getEnergyConsumption();
-        energy -= energyLoss * dt;
+        energy -= energyLoss * dt * COMPONENT_ENERGY_CONSUMPTION_SCALAR;
         if (energy < 0) {
             energy = 0;
             queueRemoval();
@@ -240,6 +237,7 @@ public class Creature extends Circle implements Mutable {
             // create offspring
             List<Creature> offspring = new ArrayList<>(REPLICATE_AMOUNT);
             energy /= (1 + REPLICATE_AMOUNT); // divide energy equally. offsprings will inherit this
+            energy -= REPLICATE_COST;
             for (int i = 0; i < REPLICATE_AMOUNT; i++) {
                 Creature newCreature = new Creature(this, engine);
                 if (mutateAmount > 0)
@@ -270,27 +268,7 @@ public class Creature extends Circle implements Mutable {
         return (scale.x + 1) / 2;
     }
 
-    // TODO: unit test
-    /**
-     * takes a step towards desired from current, changing at most 'rate'
-     * @param current - the current value we want to move
-     * @param desired - the value we want to move towards
-     * @param rate - the amount to change desired by to move towards current
-     * @return - the moved value
-     */
-    private float towardsValue(float current, float desired, float rate) {
-        if (desired > current + rate) {
-            current += rate;
-        } else if (desired > current) {
-            current = desired;
-        } else if (desired < current - rate) {
-            current -= rate;
-        } else if (desired < current) {
-            current = desired;
-        }
 
-        return current;
-    }
 
     public void takeDamage(float damageAmount) {
         health -= damageAmount;

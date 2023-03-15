@@ -3,19 +3,11 @@ package com.csi4999.systems.environment;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.RandomXS128;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.Rectangle;
 import com.csi4999.systems.creature.Creature;
-import com.csi4999.systems.creature.SensorBuilder;
-import com.csi4999.systems.creature.ToolBuilder;
-import com.csi4999.systems.creature.sensors.EyeBuilder;
-import com.csi4999.systems.creature.tools.FlagellaBuilder;
-import com.csi4999.systems.creature.tools.HornBuilder;
-import com.csi4999.systems.creature.tools.MouthBuilder;
 import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 public class Environment {
@@ -23,7 +15,7 @@ public class Environment {
     PhysicsEngine physics;
     Random r;
 
-    FoodSpawner foodSpawner;
+    public FoodSpawner foodSpawner;
     public CreatureSpawner creatureSpawner;
 
     private EnvProperties properties;
@@ -51,9 +43,15 @@ public class Environment {
 //        physics.renderBounds(drawer);
     }
 
+    public void removeOutsideOfRectangle(Rectangle rectangle) {
+        physics.removeOutsideOfRectangle(rectangle);
+        foodSpawner.handleRemoval();
+        creatureSpawner.handleRemoval();
+    }
+
     public synchronized void update() {
         physics.run(dt);
-        creatureSpawner.run(physics, r, properties.mutationRate);
+        creatureSpawner.run(physics, r, properties.globalMutationRate);
         foodSpawner.run(r, physics);
     }
     public Creature getCreature(int x, int y) {

@@ -19,7 +19,6 @@ import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.networking.GameClient;
 import com.csi4999.systems.networking.clientListeners.DescriptionListener;
 import com.csi4999.systems.networking.packets.RequestSavedEntityDataPacket;
-import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.esotericsoftware.kryonet.Client;
 import jdk.javadoc.internal.doclint.Env;
 
@@ -39,7 +38,7 @@ public class MainMenuScreen implements Screen {
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
-        titleFont = CustomAssetManager.getInstance().manager.get(UI_FONT);
+        titleFont = CustomAssetManager.getInstance().manager.get(TITLE_FONT);
         titleFontColor = new Color(1f, 1f, 1f, 1f);
 
         menuCam = new OrthographicCamera();
@@ -49,11 +48,11 @@ public class MainMenuScreen implements Screen {
         menuCam.update();
 
         stage = new Stage(menuViewport, app.batch);
-        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         // Main table that holds the title label at the top and a buttons table at the bottom
         Table mainTable = new Table();
         Table buttonsTable = new Table();

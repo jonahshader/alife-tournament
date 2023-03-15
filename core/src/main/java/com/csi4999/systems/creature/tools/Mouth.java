@@ -16,7 +16,7 @@ public class Mouth extends Circle implements Tool {
     private static final float ENERGY_CONSUMPTION_DYNAMIC = 0.3f; // units per strength squared per second
     private static final float ENERGY_CONSUMPTION_STATIC = 0.03f; // units per second
     private static final float MUTATE_ROTATION_STD = 1f;
-    private static final float MAX_CONSUME_RATE = 30f;
+    private static final float MAX_CONSUME_RATE = 15f;
 
     private Creature parent;
     private MouthPart left, right;

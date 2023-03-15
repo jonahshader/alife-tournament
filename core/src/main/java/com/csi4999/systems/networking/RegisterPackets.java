@@ -9,10 +9,7 @@ import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.Eye;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
 import com.csi4999.systems.creature.tools.*;
-import com.csi4999.systems.environment.CreatureSpawner;
-import com.csi4999.systems.environment.Environment;
-import com.csi4999.systems.environment.Food;
-import com.csi4999.systems.environment.FoodSpawner;
+import com.csi4999.systems.environment.*;
 import com.csi4999.systems.networking.common.Account;
 import com.csi4999.systems.networking.common.SavedCreatureDescription;
 import com.csi4999.systems.networking.common.SavedEnvironmentDescription;
@@ -68,6 +65,7 @@ public class RegisterPackets {
         k.register(RandomXS128.class, new JavaSerializer());
         k.register(EyeBuilder.class);
         k.register(FlagellaBuilder.class);
+        k.register(EnvProperties.class);
 
         // classes for creature save
         k.register(SaveCreaturePacket.class);

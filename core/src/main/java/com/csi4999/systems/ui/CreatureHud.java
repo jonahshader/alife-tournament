@@ -183,21 +183,17 @@ public class CreatureHud implements InputProcessor, Screen {
     public void dispose() {stage.dispose();}
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.MIDDLE) {
+        if (button == Input.Buttons.RIGHT) {
             Vector3 pos = worldCam.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
             assignCreature(env.getCreature((int) pos.x, (int) pos.y));
             return true;
-        } else if (button == Input.Buttons.LEFT) {
+        } else if (button == Input.Buttons.MIDDLE) {
             unassignCreature();
         }
         return false;
     }
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE) {
-            unassignCreature();
-            return true;
-        }
         return false;
     }
     @Override

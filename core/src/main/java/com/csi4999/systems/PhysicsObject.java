@@ -32,8 +32,6 @@ public abstract class PhysicsObject {
 
     public boolean removeQueued;
 
-
-
     public Affine2 worldTransform;
 
     private List<PhysicsObject> children;
@@ -67,7 +65,6 @@ public abstract class PhysicsObject {
     }
 
     public void draw(Batch batch, ShapeDrawer shapeDrawer, Camera cam, float parentAlpha) {
-
         if (cam.frustum.pointInFrustum(transformedPos)) {
             applyTransform(batch, computedTransform);
             // draw this
@@ -126,7 +123,7 @@ public abstract class PhysicsObject {
     }
 
     // assumes the parent's worldTransform is accurate
-    private Matrix4 computeTransform(PhysicsObject parent) {
+    protected Matrix4 computeTransform(PhysicsObject parent) {
         worldTransform.setToTrnRotScl(position, rotationDegrees, scale);
         if (parent != null)
             worldTransform.preMul(parent.worldTransform);

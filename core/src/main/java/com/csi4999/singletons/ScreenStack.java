@@ -1,5 +1,7 @@
 package com.csi4999.singletons;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.csi4999.ALifeApp;
 
@@ -23,7 +25,8 @@ public class ScreenStack {
     }
 
     public static void switchTo(Screen screen) {
-        stack.pop().dispose();
+        if (!stack.isEmpty())
+            stack.pop().dispose();
         stack.push(screen);
         app.setScreen(screen);
     }
