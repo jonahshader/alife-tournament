@@ -151,43 +151,43 @@ public class SaveTestingScreen implements Screen {
             }
         });
 
-//        createAndSaveCreatureButton.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                Client client = GameClient.getInstance().client;
-//                Creature creature = new Creature(new Vector2((float) r.nextGaussian(0f, 512f), (float) r.nextGaussian(0f, 512f)),
-//                    sensorBuilders, toolBuilders, 4, 4, new PhysicsEngine(), r);
-//                creature.userID=1;
-//                client.sendTCP(new SaveCreaturePacket(creature));
-//
-//            }
-//        });
-//
-//        updateCreatureButton.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                Client client = GameClient.getInstance().client;
-//                Creature creature = new Creature(new Vector2((float) r.nextGaussian(0f, 512f), (float) r.nextGaussian(0f, 512f)),
-//                    sensorBuilders, toolBuilders, 4, 4, new PhysicsEngine(), r);
-//                creature.userID=1;
-//                creature.creatureID = 1;
-//                client.sendTCP(new SaveCreaturePacket(creature));
-//
-//            }
-//        });
-//
-//        bogusCreatureButton.addListener(new ClickListener(){
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                Client client = GameClient.getInstance().client;
-//                Creature creature = new Creature(new Vector2((float) r.nextGaussian(0f, 512f), (float) r.nextGaussian(0f, 512f)),
-//                    sensorBuilders, toolBuilders, 4, 4, new PhysicsEngine(), r);
-//                creature.userID=1;
-//                creature.creatureID = 1234;
-//                client.sendTCP(new SaveCreaturePacket(creature));
-//
-//            }
-//        });
+        createAndSaveCreatureButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                Creature creature = new Creature(new Vector2((float) r.nextGaussian(0f, 512f), (float) r.nextGaussian(0f, 512f)),
+                    sensorBuilders, toolBuilders, 4, 4, new PhysicsEngine(), r);
+                creature.userID=1;
+                client.sendTCP(new SaveCreaturePacket(creature));
+
+            }
+        });
+
+        updateCreatureButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                Creature creature = new Creature(new Vector2((float) r.nextGaussian(0f, 512f), (float) r.nextGaussian(0f, 512f)),
+                    sensorBuilders, toolBuilders, 4, 4, new PhysicsEngine(), r);
+                creature.userID=1;
+                creature.creatureID = 1;
+                client.sendTCP(new SaveCreaturePacket(creature));
+
+            }
+        });
+
+        bogusCreatureButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Client client = GameClient.getInstance().client;
+                Creature creature = new Creature(new Vector2((float) r.nextGaussian(0f, 512f), (float) r.nextGaussian(0f, 512f)),
+                    sensorBuilders, toolBuilders, 4, 4, new PhysicsEngine(), r);
+                creature.userID=1;
+                creature.creatureID = 1234;
+                client.sendTCP(new SaveCreaturePacket(creature));
+
+            }
+        });
 
         updateAccountButton.addListener(new ClickListener(){
             @Override

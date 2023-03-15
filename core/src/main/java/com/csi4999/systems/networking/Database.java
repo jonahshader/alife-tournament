@@ -96,6 +96,8 @@ public class Database {
                 return "UserAccount";
             case ENVIRONMENT:
                 return "Environment";
+            case CHUNK:
+                return "Chunk";
             default:
                 throw new IllegalStateException("Unexpected value: " + type);
         }

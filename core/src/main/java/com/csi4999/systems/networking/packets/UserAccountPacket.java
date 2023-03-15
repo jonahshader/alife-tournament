@@ -20,8 +20,8 @@ public class UserAccountPacket {
     public long numberOfTools;
     public long numberOfSensors;
 
-    public long performance;
-    public long confidence;
+    public float wins;
+    public float confidence;
 
     public UserAccountPacket(){} // empty constructor for Kryo
 
@@ -34,7 +34,7 @@ public class UserAccountPacket {
         // are these just the length of the list ?
         this.numberOfTools = numberOfTools;
         this.numberOfSensors = numberOfSensors;
-        this.performance = 0;
+        this.wins = 0;
         this.confidence = 0;
     }
 
