@@ -2,11 +2,8 @@ package com.csi4999.systems.creature.sensors;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.CustomGraphics;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.creature.Sensor;
@@ -18,20 +15,18 @@ import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Random;
 
-import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
-import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
+import static com.csi4999.systems.CustomMath.towardsValue;
 
 public class Eye extends LineSegment implements Sensor {
-    private float[] visionData;
+    private float[] visionData, baselineVisionData;
     private static final float MUTATE_POS_STD = 0.5f;
     private static final float MUTATE_LENGTH_STD = 0.5f;
     private static final float MUTATE_ROTATION_STD = 1f;
 
     private static final float ENERGY_CONSUMPTION = 0.025f; // energy per second
+    private static final float EYE_DECAY = 0.05f;
 
     private Color colorTransparent;
     private Collider parent;
@@ -43,9 +38,9 @@ public class Eye extends LineSegment implements Sensor {
         lastHitDist = e.lastHitDist;
         position.set(e.position);
         visionData = e.visionData.clone(); // clone is shallow but its fine because its floats
+        baselineVisionData = e.baselineVisionData.clone();
         colorTransparent = new Color(e.colorTransparent);
         rotationDegrees = e.rotationDegrees;
-
     }
 
     public Eye() {} //Kryo
@@ -58,6 +53,7 @@ public class Eye extends LineSegment implements Sensor {
         position.set(pos);
         // similarity score, isFood, distance
         visionData = new float[] {-1f, 0f, 0f};
+        baselineVisionData = new float[] {-1f, 0f, 0f};
         colorTransparent = new Color();
     }
 
@@ -128,12 +124,18 @@ public class Eye extends LineSegment implements Sensor {
             visionData[2] = (lineLength - visionData[2]) / lineLength;
 
             // Line changes to color of seen object
-            this.color.set(nearest.color);
+            color.set(nearest.color);
         } else {
-            Arrays.fill(visionData, 0f);
-            visionData[0] = -1f; // similarity defaults to 0
+            // move towards baselineVisionData
+            for (int i = 0; i < visionData.length; i++) {
+                visionData[i] = towardsValue(visionData[i], baselineVisionData[i], EYE_DECAY);
+            }
+            // also move colors towards white
+            color.r = towardsValue(color.r, 1f, EYE_DECAY);
+            color.g = towardsValue(color.g, 1f, EYE_DECAY);
+            color.b = towardsValue(color.b, 1f, EYE_DECAY);
+
             lastHitDist = lineLength;
-            this.color.set(1f, 1f, 1f, 1f);
         }
     }
 

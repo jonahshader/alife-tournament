@@ -14,7 +14,8 @@ public final class CustomAssetManager {
     public static final String SPRITE_PACK = "graphics/sprites.atlas";
 
     // Fonts
-    public static final String UI_FONT = "ui/neutralizer/raw/font-title-export.fnt";
+    public static final String TITLE_FONT = "ui/neutralizer/raw/font-title-export.fnt";
+    public static final String UI_FONT = "ui/neutralizer/raw/font-export.fnt";
 
     // Skins
     public static final String SKIN_MAIN = "ui/neutralizer/skin/neutralizer-ui.json";
@@ -28,6 +29,7 @@ public final class CustomAssetManager {
     }
 
     public void loadFonts() {
+        manager.load(TITLE_FONT, BitmapFont.class);
         manager.load(UI_FONT, BitmapFont.class);
     }
 
