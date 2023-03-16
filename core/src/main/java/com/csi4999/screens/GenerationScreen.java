@@ -64,27 +64,34 @@ public class GenerationScreen implements Screen {
         exitButton.setColor(1f, 0f, 0f, 1f);
 
         Slider mutationRateSlider = new Slider(0, 4, 0.1f, false, skin);
+        mutationRateSlider.setValue(properties.globalMutationRate);
         Label mutationRateLabel = new Label("Mutation Rate", skin);
-        Label mutationRateValueLabel = new Label("0", skin);
+        Label mutationRateValueLabel = new Label(String.valueOf(properties.globalMutationRate), skin);
 
-
-        Slider initialCreaturesSlider = new Slider(0, 1000, 1f, false, skin);
+        Slider initialCreaturesSlider = new Slider(0, 1000, 1, false, skin);
+        initialCreaturesSlider.setValue(properties.initialCreatures);
         Label initialCreaturesLabel = new Label("Initial Population", skin);
-        Label initialCreaturesValueLabel = new Label("0", skin);
+        Label initialCreaturesValueLabel = new Label(String.valueOf(properties.initialCreatures), skin);
 
-        Slider initialFoodSlider = new Slider(0, 10000, 1f, false, skin);
+        Slider initialFoodSlider = new Slider(0, 10000, 1, false, skin);
+        initialFoodSlider.setValue(properties.initialFood);
         Label initialFoodLabel = new Label("Initial Food", skin);
-        Label initialFoodValueLabel = new Label("0", skin);
-        Slider foodDeviationSlider = new Slider(0, 1024, 1f, false, skin);
+        Label initialFoodValueLabel = new Label(String.valueOf(properties.initialFood), skin);
+
+        Slider foodDeviationSlider = new Slider(0, 8192, 1, false, skin);
+        foodDeviationSlider.setValue(properties.foodSpawnStd);
         Label foodDeviationLabel = new Label("Food Deviation", skin);
-        Label foodDeviationValueLabel = new Label("0", skin);
+        Label foodDeviationValueLabel = new Label(String.valueOf(properties.foodSpawnStd), skin);
 
         Slider sensorSlider = new Slider(0, 24, 1, false, skin);
+        sensorSlider.setValue(properties.maxSensors);
         Label sensorLabel = new Label("Max Sensors", skin);
-        Label sensorValueLabel = new Label("0", skin);
+        Label sensorValueLabel = new Label(String.valueOf(properties.maxSensors), skin);
+
         Slider toolSlider = new Slider(0, 24, 1, false, skin);
+        toolSlider.setValue(properties.maxTools);
         Label toolLabel = new Label("Max Tools", skin);
-        Label toolValueLabel = new Label("0", skin);
+        Label toolValueLabel = new Label(String.valueOf(properties.maxTools), skin);
 
 
         // Select which components can be used here too?
