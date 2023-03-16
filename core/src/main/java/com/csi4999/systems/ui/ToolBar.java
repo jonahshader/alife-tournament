@@ -74,7 +74,7 @@ public class ToolBar implements InputProcessor, Disposable {
                sim.playing = false;
                pauseButton.setText("Play");
                pauseButton.setChecked(true);
-
+               ScreenStack.push(new NameDescriptionScreen(sim.app, "Save Environment", "Save", c));
            }
         });
         tournamentButton.addListener(new ClickListener() {
