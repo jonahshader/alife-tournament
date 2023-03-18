@@ -2,14 +2,12 @@ package com.csi4999.systems.creature;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.csi4999.singletons.CustomGraphics;
 import com.csi4999.systems.Mutable;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.ai.Brain;
 import com.csi4999.systems.ai.SparseBrain;
-import com.csi4999.systems.creature.sensors.Eye;
 import com.csi4999.systems.environment.Food;
 import com.csi4999.systems.physics.Circle;
 import com.csi4999.systems.physics.Collider;
@@ -17,7 +15,6 @@ import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -29,8 +26,6 @@ public class Creature extends Circle implements Mutable {
     private static final float BASE_MAX_ACCEL = 10f; // units per second. meters?
     private static final float DRAG = 3f; // accel per velocity
     private static final float ANGULAR_DRAG = 25f; // accel per velocity (degrees)
-
-    private static final float COLOR_CHANGE_VELOCITY = 8f; // units per second
 
     private static final int MISC_INPUTS = 5;
     private static final int MISC_OUTPUTS = 1;
