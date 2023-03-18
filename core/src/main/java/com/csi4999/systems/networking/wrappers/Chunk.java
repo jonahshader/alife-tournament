@@ -7,15 +7,12 @@ import com.csi4999.systems.environment.Environment;
  */
 public class Chunk {
 
-    public long userID; //db key user
-    public long creatureID; //db key creature
+    public long chunkID;
     public Environment environment;
 
     public Chunk() {} // empty constructor for Kryo
 
-    public Chunk(long userID, long creatureID, Environment environment) {
-        this.userID = userID;
-        this.creatureID = creatureID;
+    public Chunk(Environment environment) {
         this.environment = environment;
     }
 }

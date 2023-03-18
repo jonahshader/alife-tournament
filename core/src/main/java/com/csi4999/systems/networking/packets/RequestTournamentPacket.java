@@ -7,10 +7,13 @@ import com.csi4999.systems.networking.wrappers.Chunk;
  */
 public class RequestTournamentPacket {
     public Chunk chunk;
+    public long difficulty;
 
     public  RequestTournamentPacket(){} // empty constructor for Kryo
 
-    public  RequestTournamentPacket(Chunk chunk) {
+    public  RequestTournamentPacket(Chunk chunk, long difficulty) {
+
         this.chunk = chunk;
+        this.difficulty = difficulty;
     }
 }
