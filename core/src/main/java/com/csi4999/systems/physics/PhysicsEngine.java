@@ -3,6 +3,7 @@ package com.csi4999.systems.physics;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.creature.Creature;
 import jdk.vm.ci.meta.Constant;
@@ -46,6 +47,11 @@ public class PhysicsEngine {
         drawLock.lock();
         objects.removeIf(c -> c.removeQueued);
         drawLock.unlock();
+    }
+
+    public void merge(PhysicsEngine toMerge) {
+        colliders.addAll(toMerge.colliders);
+        objects.addAll(toMerge.objects);
     }
 
     private void runCollision() {
@@ -144,6 +150,11 @@ public class PhysicsEngine {
         drawLock.lock();
         objects.add(o);
         drawLock.unlock();
+    }
+
+    public void shiftObjects(Vector2 shift) {
+        for (PhysicsObject o : objects)
+            o.position.add(shift);
     }
 
     public void removeOutsideOfRectangle(Rectangle rectangle) {

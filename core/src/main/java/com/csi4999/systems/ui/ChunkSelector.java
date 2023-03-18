@@ -24,7 +24,7 @@ import static com.csi4999.systems.networking.GameClient.BUFFER_SIZE;
 
 public class ChunkSelector implements InputProcessor {
     // selects a chunk from an environment, so use the world viewport/cam
-    private static final int CHUNK_SIZE = 256;
+    public static final int CHUNK_SIZE = 256;
 
     private Viewport viewport;
     private Camera cam;
@@ -89,15 +89,18 @@ public class ChunkSelector implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (active && button == Input.Buttons.LEFT) {
-            // TODO: clone env, delete everything outside of rectangle, transpose everything so that bottom left is origin
-//            Environment newEnv = GameClient.getInstance().client.getKryo()
             Output o = new Output(BUFFER_SIZE);
             GameClient.getInstance().client.getKryo().writeClassAndObject(o, sim.env);
 
+            // dumb logic to clone environment. can't use the copy function because the serializers behave differently
             ByteBufferInput i = new ByteBufferInput(o.getBuffer());
             Environment newEnv = (Environment) GameClient.getInstance().client.getKryo().readClassAndObject(i);
             Vector2 worldPos = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
             newEnv.removeOutsideOfRectangle(new Rectangle(worldPos.x - CHUNK_SIZE/2, worldPos.y - CHUNK_SIZE/2, CHUNK_SIZE, CHUNK_SIZE));
+            newEnv.physics.shiftObjects(worldPos.scl(-1f));
+            newEnv.update();
+
+            // TODO: send packet
             sim.env = newEnv;
             i.close();
             o.close();
