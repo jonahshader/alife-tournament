@@ -7,7 +7,7 @@ import java.util.List;
 public class TournamentResultsPacket {
 
 
-    List<ChunkPerformance> performances;
+    public List<ChunkPerformance> performances;
 
     public TournamentResultsPacket(){}
 

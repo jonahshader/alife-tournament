@@ -11,9 +11,11 @@ import com.csi4999.systems.creature.sensors.EyeBuilder;
 import com.csi4999.systems.creature.tools.*;
 import com.csi4999.systems.environment.*;
 import com.csi4999.systems.networking.common.Account;
+import com.csi4999.systems.networking.common.ChunkPerformance;
 import com.csi4999.systems.networking.common.SavedCreatureDescription;
 import com.csi4999.systems.networking.common.SavedEnvironmentDescription;
 import com.csi4999.systems.networking.packets.*;
+import com.csi4999.systems.networking.wrappers.Chunk;
 import com.csi4999.systems.physics.PhysicsEngine;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.serializers.JavaSerializer;
@@ -76,6 +78,15 @@ public class RegisterPackets {
         k.register(SavedEntityDataPacket.class);
         k.register(SavedCreatureDescription.class);
         k.register(RequestEnvironmentPacket.class);
+
+
+        //classes for tournament creation
+        k.register(RequestTournamentPacket.class);
+        k.register(TournamentPacket.class);
+        k.register(TournamentResultsPacket.class);
+        k.register(Chunk.class);
+        k.register(ChunkPerformance.class);
+        k.register(TournamentFailPacket.class);
 
     }
 }

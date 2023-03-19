@@ -100,6 +100,8 @@ public class ChunkSelector implements InputProcessor {
             newEnv.physics.shiftObjects(worldPos.scl(-1f));
             newEnv.update();
 
+            newEnv.userID = GameClient.getInstance().user.userID;
+
             // TODO: send packet
             sim.env = newEnv;
             i.close();
