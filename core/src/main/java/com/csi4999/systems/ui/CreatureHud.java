@@ -210,6 +210,7 @@ public class CreatureHud implements InputProcessor, Screen {
     public boolean mouseMoved(int screenX, int screenY) { return false; }
 
     public void assignCreature(Creature c) {
+        if (c == null) return;
         this.c = c;
         myCam.position.set(myCam.viewportWidth/2, myCam.viewportHeight/2, 0);
         show();

@@ -173,7 +173,7 @@ public class PhysicsEngine {
 
     public Creature getCreature(int x, int y) {
         renderBoundsLock.lock();
-        int nearestIndex = 0;
+        int nearestIndex = -1;
         int closest = Integer.MAX_VALUE;
         for (int i = 0; i < objects.size(); i++) {
             if (objects.get(i) instanceof Creature) {
@@ -186,6 +186,9 @@ public class PhysicsEngine {
             }
         }
         renderBoundsLock.unlock();
-        return (Creature) objects.get(nearestIndex);
+        if (nearestIndex >= 0)
+            return (Creature) objects.get(nearestIndex);
+        else
+            return null;
     }
 }

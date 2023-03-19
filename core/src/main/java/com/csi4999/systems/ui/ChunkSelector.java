@@ -12,9 +12,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csi4999.screens.SimScreen;
+import com.csi4999.screens.TournamentWaitScreen;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.GameClient;
+import com.csi4999.systems.networking.packets.RequestTournamentPacket;
+import com.csi4999.systems.networking.wrappers.Chunk;
 import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.Output;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -24,7 +28,7 @@ import static com.csi4999.systems.networking.GameClient.BUFFER_SIZE;
 
 public class ChunkSelector implements InputProcessor {
     // selects a chunk from an environment, so use the world viewport/cam
-    public static final int CHUNK_SIZE = 256;
+    public static final int CHUNK_SIZE = 1024;
 
     private Viewport viewport;
     private Camera cam;
@@ -32,7 +36,6 @@ public class ChunkSelector implements InputProcessor {
     private BitmapFont font;
 
     private boolean active = false;
-    private boolean panning = false;
 
     private float animPhase = 0f;
 
@@ -103,7 +106,10 @@ public class ChunkSelector implements InputProcessor {
             newEnv.userID = GameClient.getInstance().user.userID;
 
             // TODO: send packet
-            sim.env = newEnv;
+            RequestTournamentPacket p = new RequestTournamentPacket(new Chunk(newEnv), 0);
+            ScreenStack.switchTo(new TournamentWaitScreen(sim.app));
+            System.out.println("Sending RequestTournamentPacket to server.");
+            GameClient.getInstance().client.sendTCP(p);
             i.close();
             o.close();
             active = false;

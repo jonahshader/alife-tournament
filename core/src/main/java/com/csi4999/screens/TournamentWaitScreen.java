@@ -11,17 +11,24 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.networking.GameClient;
+import com.csi4999.systems.networking.packets.TournamentPacket;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 
 public class TournamentWaitScreen implements Screen {
+    public static TournamentWaitScreen instance;
     private Skin skin;
     private final OrthographicCamera cam;
     private final FitViewport viewport;
     private final ALifeApp app;
     private Stage stage;
 
+    public volatile TournamentPacket tournamentPacket;
+
     public TournamentWaitScreen(ALifeApp app) {
+        instance = this;
         this.app = app;
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
         cam = new OrthographicCamera();
@@ -48,6 +55,9 @@ public class TournamentWaitScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        if (tournamentPacket != null)
+            ScreenStack.switchTo(new SimScreen(app, GameClient.getInstance().user, tournamentPacket));
+
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 

@@ -1,5 +1,8 @@
 package com.csi4999.systems.networking.serverlisteners;
 
+import com.csi4999.systems.creature.Creature;
+import com.csi4999.systems.environment.EnvProperties;
+import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.Database;
 import com.csi4999.systems.networking.SerializedType;
 import com.csi4999.systems.networking.common.ChunkPerformance;
@@ -143,6 +146,10 @@ public class TournamentListener implements Listener {
         catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
+
+        // assign chunkID to all creatures in chunk
+        for (Creature c : chunk.environment.creatureSpawner.getCreatures())
+            c.chunkID = chunk.chunkID;
 
         db.serializeObject(SerializedType.CHUNK, chunk.chunkID, k, chunk);
     }

@@ -53,6 +53,7 @@ public class Creature extends Circle implements Mutable {
     //Creature Data for user
     public long userID;
     public long creatureID;
+    public long chunkID = -1;
     public String creatureName;
     public String creatureDescription;
 
