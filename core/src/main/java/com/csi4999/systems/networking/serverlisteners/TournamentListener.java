@@ -119,8 +119,8 @@ public class TournamentListener implements Listener {
                 Chunk chunk = (Chunk) db.retrieveSerializedObject(SerializedType.CHUNK, participantID, k);
                 participants.add(chunk);
 
-                for (Creature c : chunk.environment.creatureSpawner.getCreatures())
-                    System.out.println(c.chunkID);
+//                for (Creature c : chunk.environment.creatureSpawner.getCreatures())
+//                    System.out.println(c.chunkID);
             }
 
             return participants;
