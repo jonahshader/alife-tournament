@@ -4,6 +4,7 @@ import com.csi4999.systems.networking.Database;
 import com.csi4999.systems.networking.SerializedType;
 import com.csi4999.systems.networking.packets.RequestTournamentPacket;
 import com.csi4999.systems.networking.packets.TournamentFailPacket;
+import com.csi4999.systems.networking.packets.TournamentResultsPacket;
 import com.csi4999.systems.networking.wrappers.Chunk;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
@@ -24,6 +25,8 @@ public class TournamentListener implements Listener {
 
     private final String SAVE_CHUNK_QUERY = "INSERT INTO chunk(chunk_wins, chunk_confidence, user_id) VALUES (?,?,?);";
     private final String GET_TOURNAMENT_PARTICIPANTS_QUERY = "SELECT chunk_id FROM chunk ORDER BY RANDOM() LIMIT 3;";
+
+    private final String CREATE_TOURNAMENT_QUERY = "INSERT INTO "
 
 
 
@@ -50,8 +53,13 @@ public class TournamentListener implements Listener {
                 c.sendTCP(new TournamentFailPacket());
             }
             else {
-                /* TODO generate tournament packet out of the participants list*/
+                /* TODO generate tournament packet out of the participants list and send to user*/
             }
+        }
+        else if (o instanceof TournamentResultsPacket) {
+            TournamentResultsPacket p = (TournamentResultsPacket) o;
+
+
         }
 
     }
@@ -95,4 +103,8 @@ public class TournamentListener implements Listener {
 
         db.serializeObject(SerializedType.CHUNK, chunk.chunkID, k, chunk);
     }
+
+//    private long addTournament() {
+//
+//    }
 }
