@@ -53,6 +53,7 @@ public class Creature extends Circle implements Mutable {
     //Creature Data for user
     public long userID;
     public long creatureID;
+    public long chunkID = -1;
     public String creatureName;
     public String creatureDescription;
 
@@ -81,6 +82,12 @@ public class Creature extends Circle implements Mutable {
         brain = c.brain.copy();
         inputs = c.inputs.clone();
         replicateTimer = REPLICATE_DELAY;
+
+        userID = c.userID;
+        creatureID = c.creatureID;
+        chunkID = c.chunkID;
+        creatureName = c.creatureName;
+        creatureDescription = c.creatureDescription;
     }
 
     public Creature(Vector2 pos, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders, int initialSensors, int initialTools, PhysicsEngine engine, Random rand) {

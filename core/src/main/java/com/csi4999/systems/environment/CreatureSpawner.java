@@ -60,4 +60,8 @@ public class CreatureSpawner {
         physics.addCollider(c);
         creatures.add(c);
     }
+
+    public List<Creature> getCreatures() {
+        return creatures;
+    }
 }

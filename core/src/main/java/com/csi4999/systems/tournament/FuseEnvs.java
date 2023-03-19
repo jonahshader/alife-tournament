@@ -2,13 +2,14 @@ package com.csi4999.systems.tournament;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.networking.wrappers.Chunk;
 
 import java.util.List;
 
 import static com.csi4999.systems.ui.ChunkSelector.CHUNK_SIZE;
 
 public class FuseEnvs {
-    private static final int CHUNK_SEPARATION = CHUNK_SIZE * 4;
+    private static final int CHUNK_SEPARATION = CHUNK_SIZE * 2;
 
     public static void fuseEnvs(List<Environment> envs, Environment baseEnv) {
         if (envs.size() != 4)

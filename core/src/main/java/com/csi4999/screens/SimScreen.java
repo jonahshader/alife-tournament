@@ -9,7 +9,10 @@ import com.csi4999.ALifeApp;
 import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.networking.packets.TournamentPacket;
+import com.csi4999.systems.networking.packets.TournamentResultsPacket;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
+import com.csi4999.systems.tournament.WinCondition;
 import com.csi4999.systems.ui.*;
 
 public class SimScreen implements Screen, InputProcessor {
@@ -26,15 +29,35 @@ public class SimScreen implements Screen, InputProcessor {
     public volatile boolean playing = true;
 
     public UserAccountPacket user;
-    private ToolBar toolBar;
+    public ToolBar toolBar;
     private CreatureHud creatureHud;
     private StatsHud statsHud;
     public ChunkSelector chunkSelector;
+    private WinCondition winCondition;
+    public TournamentResultsPacket tournamentResults;
+    private DisplayResults displayResults;
+
+    private boolean tournamentMode = false;
 
     private Thread simThread;
 
     public SimScreen(ALifeApp app, UserAccountPacket user) {
         this(app, user, new Environment(EnvProperties.makeTestDefault()));
+    }
+
+    public SimScreen(ALifeApp app, UserAccountPacket user, TournamentPacket tournament) {
+        this.app = app;
+        this.user = user;
+        this.env = tournament.environment;
+
+        worldCam = new OrthographicCamera();
+        worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
+        creatureHud = new CreatureHud(app.batch, worldCam, app, env);
+        statsHud = new StatsHud(env.creatureSpawner, env.foodSpawner);
+        toolBar = new ToolBar(app.batch, this, true);
+        winCondition = new WinCondition(this, tournament.chunkIDs);
+        displayResults = new DisplayResults(this);
+        tournamentMode = true;
     }
 
     public SimScreen(ALifeApp app, UserAccountPacket user, Environment environment) {
@@ -47,19 +70,26 @@ public class SimScreen implements Screen, InputProcessor {
         creatureHud = new CreatureHud(app.batch, worldCam, app, env);
         statsHud = new StatsHud(env.creatureSpawner, env.foodSpawner);
         chunkSelector = new ChunkSelector(worldViewport, worldCam, this);
-        toolBar = new ToolBar(app.batch, this);
+        toolBar = new ToolBar(app.batch, this, false);
+        displayResults = new DisplayResults(this);
     }
 
     private void tryLaunchSimThread() {
         if (simThread == null || !simThread.isAlive()) {
             simThread = new Thread(() -> {
                 while (!limitSpeed && playing) {
-                    env.update();
-                    statsHud.update();
+                    mainLoop();
                 }
             });
             simThread.start();
         }
+    }
+
+    private void mainLoop() {
+        env.update();
+        statsHud.update();
+        if (winCondition != null)
+            winCondition.update();
     }
 
 
@@ -67,8 +97,7 @@ public class SimScreen implements Screen, InputProcessor {
     public void render(float delta) {
         if (playing) {
             if (limitSpeed) {
-                env.update();
-                statsHud.update();
+                mainLoop();
             } else {
                 tryLaunchSimThread();
             }
@@ -95,7 +124,9 @@ public class SimScreen implements Screen, InputProcessor {
         creatureHud.render(delta);
         toolBar.render();
         statsHud.render(app.shapeDrawer);
-        chunkSelector.render(app.shapeDrawer, delta);
+        if (chunkSelector != null)
+            chunkSelector.render(app.shapeDrawer, delta);
+        displayResults.render(app.shapeDrawer);
     }
 
     @Override
@@ -104,6 +135,7 @@ public class SimScreen implements Screen, InputProcessor {
         toolBar.resize(width, height);
         creatureHud.resize(width, height);
         statsHud.resize(width, height);
+        displayResults.resize(width, height);
     }
 
     @Override
@@ -114,7 +146,8 @@ public class SimScreen implements Screen, InputProcessor {
         m.addProcessor(creatureHud.stage);
         m.addProcessor(creatureHud);
         m.addProcessor(new PanCam(worldViewport, worldCam));
-        m.addProcessor(chunkSelector);
+        if (chunkSelector != null)
+            m.addProcessor(chunkSelector);
         m.addProcessor(this);
         Gdx.input.setInputProcessor(m);
     }
