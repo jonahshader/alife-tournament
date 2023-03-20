@@ -45,8 +45,8 @@ public class GenerationScreen implements Screen {
     public GenerationScreen(ALifeApp app) {
         this.app = app;
         this.properties = new EnvProperties();
-        properties.minSensors = 1;
-        properties.minTools = 1;
+        properties.minSensors = 0;
+        properties.minTools = 0;
         properties.maxSensors = (int) GameClient.getInstance().user.numberOfSensors;
         properties.maxTools = (int) GameClient.getInstance().user.numberOfTools;
 
@@ -124,46 +124,71 @@ public class GenerationScreen implements Screen {
         mutationRateSlider.setValue(properties.globalMutationRate);
         Label mutationRateLabel = new Label("Mutation Rate", skin);
         Label mutationRateValueLabel = new Label(String.valueOf(properties.globalMutationRate), skin);
-        mutationRateLabel.setAlignment(Align.top);
+
+        // Min Creatures
+        // Slider max bound might need adjustment
+        Slider minimumCreaturesSlider = new Slider(0, 1000, 1, false, skin);
+        minimumCreaturesSlider.setValue(properties.minCreatures);
+        Label minimumCreaturesLabel = new Label("Minimum Creatures", skin);
+        Label minimumCreaturesValueLabel = new Label(String.valueOf(properties.minCreatures), skin);
 
         // Initial Creatures
         Slider initialCreaturesSlider = new Slider(0, 1000, 1, false, skin);
         initialCreaturesSlider.setValue(properties.initialCreatures);
         Label initialCreaturesLabel = new Label("Initial Population", skin);
         Label initialCreaturesValueLabel = new Label(String.valueOf(properties.initialCreatures), skin);
-        initialCreaturesValueLabel.setAlignment(Align.top);
+
+        // Creature Spread
+        Slider creatureDeviationSlider = new Slider(0, 2048, 1, false, skin);
+        creatureDeviationSlider.setValue(properties.creatureSpawnStd);
+        Label creatureDeviationLabel = new Label("Creature Deviation", skin);
+        Label creatureDeviationValueLabel = new Label(String.valueOf((int) properties.creatureSpawnStd), skin);
 
         // Initial Food
         Slider initialFoodSlider = new Slider(0, 10000, 1, false, skin);
         initialFoodSlider.setValue(properties.initialFood);
         Label initialFoodLabel = new Label("Initial Food", skin);
         Label initialFoodValueLabel = new Label(String.valueOf(properties.initialFood), skin);
-        initialFoodValueLabel.setAlignment(Align.top);
+
+        // Food Target
+        Slider foodTargetSlider = new Slider(0, 600, 1, false, skin);
+        foodTargetSlider.setValue(properties.foodTarget);
+        Label foodTargetLabel = new Label("Food Target", skin);
+        Label foodTargetValueLabel = new Label(String.valueOf(properties.foodTarget), skin);
 
         // Food Spread
         Slider foodDeviationSlider = new Slider(0, 8192, 1, false, skin);
         foodDeviationSlider.setValue(properties.foodSpawnStd);
         Label foodDeviationLabel = new Label("Food Deviation", skin);
-        Label foodDeviationValueLabel = new Label(String.valueOf(properties.foodSpawnStd), skin);
-        foodDeviationValueLabel.setAlignment(Align.top);
+        Label foodDeviationValueLabel = new Label(String.valueOf((int) properties.foodSpawnStd), skin);
 
-        // Sensors
-        Slider sensorSlider = new Slider(properties.minSensors, properties.maxSensors, 1, false, skin);
-        sensorSlider.setValue(properties.maxSensors);
-        Label sensorLabel = new Label("Max Sensors", skin);
-        Label sensorValueLabel = new Label(String.valueOf(properties.maxSensors), skin);
-        sensorValueLabel.setAlignment(Align.top);
+        // Min Sensors
+        Slider minSensorSlider = new Slider(0, properties.maxSensors, 1, false, skin);
+        minSensorSlider.setValue(properties.minSensors);
+        Label minSensorLabel = new Label("Min Sensors", skin);
+        Label minSensorValueLabel = new Label(String.valueOf(properties.minSensors), skin);
 
-        // Tools
-        Slider toolSlider = new Slider(properties.minTools, properties.maxTools, 1, false, skin);
-        toolSlider.setValue(properties.maxTools);
-        Label toolLabel = new Label("Max Tools", skin);
-        Label toolValueLabel = new Label(String.valueOf(properties.maxTools), skin);
+        // Max Sensors
+        Slider maxSensorSlider = new Slider(properties.minSensors, properties.maxSensors, 1, false, skin);
+        maxSensorSlider.setValue(properties.maxSensors);
+        Label maxSensorLabel = new Label("Max Sensors", skin);
+        Label maxSensorValueLabel = new Label(String.valueOf(properties.maxSensors), skin);
+
+        // Min Tools
+        Slider minToolSlider = new Slider(0, properties.maxTools, 1, false, skin);
+        minToolSlider.setValue(properties.minTools);
+        Label minToolLabel = new Label("Min Tools", skin);
+        Label minToolValueLabel = new Label(String.valueOf(properties.minTools), skin);
+
+        // Max Tools
+        Slider maxToolSlider = new Slider(properties.minTools, properties.maxTools, 1, false, skin);
+        maxToolSlider.setValue(properties.maxTools);
+        Label maxToolLabel = new Label("Max Tools", skin);
+        Label maxToolValueLabel = new Label(String.valueOf(properties.maxTools), skin);
 
         // Buttons
         TextButton continueButton = new TextButton("Continue", skin);
-        TextButton exitButton = new TextButton("Exit", skin);
-        exitButton.setColor(1f, 0f, 0f, 1f);
+        TextButton backButton = new TextButton("Go Back", skin);
 
         // Slider listeners
         mutationRateSlider.addListener(event -> {
@@ -172,10 +197,22 @@ public class GenerationScreen implements Screen {
             mutationRateValueLabel.setText(String.valueOf(((int)(mutationRate * 100))/ 100f));
             return false;
         });
+        minimumCreaturesSlider.addListener(event -> {
+            int minCreatures = (int) minimumCreaturesSlider.getValue();
+            properties.minCreatures = minCreatures;
+            minimumCreaturesValueLabel.setText(String.valueOf(minCreatures));
+            return false;
+        });
         initialCreaturesSlider.addListener(event -> {
             int initialCreatures = (int) initialCreaturesSlider.getValue();
             properties.initialCreatures = initialCreatures;
             initialCreaturesValueLabel.setText(String.valueOf(initialCreatures));
+            return false;
+        });
+        creatureDeviationSlider.addListener(event -> {
+            int creatureDeviation = (int) creatureDeviationSlider.getValue();
+            properties.initialCreatures = creatureDeviation;
+            creatureDeviationValueLabel.setText(String.valueOf(creatureDeviation));
             return false;
         });
         initialFoodSlider.addListener(event -> {
@@ -184,22 +221,68 @@ public class GenerationScreen implements Screen {
             initialFoodValueLabel.setText(String.valueOf(initialFood));
             return false;
         });
+        foodTargetSlider.addListener(event -> {
+            int foodTarget = (int) foodTargetSlider.getValue();
+            properties.foodTarget = foodTarget;
+            foodTargetValueLabel.setText(String.valueOf(foodTarget));
+            return false;
+        });
         foodDeviationSlider.addListener(event -> {
             int foodStd = (int) foodDeviationSlider.getValue();
             properties.foodSpawnStd = foodStd;
             foodDeviationValueLabel.setText(String.valueOf(foodStd));
             return false;
         });
-        sensorSlider.addListener(event -> {
-            int maxSensors = (int) sensorSlider.getValue();
-            properties.maxSensors = maxSensors;
-            sensorValueLabel.setText(String.valueOf(maxSensors));
+        minSensorSlider.addListener(event -> {
+            int minSensors = (int) minSensorSlider.getValue();
+
+            if (minSensors > properties.maxSensors) {
+                properties.maxSensors = minSensors;
+                maxSensorValueLabel.setText(String.valueOf(minSensors));
+                maxSensorSlider.setValue(minSensors);
+            }
+
+            properties.minSensors = minSensors;
+            minSensorValueLabel.setText(String.valueOf(minSensors));
             return false;
         });
-        toolSlider.addListener(event -> {
-            int maxTools = (int) toolSlider.getValue();
+        maxSensorSlider.addListener(event -> {
+            int maxSensors = (int) maxSensorSlider.getValue();
+
+            if (maxSensors < properties.minSensors) {
+                properties.minSensors = maxSensors;
+                minSensorValueLabel.setText(String.valueOf(maxSensors));
+                minSensorSlider.setValue(maxSensors);
+            }
+
+            properties.maxSensors = maxSensors;
+            maxSensorValueLabel.setText(String.valueOf(maxSensors));
+            return false;
+        });
+        minToolSlider.addListener(event -> {
+            int minTools = (int) minToolSlider.getValue();
+
+            if (minTools > properties.maxTools) {
+                properties.maxTools = minTools;
+                maxToolValueLabel.setText(String.valueOf(minTools));
+                maxToolSlider.setValue(minTools);
+            }
+
+            properties.minTools = minTools;
+            minToolValueLabel.setText(String.valueOf(minTools));
+            return false;
+        });
+        maxToolSlider.addListener(event -> {
+            int maxTools = (int) maxToolSlider.getValue();
+
+            if (maxTools < properties.minTools) {
+                properties.minTools = maxTools;
+                minToolValueLabel.setText(String.valueOf(maxTools));
+                minToolSlider.setValue(maxTools);
+            }
+
             properties.maxTools = maxTools;
-            toolValueLabel.setText(String.valueOf(maxTools));
+            maxToolValueLabel.setText(String.valueOf(maxTools));
             return false;
         });
 
@@ -257,63 +340,92 @@ public class GenerationScreen implements Screen {
                 ScreenStack.push(new SimScreen(app, GameClient.getInstance().user, properties));
             }
         });
-        exitButton.addListener(new ClickListener(){
+        backButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit();
+                ScreenStack.switchTo(new MainMenuScreen(app));
             }
         });
 
-        float width = 50f;
+        float width = 75f;
 
-        componentsTable.row().pad(0,10,10,0);
+        // Components column
+        componentsTable.row().pad(0,0,10,0);
         componentsTable.add(eyeCheckbox).align(Align.left);
-        componentsTable.row().pad(0,10,10,0);
+
+        componentsTable.row().pad(0,0,10,0);
         componentsTable.add(flagellaCheckbox).align(Align.left);
-        componentsTable.row().pad(0,10,10,0);
+
+        componentsTable.row().pad(0,0,10,0);
         componentsTable.add(mouthCheckbox).align(Align.left);
-        componentsTable.row().pad(0,10,10,0);
+
+        componentsTable.row().pad(0,0,10,0);
         componentsTable.add(hornCheckbox).align(Align.left);
 
-
-        slidersTable.row().pad(0, 0, 10, 0);
+        // Sliders column
+        slidersTable.row().pad(0, 0, 10, 10);
         slidersTable.add(mutationRateLabel).align(Align.left);
         slidersTable.add(mutationRateSlider);
-        slidersTable.add(mutationRateValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
+        slidersTable.add(mutationRateValueLabel).pad(0, 15f, 0, 0).align(Align.center).width(width);
 
-        slidersTable.row().pad(0, 0, 10, 0);
+        slidersTable.row().pad(0, 0, 10, 10);
+        slidersTable.add(minimumCreaturesLabel).align(Align.left);
+        slidersTable.add(minimumCreaturesSlider);
+        slidersTable.add(minimumCreaturesValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
+
+        slidersTable.row().pad(0, 0, 10, 10);
         slidersTable.add(initialCreaturesLabel).align(Align.left);
         slidersTable.add(initialCreaturesSlider);
         slidersTable.add(initialCreaturesValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
 
-        slidersTable.row().pad(0, 0, 10, 0);
+        slidersTable.row().pad(0, 0, 10, 10);
+        slidersTable.add(creatureDeviationLabel).align(Align.left);
+        slidersTable.add(creatureDeviationSlider);
+        slidersTable.add(creatureDeviationValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
+
+        slidersTable.row().pad(0, 0, 10, 10);
         slidersTable.add(initialFoodLabel).align(Align.left);
         slidersTable.add(initialFoodSlider);
         slidersTable.add(initialFoodValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
 
-        slidersTable.row().pad(0, 0, 10, 0);
+        slidersTable.row().pad(0, 0, 10, 10);
+        slidersTable.add(foodTargetLabel).align(Align.left);
+        slidersTable.add(foodTargetSlider);
+        slidersTable.add(foodTargetValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
+
+        slidersTable.row().pad(0, 0, 10, 10);
         slidersTable.add(foodDeviationLabel).align(Align.left);
         slidersTable.add(foodDeviationSlider);
         slidersTable.add(foodDeviationValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
 
-        slidersTable.row().pad(0, 0, 10, 0);
-        slidersTable.add(sensorLabel).align(Align.left);
-        slidersTable.add(sensorSlider);
-        slidersTable.add(sensorValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
+        slidersTable.row().pad(0, 0, 10, 10);
+        slidersTable.add(minSensorLabel).align(Align.left);
+        slidersTable.add(minSensorSlider);
+        slidersTable.add(minSensorValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
 
-        slidersTable.row().pad(0, 0, 10, 0);
-        slidersTable.add(toolLabel).align(Align.left);
-        slidersTable.add(toolSlider);
-        slidersTable.add(toolValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
+        slidersTable.row().pad(0, 0, 10, 10);
+        slidersTable.add(maxSensorLabel).align(Align.left);
+        slidersTable.add(maxSensorSlider);
+        slidersTable.add(maxSensorValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
 
+        slidersTable.row().pad(0, 0, 10, 10);
+        slidersTable.add(minToolLabel).align(Align.left);
+        slidersTable.add(minToolSlider);
+        slidersTable.add(minToolValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
 
-        slidersTable.row().pad(0, 0, 10, 0);
-        slidersTable.add(continueButton).fill().align(Align.center);
-        slidersTable.row().pad(0, 0, 10, 0);
-        slidersTable.add(exitButton).fill().align(Align.center);
+        slidersTable.row().pad(0, 0, 10, 10);
+        slidersTable.add(maxToolLabel).align(Align.left);
+        slidersTable.add(maxToolSlider);
+        slidersTable.add(maxToolValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
 
         mainTable.add(slidersTable);
         mainTable.add(componentsTable).top();
+
+        mainTable.row().pad(10, 0, 10, 0);
+        mainTable.add(continueButton).width(100).align(Align.center);
+        mainTable.row().pad(0, 0, 10, 0);
+        mainTable.add(backButton).width(100).align(Align.center);
+
 
         stage.addActor(mainTable);
     }

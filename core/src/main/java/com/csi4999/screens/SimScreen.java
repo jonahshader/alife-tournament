@@ -135,7 +135,7 @@ public class SimScreen implements Screen, InputProcessor {
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ESCAPE) {
             playing = false;
-            ScreenStack.pop();
+            ScreenStack.switchTo(new MainMenuScreen(app));
         }
         return false;
     }

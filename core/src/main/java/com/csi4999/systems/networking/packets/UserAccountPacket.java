@@ -19,9 +19,15 @@ public class UserAccountPacket {
     public long userID;
     public List<ToolBuilder> toolBuilders;
     public List<SensorBuilder> sensorBuilders;
-
     public long numberOfTools;
     public long numberOfSensors;
+    public long maxTools;
+    public long maxSensors;
+    public int foodTarget;
+
+
+
+
 
     public float wins;
     public float confidence;

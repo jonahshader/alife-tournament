@@ -16,7 +16,7 @@ public class EnvProperties {
 
     // for food spawner
     public int initialFood = 400;
-    public int minFood = 600;
+    public int foodTarget = 600;
     public float foodSpawnStd = 2048f;
 
 
@@ -26,9 +26,9 @@ public class EnvProperties {
     public float creatureSpawnStd = 2048f;
     public List<SensorBuilder> sensorBuilders = new ArrayList<>();
     public List<ToolBuilder> toolBuilders = new ArrayList<>();
-    public int minSensors = 1;
+    public int minSensors = 0;
     public int maxSensors = 4;
-    public int minTools = 3;
+    public int minTools = 0;
     public int maxTools = 6;
 
     public EnvProperties(){}
