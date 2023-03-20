@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class WinCondition {
     private SimScreen sim;
-    public static final long TIME_LIMIT =  (long) (3 * 60 / Environment.dt); // 60 minutes (sim time)
+    public static final long TIME_LIMIT =  (long) (5 * 60 / Environment.dt); // 5 minutes (sim time)
     private List<Long> originalChunkIDs;
     private boolean gameDone = false;
 

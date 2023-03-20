@@ -67,9 +67,9 @@ public class MainMenuScreen implements Screen {
 
 
         // Create buttons and their respective click listeners
-        TextButton trainingButton = new TextButton("Training", skin);
+        TextButton trainingButton = new TextButton("Play", skin);
         TextButton tournamentButton = new TextButton("Tournament", skin);
-        TextButton savedEntitiesButton = new TextButton("Saved", skin);
+        TextButton savedEntitiesButton = new TextButton("Load", skin);
         TextButton settingsButton = new TextButton("Settings", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
@@ -117,8 +117,8 @@ public class MainMenuScreen implements Screen {
 
         buttonsTable.row().pad(0, 0, 10, 0);
         buttonsTable.add(trainingButton).fill().uniform();
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(tournamentButton).fill().uniform();
+//        buttonsTable.row().pad(0, 0, 10, 0);
+//        buttonsTable.add(tournamentButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
         buttonsTable.add(savedEntitiesButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);

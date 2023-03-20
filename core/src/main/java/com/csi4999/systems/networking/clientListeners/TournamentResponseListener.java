@@ -1,6 +1,5 @@
 package com.csi4999.systems.networking.clientListeners;
 
-import com.csi4999.screens.TournamentScreen;
 import com.csi4999.screens.TournamentWaitScreen;
 import com.csi4999.systems.networking.packets.TournamentFailPacket;
 import com.csi4999.systems.networking.packets.TournamentPacket;
