@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Align;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.systems.creature.Creature;
+import com.csi4999.systems.environment.CreatureSpawner;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,11 +15,11 @@ import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
 
 public class CreatureNameTag {
     private Map<Long, String> chunkIDToName = new HashMap<>();
-    private List<Creature> creatures;
+    private CreatureSpawner creatureSpawner;
     private BitmapFont font;
 
-    public CreatureNameTag(List<Long> chunkIDs, List<String> usernames, List<Creature> creatures) {
-        this.creatures = creatures;
+    public CreatureNameTag(List<Long> chunkIDs, List<String> usernames, CreatureSpawner creatureSpawner) {
+        this.creatureSpawner = creatureSpawner;
         for (int i = 0; i < chunkIDs.size(); i++)
             chunkIDToName.put(chunkIDs.get(i), usernames.get(i));
 
@@ -27,10 +28,12 @@ public class CreatureNameTag {
 
     public void render(Batch batch) {
         // TODO: cull?
-        for (Creature c : creatures) {
+        creatureSpawner.creatureLock.lock();
+        for (Creature c : creatureSpawner.getCreatures()) {
             if (chunkIDToName.containsKey(c.chunkID)) {
                 font.draw(batch, chunkIDToName.get(c.chunkID), c.position.x, c.position.y, 0, Align.center, false);
             }
         }
+        creatureSpawner.creatureLock.unlock();
     }
 }

@@ -39,7 +39,9 @@ public class CreatureSpawner {
     }
 
     public void handleRemoval() {
+        creatureLock.lock();
         creatures.removeIf(c -> c.removeQueued);
+        creatureLock.unlock();
     }
 
     public int getCreatureCount() {

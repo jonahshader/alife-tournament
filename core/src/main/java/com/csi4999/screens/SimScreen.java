@@ -62,7 +62,7 @@ public class SimScreen implements Screen, InputProcessor {
         toolBar = new ToolBar(app.batch, this, true);
         winCondition = new WinCondition(this, tournament.chunkIDs);
         displayResults = new DisplayResults(this);
-        creatureNameTag = new CreatureNameTag(tournament.chunkIDs, tournament.names, env.creatureSpawner.getCreatures());
+        creatureNameTag = new CreatureNameTag(tournament.chunkIDs, tournament.names, env.creatureSpawner);
     }
 
     public SimScreen(ALifeApp app, UserAccountPacket user, Environment environment) {
@@ -123,9 +123,7 @@ public class SimScreen implements Screen, InputProcessor {
             app.batch.begin();
             env.draw(app.shapeDrawer, app.batch, worldCam);
             if (creatureNameTag != null) {
-                env.creatureSpawner.creatureLock.lock();
                 creatureNameTag.render(app.batch);
-                env.creatureSpawner.creatureLock.unlock();
             }
 
             app.batch.end();
