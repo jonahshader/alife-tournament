@@ -36,8 +36,13 @@ public class ToolBar implements InputProcessor, Disposable {
 
     private SimScreen sim;
 
-    public ToolBar(Batch batch, SimScreen sim) {
+    private boolean tournamentMode;
+
+    TextButton pauseButton;
+
+    public ToolBar(Batch batch, SimScreen sim, boolean tournamentMode) {
         this.sim = sim;
+        this.tournamentMode = tournamentMode;
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
         cam = new OrthographicCamera();
         viewport = new ExtendViewport(WIDTH, HEIGHT, cam);
@@ -48,6 +53,12 @@ public class ToolBar implements InputProcessor, Disposable {
         show();
     }
 
+    public void setPlayState(boolean playing) {
+        sim.playing = playing;
+        pauseButton.setChecked(!playing);
+        pauseButton.setText(playing ? "Pause" : "Play");
+    }
+
     public void show() {
         mainTable = new Table();
         mainTable.setSize(WIDTH, 80);
@@ -56,7 +67,7 @@ public class ToolBar implements InputProcessor, Disposable {
 
         TextButton saveButton = new TextButton("Save", skin);
         TextButton tournamentButton = new TextButton("Tournament", skin);
-        TextButton pauseButton = new TextButton("Pause", skin);
+        pauseButton = new TextButton("Pause", skin);
         TextButton noDrawButton = new TextButton("No Render", skin);
         TextButton limitSpeedButton = new TextButton("Unlock Speed", skin);
 
@@ -69,20 +80,14 @@ public class ToolBar implements InputProcessor, Disposable {
                    sim.env.userID = GameClient.getInstance().user.userID;
                    GameClient.getInstance().client.sendTCP(new SaveEnvironmentPacket(sim.env));
                };
-               // TODO: reduce duplicate code
-               // pause the sim to prevent ConcurrentModification during serialization
-               sim.playing = false;
-               pauseButton.setText("Play");
-               pauseButton.setChecked(true);
+               setPlayState(false);
                ScreenStack.push(new NameDescriptionScreen(sim.app, "Save Environment", "Save", c));
            }
         });
         tournamentButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                sim.playing = false;
-                pauseButton.setText("Play");
-                pauseButton.setChecked(true);
+                setPlayState(false);
                 sim.chunkSelector.activate();
             }
         });
@@ -125,8 +130,10 @@ public class ToolBar implements InputProcessor, Disposable {
         int w = 105;
         int pad = 2;
         mainTable.row().center();
-        mainTable.add(saveButton).fill().width(w).pad(pad);
-        mainTable.add(tournamentButton).fill().width(w).pad(pad);
+        if (!tournamentMode) {
+            mainTable.add(saveButton).fill().width(w).pad(pad);
+            mainTable.add(tournamentButton).fill().width(w).pad(pad);
+        }
         mainTable.add(pauseButton).fill().width(w).pad(pad);
         mainTable.add(noDrawButton).fill().width(w).pad(pad);
         mainTable.add(limitSpeedButton).fill().width(w).pad(pad);

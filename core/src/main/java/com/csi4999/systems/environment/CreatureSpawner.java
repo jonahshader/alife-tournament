@@ -49,11 +49,19 @@ public class CreatureSpawner {
         return totalEnergy;
     }
 
+    public void merge(CreatureSpawner toMerge) {
+        creatures.addAll(toMerge.creatures);
+    }
+
     private void addRandomCreature(Random r, PhysicsEngine physics, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders) {
         Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, properties.creatureSpawnStd), (float) r.nextGaussian(0f, properties.creatureSpawnStd)),
             sensorBuilders, toolBuilders, r.nextInt(properties.minSensors, properties.maxSensors + 1), r.nextInt(properties.minTools, properties.maxTools + 1), physics, r);
         physics.addObject(c);
         physics.addCollider(c);
         creatures.add(c);
+    }
+
+    public List<Creature> getCreatures() {
+        return creatures;
     }
 }

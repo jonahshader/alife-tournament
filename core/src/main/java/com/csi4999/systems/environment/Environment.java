@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -12,7 +13,7 @@ import java.util.Random;
 
 public class Environment {
     // One and only instance of random
-    PhysicsEngine physics;
+    public PhysicsEngine physics;
     Random r;
 
     public FoodSpawner foodSpawner;
@@ -20,7 +21,8 @@ public class Environment {
 
     private EnvProperties properties;
 
-    private float dt = 1/60f;
+    public static final float dt = 1/60f;
+    public long age = 0;
 
     public String environmentName;
     public String EnvironmentDescription;
@@ -53,8 +55,15 @@ public class Environment {
         physics.run(dt);
         creatureSpawner.run(physics, r, properties.globalMutationRate);
         foodSpawner.run(r, physics);
+        age++;
     }
     public Creature getCreature(int x, int y) {
         return physics.getCreature(x, y);
+    }
+
+    public void merge(Environment toMerge) {
+        foodSpawner.merge(toMerge.foodSpawner);
+        creatureSpawner.merge(toMerge.creatureSpawner);
+        physics.merge(toMerge.physics);
     }
 }
