@@ -9,8 +9,10 @@ import com.csi4999.systems.physics.PhysicsEngine;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class CreatureSpawner {
+    public ReentrantLock creatureLock = new ReentrantLock();
     private List<Creature> creatures = new ArrayList<>();
 
     private EnvProperties properties;
@@ -31,7 +33,9 @@ public class CreatureSpawner {
                 newCreatures.addAll(newOffspring);
             }
         }
+        creatureLock.lock();
         creatures.addAll(newCreatures);
+        creatureLock.unlock();
     }
 
     public void handleRemoval() {
@@ -50,7 +54,9 @@ public class CreatureSpawner {
     }
 
     public void merge(CreatureSpawner toMerge) {
+        creatureLock.lock();
         creatures.addAll(toMerge.creatures);
+        creatureLock.unlock();
     }
 
     private void addRandomCreature(Random r, PhysicsEngine physics, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders) {
@@ -58,7 +64,9 @@ public class CreatureSpawner {
             sensorBuilders, toolBuilders, r.nextInt(properties.minSensors, properties.maxSensors), r.nextInt(properties.minTools, properties.maxTools), physics, r);
         physics.addObject(c);
         physics.addCollider(c);
+        creatureLock.lock();
         creatures.add(c);
+        creatureLock.unlock();
     }
 
     public List<Creature> getCreatures() {

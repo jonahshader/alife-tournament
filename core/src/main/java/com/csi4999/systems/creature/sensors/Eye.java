@@ -29,7 +29,7 @@ public class Eye extends LineSegment implements Sensor {
     private static final float EYE_DECAY = 0.05f;
 
     private Color colorTransparent;
-    private Collider parent;
+    private Collider parent; // TODO: fix bug where parent isn't set correctly in tournament
 
     private float lastHitDist;
 

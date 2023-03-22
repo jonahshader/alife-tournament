@@ -123,9 +123,9 @@ public class SimScreen implements Screen, InputProcessor {
             app.batch.begin();
             env.draw(app.shapeDrawer, app.batch, worldCam);
             if (creatureNameTag != null) {
-                env.physics.drawLock.lock();
+                env.creatureSpawner.creatureLock.lock();
                 creatureNameTag.render(app.batch);
-                env.physics.drawLock.unlock();
+                env.creatureSpawner.creatureLock.unlock();
             }
 
             app.batch.end();

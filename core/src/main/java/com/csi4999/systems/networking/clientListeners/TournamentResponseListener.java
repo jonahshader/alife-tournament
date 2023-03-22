@@ -22,6 +22,7 @@ public class TournamentResponseListener implements Listener {
 
         if (o instanceof TournamentFailPacket) {
             System.out.println("Tournament Creation Failed");
+            TournamentWaitScreen.instance.tournamentFailed = true;
         }
         else if (o instanceof TournamentPacket) {
             System.out.println("Received Tournament Packet!");
