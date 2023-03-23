@@ -24,8 +24,10 @@ public class SettingsScreen extends AppPreferences implements Screen {
     private final FitViewport settingsViewport;
     private Stage stage;
 
-    public SettingsScreen(ALifeApp app) {
+    private final ALifeApp app;
 
+    public SettingsScreen(ALifeApp app) {
+        this.app = app;
         skin = new Skin(Gdx.files.internal("ui/neutralizer/skin/neutralizer-ui.json"));
 
         settingsCam = new OrthographicCamera();
@@ -52,7 +54,7 @@ public class SettingsScreen extends AppPreferences implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.pop();
+                ScreenStack.switchTo(new MainMenuScreen(app));
             }
         });
 

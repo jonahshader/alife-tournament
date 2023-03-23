@@ -22,7 +22,7 @@ public class FoodSpawner {
 
     public void run(Random r, PhysicsEngine physics) {
         handleRemoval();
-        if (food.size() < properties.minFood) {
+        if (food.size() < properties.foodTarget) {
             addRandomFood(r, physics, false);
         }
     }
