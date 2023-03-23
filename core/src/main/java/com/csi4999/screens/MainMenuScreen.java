@@ -15,10 +15,12 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.networking.GameClient;
 import com.csi4999.systems.networking.clientListeners.DescriptionListener;
 import com.csi4999.systems.networking.packets.RequestSavedEntityDataPacket;
 import com.esotericsoftware.kryonet.Client;
+import jdk.javadoc.internal.doclint.Env;
 
 import static com.csi4999.singletons.CustomAssetManager.*;
 
@@ -77,14 +79,14 @@ public class MainMenuScreen implements Screen {
         trainingButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user));
+                ScreenStack.push(new GenerationScreen(app));
             }
         });
 
         tournamentButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user));
+                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user, EnvProperties.makeTestDefault()));
             }
         });
 

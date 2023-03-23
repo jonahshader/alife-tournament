@@ -2,6 +2,9 @@ package com.csi4999.systems.networking.packets;
 
 import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
+import com.csi4999.systems.creature.sensors.EyeBuilder;
+import com.csi4999.systems.creature.tools.FlagellaBuilder;
+import com.csi4999.systems.creature.tools.MouthBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +19,15 @@ public class UserAccountPacket {
     public long userID;
     public List<ToolBuilder> toolBuilders;
     public List<SensorBuilder> sensorBuilders;
-
     public long numberOfTools;
     public long numberOfSensors;
+    public long maxTools;
+    public long maxSensors;
+    public int foodTarget;
+
+
+
+
 
     public float wins;
     public float confidence;
@@ -30,7 +39,6 @@ public class UserAccountPacket {
         this.userID = userID;
         this.toolBuilders = toolBuilders;
         this.sensorBuilders = sensorBuilders;
-
         // are these just the length of the list ?
         this.numberOfTools = numberOfTools;
         this.numberOfSensors = numberOfSensors;
@@ -43,9 +51,11 @@ public class UserAccountPacket {
         p.userID = id;
         p.toolBuilders = new ArrayList<>();
         p.sensorBuilders = new ArrayList<>();
+        p.toolBuilders.add(new MouthBuilder());
+        p.toolBuilders.add(new FlagellaBuilder());
+        p.sensorBuilders.add(new EyeBuilder());
         p.numberOfTools = NUMBER_OF_TOOLS_DEFAULT;
         p.numberOfSensors = NUMBER_OF_SENSORS_DEFAULT;
         return p;
     }
-
 }

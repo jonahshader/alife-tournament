@@ -41,8 +41,22 @@ public class SimScreen implements Screen, InputProcessor {
 
     private Thread simThread;
 
-    public SimScreen(ALifeApp app, UserAccountPacket user) {
-        this(app, user, new Environment(EnvProperties.makeTestDefault()));
+    public SimScreen(ALifeApp app, UserAccountPacket user, EnvProperties properties) {
+        this(app, user, new Environment(properties));
+    }
+
+    public SimScreen(ALifeApp app, UserAccountPacket user, Environment env) {
+        this.app = app;
+        this.user = user;
+        this.env = env;
+
+        worldCam = new OrthographicCamera();
+        worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
+        creatureHud = new CreatureHud(app.batch, worldCam, app, env);
+        statsHud = new StatsHud(env.creatureSpawner, env.foodSpawner);
+        chunkSelector = new ChunkSelector(worldViewport, worldCam, this);
+        toolBar = new ToolBar(app.batch, this, false);
+        displayResults = new DisplayResults(this);
     }
 
     public SimScreen(ALifeApp app, UserAccountPacket user, TournamentPacket tournament) {
@@ -58,20 +72,6 @@ public class SimScreen implements Screen, InputProcessor {
         winCondition = new WinCondition(this, tournament.chunkIDs);
         displayResults = new DisplayResults(this);
         tournamentMode = true;
-    }
-
-    public SimScreen(ALifeApp app, UserAccountPacket user, Environment environment) {
-        this.app = app;
-        this.user = user;
-        this.env = environment;
-
-        worldCam = new OrthographicCamera();
-        worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
-        creatureHud = new CreatureHud(app.batch, worldCam, app, env);
-        statsHud = new StatsHud(env.creatureSpawner, env.foodSpawner);
-        chunkSelector = new ChunkSelector(worldViewport, worldCam, this);
-        toolBar = new ToolBar(app.batch, this, false);
-        displayResults = new DisplayResults(this);
     }
 
     private void tryLaunchSimThread() {
@@ -168,7 +168,7 @@ public class SimScreen implements Screen, InputProcessor {
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ESCAPE) {
             playing = false;
-            ScreenStack.pop();
+            ScreenStack.switchTo(new MainMenuScreen(app));
         }
         return false;
     }

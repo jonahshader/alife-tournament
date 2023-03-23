@@ -55,7 +55,7 @@ public class CreatureSpawner {
 
     private void addRandomCreature(Random r, PhysicsEngine physics, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders) {
         Creature c = new Creature(new Vector2((float) r.nextGaussian(0f, properties.creatureSpawnStd), (float) r.nextGaussian(0f, properties.creatureSpawnStd)),
-            sensorBuilders, toolBuilders, r.nextInt(properties.minSensors, properties.maxSensors), r.nextInt(properties.minTools, properties.maxTools), physics, r);
+            sensorBuilders, toolBuilders, r.nextInt(properties.minSensors, properties.maxSensors + 1), r.nextInt(properties.minTools, properties.maxTools + 1), physics, r);
         physics.addObject(c);
         physics.addCollider(c);
         creatures.add(c);
