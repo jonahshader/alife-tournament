@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.List;
 
 public class TournamentListener implements Listener {
 
@@ -30,6 +31,8 @@ public class TournamentListener implements Listener {
 
     private final String SAVE_CHUNK_QUERY = "INSERT INTO chunk(chunk_wins, chunk_confidence, user_id) VALUES (?,?,?);";
     private final String GET_TOURNAMENT_PARTICIPANTS_QUERY = "SELECT chunk_id FROM chunk WHERE user_id != ? ORDER BY RANDOM() LIMIT 3;";
+
+    private final String GET_USERNAME_FROM_CHUNK_ID_QUERY = "SELECT username FROM user INNER JOIN chunk ON user.user_id = chunk.user_id WHERE chunk_id = ?;";
 
     private final String CREATE_TOURNAMENT_QUERY = "INSERT INTO tournament(tournament_date) VALUES (?);";
 
@@ -73,14 +76,17 @@ public class TournamentListener implements Listener {
                 ArrayList<Environment> participantEnvironments = new ArrayList<>();
                 ArrayList<Long> chunkIDs = new ArrayList<>();
 
+
                 for (Chunk chunk : participants) {
                     participantEnvironments.add(chunk.environment);
                     chunkIDs.add(chunk.chunkID);
                 }
 
+                List<String> names = getChunkOwnerUsernames(chunkIDs);
+
                 FuseEnvs.fuseEnvs(participantEnvironments, tournamentEnvironment);
 
-                c.sendTCP(new TournamentPacket(tournamentEnvironment, chunkIDs, p.chunk.environment.userID));
+                c.sendTCP(new TournamentPacket(tournamentEnvironment, chunkIDs, names, p.chunk.environment.userID));
             }
         }
         else if (o instanceof TournamentResultsPacket) {
@@ -118,15 +124,28 @@ public class TournamentListener implements Listener {
 
                 Chunk chunk = (Chunk) db.retrieveSerializedObject(SerializedType.CHUNK, participantID, k);
                 participants.add(chunk);
-
-//                for (Creature c : chunk.environment.creatureSpawner.getCreatures())
-//                    System.out.println(c.chunkID);
             }
 
             return participants;
         }
         catch (SQLException exception) {
             throw new RuntimeException(exception);
+        }
+    }
+
+    private List<String> getChunkOwnerUsernames(List<Long> chunkIDs) {
+        try {
+            List<String> usernames = new ArrayList<>();
+            for (Long chunkID : chunkIDs) {
+                PreparedStatement statement = db.con.prepareStatement(GET_USERNAME_FROM_CHUNK_ID_QUERY);
+                statement.setLong(1, chunkID);
+                ResultSet r = statement.executeQuery();
+
+                usernames.add(r.getString("username"));
+            }
+            return usernames;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 

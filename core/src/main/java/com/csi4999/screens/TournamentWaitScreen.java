@@ -26,6 +26,7 @@ public class TournamentWaitScreen implements Screen {
     private Stage stage;
 
     public volatile TournamentPacket tournamentPacket;
+    public volatile boolean tournamentFailed = false;
 
     public TournamentWaitScreen(ALifeApp app) {
         instance = this;
@@ -57,6 +58,8 @@ public class TournamentWaitScreen implements Screen {
     public void render(float delta) {
         if (tournamentPacket != null)
             ScreenStack.switchTo(new SimScreen(app, GameClient.getInstance().user, tournamentPacket));
+        if (tournamentFailed)
+            ScreenStack.switchTo(new MainMenuScreen(app));
 
         Gdx.gl.glClearColor(.1f, .12f, .16f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

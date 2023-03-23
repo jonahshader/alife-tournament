@@ -1,6 +1,5 @@
 package com.csi4999.systems.networking.clientListeners;
 
-import com.csi4999.screens.TournamentScreen;
 import com.csi4999.screens.TournamentWaitScreen;
 import com.csi4999.systems.networking.packets.TournamentFailPacket;
 import com.csi4999.systems.networking.packets.TournamentPacket;
@@ -23,6 +22,7 @@ public class TournamentResponseListener implements Listener {
 
         if (o instanceof TournamentFailPacket) {
             System.out.println("Tournament Creation Failed");
+            TournamentWaitScreen.instance.tournamentFailed = true;
         }
         else if (o instanceof TournamentPacket) {
             System.out.println("Received Tournament Packet!");
