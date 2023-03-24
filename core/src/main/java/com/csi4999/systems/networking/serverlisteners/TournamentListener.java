@@ -40,7 +40,7 @@ public class TournamentListener implements Listener {
 
     private final String GET_CURRENT_PERFORMANCE_QUERY = "SELECT chunk_wins FROM chunk WHERE chunk_id = ?;";
 
-    private final String UPDATE_WINS_QUERY = "UPDATE chunk set chunk_wins = ? WHERE chunk_id = ?;";
+    private final String UPDATE_WINS_QUERY = "UPDATE chunk set games_played = ? WHERE chunk_id = ?;";
 
     private EnvProperties tournamentProperties;
 
@@ -208,12 +208,11 @@ public class TournamentListener implements Listener {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
-            float currentWins = resultSet.getFloat("chunk_wins");
-
-            currentWins += performance.proportionOfWin;
+            long currentGamesPlayed = resultSet.getLong("games_played");
+            currentGamesPlayed++;
 
             preparedStatement = db.con.prepareStatement(UPDATE_WINS_QUERY);
-            preparedStatement.setFloat(1, currentWins);
+            preparedStatement.setLong(1, currentGamesPlayed);
             preparedStatement.setLong(2, performance.chunkID);
             preparedStatement.executeUpdate();
         }
