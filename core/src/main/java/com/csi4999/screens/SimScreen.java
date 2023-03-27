@@ -49,6 +49,10 @@ public class SimScreen implements Screen, InputProcessor {
         this(app, user, new Environment(properties));
     }
 
+    public SimScreen(ALifeApp app, UserAccountPacket user, EnvProperties properties, Creature creature) {
+        this(app, user, new Environment(properties, creature));
+    }
+
     public SimScreen(ALifeApp app, UserAccountPacket user, Environment env) {
         this.app = app;
         this.user = user;

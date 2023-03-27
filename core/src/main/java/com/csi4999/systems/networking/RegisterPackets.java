@@ -88,5 +88,8 @@ public class RegisterPackets {
         k.register(ChunkPerformance.class);
         k.register(TournamentFailPacket.class);
 
+        // classes for creature load
+        k.register(RequestCreaturePacket.class);
+
     }
 }

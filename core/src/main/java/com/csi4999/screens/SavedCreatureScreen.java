@@ -14,10 +14,16 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.networking.GameClient;
 import com.csi4999.systems.networking.clientListeners.DescriptionListener;
+import com.csi4999.systems.networking.clientListeners.LoadListener;
 import com.csi4999.systems.networking.common.SavedCreatureDescription;
+import com.csi4999.systems.networking.packets.RequestCreaturePacket;
+import com.csi4999.systems.networking.packets.RequestEnvironmentPacket;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
+import com.csi4999.systems.networking.serverlisteners.LoadCreatureListener;
+import com.esotericsoftware.kryonet.Client;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 
@@ -79,6 +85,20 @@ public class SavedCreatureScreen implements Screen {
                 creatureDescription = new Label(d.description.substring(0,24),skin);
 
             TextButton loadButton = new TextButton("Load", skin);
+
+            loadButton.addListener(new ClickListener(){
+
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Client client = GameClient.getInstance().client;
+                    client.sendTCP(new RequestCreaturePacket(d.creatureID));
+                    while (!LoadListener.getInstance().ready){}
+
+                    ScreenStack.push(new SimScreen(app, GameClient.getInstance().user, new EnvProperties(), LoadListener.getInstance().creature));
+                    LoadListener.getInstance().creature = null;
+                    LoadListener.getInstance().ready = false;
+                }
+            });
 
             entityTable.add(creatureName).width(100).pad(0,0,0, 50).uniform();
             entityTable.add(creatureDescription).expandX().pad(0,0,0,0);
