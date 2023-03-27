@@ -17,8 +17,8 @@ public class UserAccountPacket {
     public long userID;
     public List<ToolBuilder> toolBuilders;
     public List<SensorBuilder> sensorBuilders;
-    public long maxTools = 2;
-    public long maxSensors = 0;
+    public long maxTools = 4; // TODO: turn these back down for final release
+    public long maxSensors = 4;
     public int maxMutationRate = 1;
     public int maxCreaturesPerSecond = 0;
     public int maxInitialCreatures = 600;

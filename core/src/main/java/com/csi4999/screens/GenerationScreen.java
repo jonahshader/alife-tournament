@@ -165,28 +165,28 @@ public class GenerationScreen implements Screen {
         Label foodDeviationValueLabel = new Label(String.valueOf((int) properties.foodSpawnStd), skin);
 
         // Min Sensors
-        Slider minSensorSlider = new Slider(0, properties.maxSensors, 1, false, skin);
-        minSensorSlider.setValue(properties.minSensors);
+        Slider minSensorSlider = new Slider(0, user.maxSensors, 1, false, skin);
+        minSensorSlider.setValue(0);
         Label minSensorLabel = new Label("Min Sensors", skin);
-        Label minSensorValueLabel = new Label(String.valueOf(properties.minSensors), skin);
+        Label minSensorValueLabel = new Label(String.valueOf(0), skin);
 
         // Max Sensors
-        Slider maxSensorSlider = new Slider(properties.minSensors, properties.maxSensors, 1, false, skin);
-        maxSensorSlider.setValue(properties.maxSensors);
+        Slider maxSensorSlider = new Slider(0, user.maxSensors, 1, false, skin);
+        maxSensorSlider.setValue(user.maxSensors);
         Label maxSensorLabel = new Label("Max Sensors", skin);
-        Label maxSensorValueLabel = new Label(String.valueOf(properties.maxSensors), skin);
+        Label maxSensorValueLabel = new Label(String.valueOf(user.maxSensors), skin);
 
         // Min Tools
-        Slider minToolSlider = new Slider(0, properties.maxTools, 1, false, skin);
+        Slider minToolSlider = new Slider(0, user.maxTools, 1, false, skin);
         minToolSlider.setValue(properties.minTools);
         Label minToolLabel = new Label("Min Tools", skin);
-        Label minToolValueLabel = new Label(String.valueOf(properties.minTools), skin);
+        Label minToolValueLabel = new Label(String.valueOf(0), skin);
 
         // Max Tools
-        Slider maxToolSlider = new Slider(properties.minTools, properties.maxTools, 1, false, skin);
+        Slider maxToolSlider = new Slider(properties.minTools, user.maxTools, 1, false, skin);
         maxToolSlider.setValue(properties.maxTools);
         Label maxToolLabel = new Label("Max Tools", skin);
-        Label maxToolValueLabel = new Label(String.valueOf(properties.maxTools), skin);
+        Label maxToolValueLabel = new Label(String.valueOf(user.maxTools), skin);
 
         // Buttons
         TextButton continueButton = new TextButton("Continue", skin);

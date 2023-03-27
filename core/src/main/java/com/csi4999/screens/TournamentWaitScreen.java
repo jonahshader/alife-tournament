@@ -4,10 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
@@ -48,16 +53,24 @@ public class TournamentWaitScreen implements Screen {
         t.setFillParent(true);
         t.center();
         Label message = new Label("Waiting for server to create tournament...", skin);
+        TextButton start = new TextButton("Start", skin);
+        start.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (tournamentPacket != null && !tournamentFailed) {
+                    ScreenStack.switchTo(new SimScreen(app, GameClient.getInstance().user, tournamentPacket));
+                }
+            }
+        });
 
         t.add(message);
+        t.add(start);
 
         stage.addActor(t);
     }
 
     @Override
     public void render(float delta) {
-        if (tournamentPacket != null)
-            ScreenStack.switchTo(new SimScreen(app, GameClient.getInstance().user, tournamentPacket));
         if (tournamentFailed)
             ScreenStack.switchTo(new MainMenuScreen(app));
 

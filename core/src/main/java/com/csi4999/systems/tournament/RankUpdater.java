@@ -10,7 +10,7 @@ public class RankUpdater {
     public static final float RANK_STD = 20.0f;
     private static final float RANK_CHANGE_MIN_PROPORTION = 0.25f;
 
-    private static final float SMALL = 0.0001f;
+    private static final float SMALL = 0.001f;
 
     private static List<Float> calculateNewTargetRank(List<Float> ranks, List<Float> performances) {
         float meanRank = 0;

@@ -43,11 +43,27 @@ public class DisplayResults {
                 float pos = (i / (sim.tournamentResults.performances.size() - 1f)) - .5f;
 
                 float xPos = (-BAR_WIDTH/2) + pos * .8f * WIDTH;
-                float yPos = (-HEIGHT/2f) + 40f;
-                float barHeight = (HEIGHT/2f) - yPos - 40f;
+                float yPos = (-HEIGHT/2f) + 60f;
+                float barHeight = (HEIGHT/2f) - yPos - 60f;
                 drawer.filledRectangle(xPos, yPos, BAR_WIDTH, barHeight, new Color(0f, 0f, 0f, 0.5f));
                 drawer.filledRectangle(xPos, yPos, BAR_WIDTH, barHeight * p.proportionOfWin, new Color(1f, 1f, 1f, 1f));
                 font.draw(drawer.getBatch(), sim.chunkNames.get(i), xPos + BAR_WIDTH/2, yPos - 10f, 0f, Align.center, false);
+                font.draw(drawer.getBatch(), Float.toString(sim.initialRanks.get(i)), xPos + BAR_WIDTH/2, yPos - 25f, 0f, Align.center, false);
+                if (sim.newRanksPacket != null) {
+                    float newRank = sim.newRanksPacket.ranks.get(i);
+                    float oldRank = sim.initialRanks.get(i);
+                    float diff = newRank - oldRank;
+                    if (diff > 0) {
+                        drawer.getBatch().setColor(new Color(0f, 1f, 0f, 1f));
+                    } else {
+                        drawer.getBatch().setColor(new Color(1f, 0f, 0f, 1f));
+                    }
+                    font.draw(drawer.getBatch(), diff > 0 ? "+" : "" + diff, xPos + BAR_WIDTH/2, yPos - 40f, 0f, Align.center, false);
+                    drawer.getBatch().setColor(new Color(1f, 1f, 1f, 1f));
+
+                }
+
+
             }
             drawer.getBatch().end();
         }
