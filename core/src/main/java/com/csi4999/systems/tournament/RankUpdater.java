@@ -8,7 +8,7 @@ import java.util.List;
 public class RankUpdater {
     public static final float RANK_MEAN = 50.0f;
     public static final float RANK_STD = 20.0f;
-    private static final float RANK_CHANGE_MIN_PROPORTION = 0.25f;
+    public static final float RANK_CHANGE_MIN_PROPORTION = 0.25f;
 
     private static final float SMALL = 0.001f;
 

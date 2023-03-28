@@ -38,6 +38,7 @@ public class DisplayResults {
         if (sim.tournamentResults != null) {
             drawer.getBatch().setProjectionMatrix(viewport.getCamera().combined);
             drawer.getBatch().begin();
+            drawer.filledRectangle(-WIDTH, -HEIGHT, 2*WIDTH, 2*HEIGHT, new Color(0f, 0f, 0f, 0.5f));
             for (int i = 0; i < sim.tournamentResults.performances.size(); i++) {
                 ChunkPerformance p = sim.tournamentResults.performances.get(i);
                 float pos = (i / (sim.tournamentResults.performances.size() - 1f)) - .5f;
@@ -58,7 +59,7 @@ public class DisplayResults {
                     } else {
                         drawer.getBatch().setColor(new Color(1f, 0f, 0f, 1f));
                     }
-                    font.draw(drawer.getBatch(), diff > 0 ? "+" : "" + diff, xPos + BAR_WIDTH/2, yPos - 40f, 0f, Align.center, false);
+                    font.draw(drawer.getBatch(), (diff > 0 ? "+" : "") + diff, xPos + BAR_WIDTH/2, yPos - 40f, 0f, Align.center, false);
                     drawer.getBatch().setColor(new Color(1f, 1f, 1f, 1f));
 
                 }

@@ -10,6 +10,7 @@ import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.networking.common.ChunkPerformance;
 import com.csi4999.systems.networking.packets.NewRanksPacket;
 import com.csi4999.systems.networking.packets.TournamentPacket;
 import com.csi4999.systems.networking.packets.TournamentResultsPacket;
@@ -46,8 +47,9 @@ public class SimScreen implements Screen, InputProcessor {
     private DisplayResults displayResults;
     private CreatureNameTag creatureNameTag;
 
-
     private Thread simThread;
+
+    private boolean savedUserRank = false;
 
     public SimScreen(ALifeApp app, UserAccountPacket user, EnvProperties properties) {
         this(app, user, new Environment(properties));
@@ -114,6 +116,14 @@ public class SimScreen implements Screen, InputProcessor {
                 tryLaunchSimThread();
             }
         }
+
+//        if (!savedUserRank && newRanksPacket != null && tournamentResults != null) {
+//            for (ChunkPerformance p : tournamentResults.performances) {
+//                if (p.user)
+//            }
+//
+//            savedUserRank = true;
+//        }
 
 
         worldViewport.apply();

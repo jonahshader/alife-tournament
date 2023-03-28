@@ -5,6 +5,7 @@ import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
 import com.csi4999.systems.creature.tools.FlagellaBuilder;
 import com.csi4999.systems.creature.tools.MouthBuilder;
+import com.csi4999.systems.tournament.RankUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +26,8 @@ public class UserAccountPacket {
 
 
     // ranking stuff
-    public float wins = 0;
-    public float confidence = 0;
+    public float rank = RankUpdater.RANK_MEAN;
+    public int gamesPlayed = 0;
 
     public UserAccountPacket(){} // empty constructor for Kryo
 

@@ -66,7 +66,7 @@ public class TournamentListener implements Listener {
             List<Chunk> participants = getParticipants(p.chunk.environment.userID);
 
 
-            saveChunk(p.chunk);
+            saveChunk(p.chunk, p.rank);
 
             participants.add(p.chunk);
 
@@ -220,12 +220,12 @@ public class TournamentListener implements Listener {
         }
     }
 
-    private void saveChunk(Chunk chunk) {
+    private void saveChunk(Chunk chunk, float rank) {
 
         try {
             PreparedStatement preparedStatement = db.con.prepareStatement(SAVE_CHUNK_QUERY, new String[] {"chunk_id"});
             preparedStatement.setLong(1, 0);
-            preparedStatement.setFloat(2, RANK_MEAN);
+            preparedStatement.setFloat(2, rank);
             preparedStatement.setLong(3, chunk.environment.userID);
             preparedStatement.executeUpdate();
 
