@@ -105,8 +105,7 @@ public class ChunkSelector implements InputProcessor {
 
             newEnv.userID = GameClient.getInstance().user.userID;
 
-            // TODO: send packet
-            RequestTournamentPacket p = new RequestTournamentPacket(new Chunk(newEnv), 0);
+            RequestTournamentPacket p = new RequestTournamentPacket(new Chunk(newEnv), GameClient.getInstance().user.rank);
             ScreenStack.switchTo(new TournamentWaitScreen(sim.app));
             System.out.println("Sending RequestTournamentPacket to server.");
             GameClient.getInstance().client.sendTCP(p);
@@ -125,10 +124,7 @@ public class ChunkSelector implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        if (active) {
-            return true;
-        }
-        return false;
+        return active;
     }
 
     @Override
