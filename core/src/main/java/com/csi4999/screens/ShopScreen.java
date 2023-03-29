@@ -15,6 +15,7 @@ import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
+import static com.csi4999.systems.shop.ShopStuffKt.makeShopItems;
 
 public class ShopScreen implements Screen {
 
@@ -36,12 +37,12 @@ public class ShopScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
     }
 
-    private void generateItems() {
-
-    }
     @Override
     public void show() {
         Table mainTable = new Table();
+        Table shopItemsTable = new Table();
+        List<ShopItem> items = makeShopItems();
+
 
 
         mainTable.setFillParent(true);
@@ -54,10 +55,14 @@ public class ShopScreen implements Screen {
         Label shopLabel = new Label("SHOP", skin);
         shopLabel.setFontScale(1.25f);
 
+        Label descriptionLabel = new Label("", skin);
+        Label costLabel = new Label("", skin);
+
         Button returnButton = new TextButton("Return", skin);
         returnButton.setScale(1.25f);
 
         Button buyButton = new TextButton("Buy", skin);
+        Button sellButton = new TextButton("Sell", skin);
 
         returnButton.addListener(new ClickListener(){
             @Override
@@ -73,11 +78,15 @@ public class ShopScreen implements Screen {
             }
         });
 
+        shopItemsTable.add(items.get(0).makeComponent(skin, descriptionLabel, costLabel, buyButton, sellButton));
 
         mainTable.row().pad(15, 0, 0, 0);
         mainTable.add(currencyLabel).width(400);
         mainTable.add(shopLabel).width(400);
         mainTable.add(returnButton).width(100);
+        mainTable.row().pad(30, 0, 0, 0);
+        mainTable.add(shopItemsTable);
+
 
         stage.addActor(mainTable);
     }
