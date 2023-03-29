@@ -18,7 +18,7 @@ public class PhysicsEngine {
 
     private List<PhysicsObject> objects;
 
-    private ReentrantLock drawLock = new ReentrantLock();
+    public ReentrantLock drawLock = new ReentrantLock();
     private ReentrantLock renderBoundsLock = new ReentrantLock();
 
     public PhysicsEngine() {

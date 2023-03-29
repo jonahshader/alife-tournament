@@ -6,12 +6,10 @@ import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.Database;
 import com.csi4999.systems.networking.SerializedType;
 import com.csi4999.systems.networking.common.ChunkPerformance;
-import com.csi4999.systems.networking.packets.RequestTournamentPacket;
-import com.csi4999.systems.networking.packets.TournamentFailPacket;
-import com.csi4999.systems.networking.packets.TournamentPacket;
-import com.csi4999.systems.networking.packets.TournamentResultsPacket;
+import com.csi4999.systems.networking.packets.*;
 import com.csi4999.systems.networking.wrappers.Chunk;
 import com.csi4999.systems.tournament.FuseEnvs;
+import com.csi4999.systems.tournament.RankUpdater;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -21,6 +19,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.List;
+
+import static com.csi4999.systems.tournament.RankUpdater.RANK_MEAN;
 
 public class TournamentListener implements Listener {
 
@@ -28,16 +29,20 @@ public class TournamentListener implements Listener {
 
     private Kryo k;
 
-    private final String SAVE_CHUNK_QUERY = "INSERT INTO chunk(chunk_wins, chunk_confidence, user_id) VALUES (?,?,?);";
-    private final String GET_TOURNAMENT_PARTICIPANTS_QUERY = "SELECT chunk_id FROM chunk WHERE user_id != ? ORDER BY RANDOM() LIMIT 3;";
+    private final String SAVE_CHUNK_QUERY = "INSERT INTO chunk(games_played, rank, user_id) VALUES (?,?,?);";
+    private final String GET_TOURNAMENT_PARTICIPANTS_QUERY = "SELECT chunk_id FROM chunk WHERE user_id != ? ORDER BY ABS(rank - ?) LIMIT 3;";
+
+    private final String GET_USERNAME_FROM_CHUNK_ID_QUERY = "SELECT username FROM user INNER JOIN chunk ON user.user_id = chunk.user_id WHERE chunk_id = ?;";
 
     private final String CREATE_TOURNAMENT_QUERY = "INSERT INTO tournament(tournament_date) VALUES (?);";
 
     private final String INSERT_INTO_BRIDGE_TABLE = "INSERT INTO chunk_tourney(chunk_id, tournament_id) VALUES (?,?);";
 
-    private final String GET_CURRENT_PERFORMANCE_QUERY = "SELECT chunk_wins FROM chunk WHERE chunk_id = ?;";
+//    private final String UPDATE_WINS_QUERY = "UPDATE chunk set games_played = ? WHERE chunk_id = ?;";
 
-    private final String UPDATE_WINS_QUERY = "UPDATE chunk set chunk_wins = ? WHERE chunk_id = ?;";
+    private final String GET_DATA_FROM_CHUNK_ID = "SELECT rank, games_played FROM chunk WHERE chunk_id = ?;";
+
+    private final String SET_DATA_FROM_CHUNK_ID = "UPDATE chunk SET games_played = ?, rank = ? WHERE chunk_id = ?;";
 
     private EnvProperties tournamentProperties;
 
@@ -57,12 +62,12 @@ public class TournamentListener implements Listener {
             System.out.println("Received request for tournament");
             RequestTournamentPacket p = (RequestTournamentPacket) o;
 
-
-            ArrayList<Chunk> participants = getParticipants(p.chunk.environment.userID);
-
-            saveChunk(p.chunk);
-
+            // ordered so that requester's chunk is first
+            List<Chunk> participants = new ArrayList<>();
+            saveChunk(p.chunk, p.rank);
             participants.add(p.chunk);
+            participants.addAll(getParticipants(p.chunk.environment.userID, p.rank));
+
 
             if (participants.size() != 4) {
                 // there are not enough chunks in the db to create a tournament
@@ -70,17 +75,21 @@ public class TournamentListener implements Listener {
             }
             else {
                 Environment tournamentEnvironment = new Environment(tournamentProperties);
-                ArrayList<Environment> participantEnvironments = new ArrayList<>();
-                ArrayList<Long> chunkIDs = new ArrayList<>();
+                List<Environment> participantEnvironments = new ArrayList<>();
+                List<Long> chunkIDs = new ArrayList<>();
+
 
                 for (Chunk chunk : participants) {
                     participantEnvironments.add(chunk.environment);
                     chunkIDs.add(chunk.chunkID);
                 }
 
+                List<String> names = getChunkOwnerUsernames(chunkIDs);
+                List<Float> initialRanks = getRanks(chunkIDs);
+
                 FuseEnvs.fuseEnvs(participantEnvironments, tournamentEnvironment);
 
-                c.sendTCP(new TournamentPacket(tournamentEnvironment, chunkIDs, p.chunk.environment.userID));
+                c.sendTCP(new TournamentPacket(tournamentEnvironment, chunkIDs, initialRanks, names, p.chunk.environment.userID));
             }
         }
         else if (o instanceof TournamentResultsPacket) {
@@ -96,20 +105,74 @@ public class TournamentListener implements Listener {
             }
 
             System.out.println("Updating chunk performance");
-            for (ChunkPerformance performance : p.performances) {
-                updateChunkStatistics(performance);
-            }
+//            for (ChunkPerformance performance : p.performances) {
+//                updateChunkStatistics(performance);
+//            }
+            updateRanks(p.performances, c);
+
+            System.out.println("Sending out NewRanksPacket");
+
         }
 
     }
 
-    private ArrayList<Chunk> getParticipants(long user_id) {
+    private void updateRanks(List<ChunkPerformance> chunkPerformances, Connection c) {
+        // ChunkPerformance has chunkID, performance (proportionOfWin)
+        // in addition to this, we need games_played and rank from each chunk with chunkID
+
+        List<Float> ranks = new ArrayList<>();
+        List<Float> performances = new ArrayList<>();
+        List<Integer> gamesPlayed = new ArrayList<>();
+
+
+        try {
+            // retrieve data
+            for (ChunkPerformance cPerf : chunkPerformances) {
+                PreparedStatement statement = db.con.prepareStatement(GET_DATA_FROM_CHUNK_ID);
+                statement.setLong(1, cPerf.chunkID);
+
+                ResultSet r = statement.executeQuery();
+
+                ranks.add(r.getFloat("rank"));
+                gamesPlayed.add(r.getInt("games_played") + 1);
+                performances.add(cPerf.proportionOfWin);
+            }
+
+            // calculate new ranks
+            List<Float> newRanks = RankUpdater.calculateNewRank(ranks, gamesPlayed, performances);
+            List<Long> chunkIDs = new ArrayList<>();
+
+            // save new ranks into db
+            for (int i = 0; i < chunkPerformances.size(); i++) {
+                long chunkID = chunkPerformances.get(i).chunkID;
+                float rank = newRanks.get(i);
+                long gPlayed = gamesPlayed.get(i);
+
+                chunkIDs.add(chunkID);
+
+                PreparedStatement statement = db.con.prepareStatement(SET_DATA_FROM_CHUNK_ID);
+                statement.setLong(1, gPlayed);
+                statement.setFloat(2, rank);
+                statement.setLong(3, chunkID);
+
+                statement.executeUpdate();
+            }
+
+            c.sendTCP(new NewRanksPacket(getRanks(chunkIDs)));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+
+    }
+
+    private ArrayList<Chunk> getParticipants(long user_id, float rank) {
 
         try {
             ArrayList<Chunk> participants = new ArrayList<>();
 
             PreparedStatement statement = db.con.prepareStatement(GET_TOURNAMENT_PARTICIPANTS_QUERY);
             statement.setLong(1, user_id);
+            statement.setFloat(2, rank);
 
             ResultSet r = statement.executeQuery();
 
@@ -118,9 +181,6 @@ public class TournamentListener implements Listener {
 
                 Chunk chunk = (Chunk) db.retrieveSerializedObject(SerializedType.CHUNK, participantID, k);
                 participants.add(chunk);
-
-//                for (Creature c : chunk.environment.creatureSpawner.getCreatures())
-//                    System.out.println(c.chunkID);
             }
 
             return participants;
@@ -130,12 +190,42 @@ public class TournamentListener implements Listener {
         }
     }
 
-    private void saveChunk(Chunk chunk) {
+    private List<Float> getRanks(List<Long> chunkIDs) {
+        try {
+            List<Float> ranks = new ArrayList<>();
+            for (Long id : chunkIDs) {
+                PreparedStatement statement = db.con.prepareStatement("SELECT rank FROM chunk WHERE chunk_id = ?;");
+                statement.setLong(1, id);
+                ranks.add(statement.executeQuery().getFloat(1));
+            }
+            return ranks;
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private List<String> getChunkOwnerUsernames(List<Long> chunkIDs) {
+        try {
+            List<String> usernames = new ArrayList<>();
+            for (Long chunkID : chunkIDs) {
+                PreparedStatement statement = db.con.prepareStatement(GET_USERNAME_FROM_CHUNK_ID_QUERY);
+                statement.setLong(1, chunkID);
+                ResultSet r = statement.executeQuery();
+
+                usernames.add(r.getString("username"));
+            }
+            return usernames;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void saveChunk(Chunk chunk, float rank) {
 
         try {
             PreparedStatement preparedStatement = db.con.prepareStatement(SAVE_CHUNK_QUERY, new String[] {"chunk_id"});
-            preparedStatement.setFloat(1, 0.0f);
-            preparedStatement.setFloat(2, 0.0f);
+            preparedStatement.setLong(1, 0);
+            preparedStatement.setFloat(2, rank);
             preparedStatement.setLong(3, chunk.environment.userID);
             preparedStatement.executeUpdate();
 
@@ -182,27 +272,26 @@ public class TournamentListener implements Listener {
         }
     }
 
-    private void updateChunkStatistics(ChunkPerformance performance) {
-        try {
-            PreparedStatement preparedStatement =  db.con.prepareStatement(GET_CURRENT_PERFORMANCE_QUERY);
-            preparedStatement.setLong(1, performance.chunkID);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            float currentWins = resultSet.getFloat("chunk_wins");
-
-            currentWins += performance.proportionOfWin;
-
-            preparedStatement = db.con.prepareStatement(UPDATE_WINS_QUERY);
-            preparedStatement.setFloat(1, currentWins);
-            preparedStatement.setLong(2, performance.chunkID);
-            preparedStatement.executeUpdate();
-        }
-        catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
-
-    }
+//    private void updateChunkStatistics(ChunkPerformance performance) {
+//        try {
+//            PreparedStatement preparedStatement =  db.con.prepareStatement(GET_CURRENT_PERFORMANCE_QUERY);
+//            preparedStatement.setLong(1, performance.chunkID);
+//
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//            resultSet.next();
+//            long currentGamesPlayed = resultSet.getLong("games_played");
+//            currentGamesPlayed++;
+//
+//            preparedStatement = db.con.prepareStatement(UPDATE_WINS_QUERY);
+//            preparedStatement.setLong(1, currentGamesPlayed);
+//            preparedStatement.setLong(2, performance.chunkID);
+//            preparedStatement.executeUpdate();
+//        }
+//        catch (SQLException exception) {
+//            throw new RuntimeException(exception);
+//        }
+//
+//    }
 
 
 

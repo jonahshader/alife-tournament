@@ -7,15 +7,21 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.networking.common.ChunkPerformance;
+import com.csi4999.systems.networking.packets.NewRanksPacket;
 import com.csi4999.systems.networking.packets.TournamentPacket;
 import com.csi4999.systems.networking.packets.TournamentResultsPacket;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.csi4999.systems.tournament.WinCondition;
 import com.csi4999.systems.ui.*;
 
+import java.util.List;
+
 public class SimScreen implements Screen, InputProcessor {
+    public static SimScreen instance;
     public static final int GAME_WIDTH = 640;
     public static final int GAME_HEIGHT = 360;
     private final OrthographicCamera worldCam;
@@ -35,9 +41,11 @@ public class SimScreen implements Screen, InputProcessor {
     public ChunkSelector chunkSelector;
     private WinCondition winCondition;
     public TournamentResultsPacket tournamentResults;
+    public NewRanksPacket newRanksPacket;
+    public List<String> chunkNames;
+    public List<Float> initialRanks;
     private DisplayResults displayResults;
-
-    private boolean tournamentMode = false;
+    private CreatureNameTag creatureNameTag;
 
     private Thread simThread;
 
@@ -46,6 +54,7 @@ public class SimScreen implements Screen, InputProcessor {
     }
 
     public SimScreen(ALifeApp app, UserAccountPacket user, Environment env) {
+        instance = this;
         this.app = app;
         this.user = user;
         this.env = env;
@@ -60,9 +69,12 @@ public class SimScreen implements Screen, InputProcessor {
     }
 
     public SimScreen(ALifeApp app, UserAccountPacket user, TournamentPacket tournament) {
+        instance = this;
         this.app = app;
         this.user = user;
-        this.env = tournament.environment;
+        env = tournament.environment;
+        chunkNames = tournament.names;
+        initialRanks = tournament.initialRanks;
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
@@ -71,7 +83,7 @@ public class SimScreen implements Screen, InputProcessor {
         toolBar = new ToolBar(app.batch, this, true);
         winCondition = new WinCondition(this, tournament.chunkIDs);
         displayResults = new DisplayResults(this);
-        tournamentMode = true;
+        creatureNameTag = new CreatureNameTag(tournament.chunkIDs, tournament.names, env.creatureSpawner);
     }
 
     private void tryLaunchSimThread() {
@@ -103,6 +115,14 @@ public class SimScreen implements Screen, InputProcessor {
             }
         }
 
+//        if (!savedUserRank && newRanksPacket != null && tournamentResults != null) {
+//            for (ChunkPerformance p : tournamentResults.performances) {
+//                if (p.user)
+//            }
+//
+//            savedUserRank = true;
+//        }
+
 
         worldViewport.apply();
         app.batch.setProjectionMatrix(worldCam.combined);
@@ -117,6 +137,10 @@ public class SimScreen implements Screen, InputProcessor {
         if (renderingEnabled) {
             app.batch.begin();
             env.draw(app.shapeDrawer, app.batch, worldCam);
+            if (creatureNameTag != null) {
+                creatureNameTag.render(app.batch);
+            }
+
             app.batch.end();
         }
 

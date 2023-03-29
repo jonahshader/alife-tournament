@@ -69,10 +69,10 @@ public class MainMenuScreen implements Screen {
 
 
         // Create buttons and their respective click listeners
-        TextButton trainingButton = new TextButton("Training", skin);
         TextButton shopButton = new TextButton("Shop", skin);
-        TextButton tournamentButton = new TextButton("Tournament", skin);
-        TextButton savedEntitiesButton = new TextButton("Saved", skin);
+        TextButton trainingButton = new TextButton("Play", skin);
+
+        TextButton savedEntitiesButton = new TextButton("Load", skin);
         TextButton settingsButton = new TextButton("Settings", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
@@ -88,13 +88,6 @@ public class MainMenuScreen implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 ScreenStack.push(new ShopScreen(app));
-            }
-        });
-
-        tournamentButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user, EnvProperties.makeTestDefault()));
             }
         });
 
@@ -129,8 +122,6 @@ public class MainMenuScreen implements Screen {
         buttonsTable.add(trainingButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
         buttonsTable.add(shopButton).fill().uniform();
-        buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(tournamentButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
         buttonsTable.add(savedEntitiesButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);

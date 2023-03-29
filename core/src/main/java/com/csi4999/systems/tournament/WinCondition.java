@@ -12,7 +12,8 @@ import java.util.stream.Collectors;
 
 public class WinCondition {
     private SimScreen sim;
-    public static final long TIME_LIMIT =  (long) (3 * 60 / Environment.dt); // 60 minutes (sim time)
+    public static final long TIME_LIMIT =  (long) (5 * 60 / Environment.dt); // 5 minutes (sim time)
+    public static final int MONEY_PER_WIN = 10;
     private List<Long> originalChunkIDs;
     private boolean gameDone = false;
 
@@ -70,6 +71,7 @@ public class WinCondition {
             }
         }
         sim.tournamentResults = new TournamentResultsPacket(chunkPerformances);
+        GameClient.getInstance().user.money += Math.round(sim.tournamentResults.performances.get(0).proportionOfWin * MONEY_PER_WIN);
         // send results to server
         GameClient.getInstance().client.sendTCP(sim.tournamentResults);
     }
