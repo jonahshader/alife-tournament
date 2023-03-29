@@ -439,7 +439,7 @@ public class GenerationScreen implements Screen {
         app.batch.begin();
         app.shapeDrawer.setColor(.18f, .2f, .28f, 1);
 
-        app.shapeDrawer.filledRectangle(15,15, menuViewport.getWorldWidth() - 35, menuViewport.getWorldHeight() - 35); // Why are these the values that produce a somewhat symmetrical result?
+        app.shapeDrawer.filledRectangle(15,15, menuViewport.getWorldWidth() - 35, menuViewport.getWorldHeight() - 35);
         app.batch.end();
 
         stage.act();
