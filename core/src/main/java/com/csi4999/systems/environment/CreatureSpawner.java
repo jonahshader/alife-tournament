@@ -16,17 +16,27 @@ public class CreatureSpawner {
     private List<Creature> creatures = new ArrayList<>();
 
     private EnvProperties properties;
+    private Random r;
+    private PhysicsEngine physics;
+
+    private float toSpawn = 0;
     public CreatureSpawner() {}
     public CreatureSpawner(Random r, PhysicsEngine physics, EnvProperties properties) {
+        this.r = r;
+        this.physics = physics;
         this.properties = properties;
         for (int i = 0; i < properties.initialCreatures; i++) {
             addRandomCreature(r, physics, properties.sensorBuilders, properties.toolBuilders);
         }
     }
 
-    public void run(PhysicsEngine engine, Random rand, float mutateAmount) {
+    public void run(PhysicsEngine engine, Random rand, float mutateAmount, float dt) {
         handleRemoval();
         List<Creature> newCreatures = new ArrayList<>();
+        while (toSpawn > 1) {
+            toSpawn -= 1;
+            addRandomCreature(r, physics, properties.sensorBuilders, properties.toolBuilders);
+        }
         for (Creature c : creatures) {
             List<Creature> newOffspring = c.getNewOffspring(engine, rand, mutateAmount);
             if (newOffspring != null) {
@@ -36,6 +46,8 @@ public class CreatureSpawner {
         creatureLock.lock();
         creatures.addAll(newCreatures);
         creatureLock.unlock();
+
+        toSpawn += properties.creaturesPerSecond * dt;
     }
 
     public void handleRemoval() {

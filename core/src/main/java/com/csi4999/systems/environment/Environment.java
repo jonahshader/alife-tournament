@@ -1,6 +1,9 @@
 package com.csi4999.systems.environment;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Rectangle;
@@ -30,6 +33,8 @@ public class Environment {
     public long userID; //for use in database
     public long EnvironmentID; //populated by server, will be needed if user can alter and resave environment
 
+    private Color backgroundColor;
+
     public Environment() {}
 
     public Environment(EnvProperties properties) {
@@ -38,9 +43,16 @@ public class Environment {
         this.r = new RandomXS128();
         this.foodSpawner = new FoodSpawner(this.r, this.physics, properties);
         this.creatureSpawner = new CreatureSpawner(this.r, this.physics, properties);
+
+        backgroundColor = new Color(0.3f * r.nextFloat(), 0.3f * r.nextFloat(), 0.3f * r.nextFloat(), 1f);
     }
 
     public void draw(ShapeDrawer drawer, Batch batch, Camera cam) {
+        // set clear color
+        Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+        // apply clear color to screen
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         physics.draw(batch, drawer, cam);
 //        physics.renderBounds(drawer);
     }
@@ -53,7 +65,7 @@ public class Environment {
 
     public synchronized void update() {
         physics.run(dt);
-        creatureSpawner.run(physics, r, properties.globalMutationRate);
+        creatureSpawner.run(physics, r, properties.globalMutationRate, dt);
         foodSpawner.run(r, physics);
         age++;
     }

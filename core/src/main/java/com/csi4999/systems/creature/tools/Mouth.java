@@ -28,10 +28,16 @@ public class Mouth extends Circle implements Tool {
     // copy constructor
     public Mouth(Mouth m) {
         super(new Vector2(m.position), m.radius);
+        computedTransform.set(m.computedTransform);
+        oldTransform.set(m.oldTransform);
+        worldTransform.set(m.worldTransform);
         rotationDegrees = m.rotationDegrees;
         left = new MouthPart();
         left.scale.y = -1;
         right = new MouthPart();
+
+        left.computeTransform(this);
+        right.computeTransform(this);
         getChildren().add(left);
         getChildren().add(right);
         animationProgress = m.animationProgress;

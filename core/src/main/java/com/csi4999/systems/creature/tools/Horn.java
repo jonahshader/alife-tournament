@@ -27,6 +27,9 @@ public class Horn extends LineSegment implements Tool {
 
     public Horn(Horn h) {
         super(new Vector2(h.position), h.lineLength);
+        computedTransform.set(h.computedTransform);
+        oldTransform.set(h.oldTransform);
+        worldTransform.set(h.worldTransform);
         rotationDegrees = h.rotationDegrees;
         lastStrength = h.lastStrength;
         lastDt = h.lastDt;
@@ -51,7 +54,6 @@ public class Horn extends LineSegment implements Tool {
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
-
         shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
         shapeDrawer.filledTriangle(0f, 1.5f, lineLength, 0f, 0f, -1.5f, color);
     }
@@ -81,7 +83,8 @@ public class Horn extends LineSegment implements Tool {
         for (Collider c : collision) {
             if (c != parent && c instanceof Creature) {
                 Creature cr = (Creature) c;
-                cr.takeDamage(lastStrength * lastDt * MAX_DAMAGE_RATE);
+                float attackScale = 1 - (cr.getSimilarity(this) * .5f);
+                cr.takeDamage(lastStrength * attackScale * lastDt * MAX_DAMAGE_RATE);
                 color.r = 0f;
             }
         }

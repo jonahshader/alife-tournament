@@ -35,6 +35,9 @@ public class Eye extends LineSegment implements Sensor {
 
     public Eye(Eye e) {
         super(e.lineLength);
+        computedTransform.set(e.computedTransform);
+        oldTransform.set(e.oldTransform);
+        worldTransform.set(e.worldTransform);
         lastHitDist = e.lastHitDist;
         position.set(e.position);
         visionData = e.visionData.clone(); // clone is shallow but its fine because its floats

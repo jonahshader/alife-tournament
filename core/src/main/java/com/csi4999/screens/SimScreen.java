@@ -127,10 +127,7 @@ public class SimScreen implements Screen, InputProcessor {
         worldViewport.apply();
         app.batch.setProjectionMatrix(worldCam.combined);
 
-        // set clear color
-        Gdx.gl.glClearColor(.21f, .2f, .21f, 1f);
-        // apply clear color to screen
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 
         creatureHud.updateCamera();
 
@@ -142,6 +139,9 @@ public class SimScreen implements Screen, InputProcessor {
             }
 
             app.batch.end();
+        } else {
+            Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1f);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         }
 
 
