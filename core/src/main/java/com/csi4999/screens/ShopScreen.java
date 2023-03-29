@@ -13,6 +13,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.shop.ShopItem;
+
+import java.util.List;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 import static com.csi4999.systems.shop.ShopStuffKt.makeShopItems;
@@ -90,6 +93,7 @@ public class ShopScreen implements Screen {
 
         stage.addActor(mainTable);
     }
+
 
     @Override
     public void render(float delta) {
