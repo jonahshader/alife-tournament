@@ -75,8 +75,13 @@ public class SavedCreatureScreen implements Screen {
         mainTable.add(title).expandX().pad(0,0,0,0);
         mainTable.row();
 
+        entityTable.add(new Label("Name:", skin)).width(100).pad(0,0,15, 50).uniform();
+        entityTable.add(new Label("Description:", skin)).expandX().pad(0,0,15,0);
+        entityTable.row();
+
         for (SavedCreatureDescription d : savedCreatures) {
             Label creatureName = new Label(d.name, skin);
+            creatureName.setEllipsis(true);
             Label creatureDescription;
 
             if (d.description.length() <= 25)

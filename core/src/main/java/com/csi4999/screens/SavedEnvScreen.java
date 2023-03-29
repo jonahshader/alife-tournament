@@ -72,15 +72,17 @@ public class SavedEnvScreen implements Screen {
         TextButton switchToCreatures = new TextButton("Switch to Saved Creatures", skin);
         Label title = new Label("Saved Environments", skin);
 
-        mainTable.add(title).expandX().pad(0,0,0,0);
+        mainTable.add(title).expandX().pad(0,0,20,0);
         mainTable.row();
 
-
-
+        entityTable.add(new Label("Name:", skin)).width(100).pad(0,0,15, 50).uniform();
+        entityTable.add(new Label("Description:", skin)).expandX().pad(0,0,15,0);
+        entityTable.row();
 
         for (SavedEnvironmentDescription d : savedEnvironments) {
 
             Label environmentName = new Label(d.name, skin);
+            environmentName.setEllipsis(true);
             Label environmentDescription;
 
             if (d.description.length() <= 25)
