@@ -29,6 +29,8 @@ public class UserAccountPacket {
     public float rank = RankUpdater.RANK_MEAN;
     public int gamesPlayed = 0;
 
+    public int money = 0;
+
     public UserAccountPacket(){} // empty constructor for Kryo
 
     public static UserAccountPacket createDefault(long id) {

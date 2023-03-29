@@ -213,7 +213,7 @@ public class GenerationScreen implements Screen {
         });
         creatureDeviationSlider.addListener(event -> {
             int creatureDeviation = (int) creatureDeviationSlider.getValue();
-            properties.initialCreatures = creatureDeviation;
+            properties.creatureSpawnStd = creatureDeviation;
             creatureDeviationValueLabel.setText(String.valueOf(creatureDeviation));
             return false;
         });

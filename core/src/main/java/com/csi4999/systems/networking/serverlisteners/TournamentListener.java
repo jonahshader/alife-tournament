@@ -30,7 +30,7 @@ public class TournamentListener implements Listener {
     private Kryo k;
 
     private final String SAVE_CHUNK_QUERY = "INSERT INTO chunk(games_played, rank, user_id) VALUES (?,?,?);";
-    private final String GET_TOURNAMENT_PARTICIPANTS_QUERY = "SELECT chunk_id FROM chunk WHERE user_id != ? ORDER BY RANDOM() LIMIT 3;";
+    private final String GET_TOURNAMENT_PARTICIPANTS_QUERY = "SELECT chunk_id FROM chunk WHERE user_id != ? ORDER BY ABS(rank - ?) LIMIT 3;";
 
     private final String GET_USERNAME_FROM_CHUNK_ID_QUERY = "SELECT username FROM user INNER JOIN chunk ON user.user_id = chunk.user_id WHERE chunk_id = ?;";
 
@@ -62,13 +62,12 @@ public class TournamentListener implements Listener {
             System.out.println("Received request for tournament");
             RequestTournamentPacket p = (RequestTournamentPacket) o;
 
-
-            List<Chunk> participants = getParticipants(p.chunk.environment.userID);
-
-
+            // ordered so that requester's chunk is first
+            List<Chunk> participants = new ArrayList<>();
             saveChunk(p.chunk, p.rank);
-
             participants.add(p.chunk);
+            participants.addAll(getParticipants(p.chunk.environment.userID, p.rank));
+
 
             if (participants.size() != 4) {
                 // there are not enough chunks in the db to create a tournament
@@ -166,13 +165,14 @@ public class TournamentListener implements Listener {
 
     }
 
-    private ArrayList<Chunk> getParticipants(long user_id) {
+    private ArrayList<Chunk> getParticipants(long user_id, float rank) {
 
         try {
             ArrayList<Chunk> participants = new ArrayList<>();
 
             PreparedStatement statement = db.con.prepareStatement(GET_TOURNAMENT_PARTICIPANTS_QUERY);
             statement.setLong(1, user_id);
+            statement.setFloat(2, rank);
 
             ResultSet r = statement.executeQuery();
 

@@ -49,8 +49,6 @@ public class SimScreen implements Screen, InputProcessor {
 
     private Thread simThread;
 
-    private boolean savedUserRank = false;
-
     public SimScreen(ALifeApp app, UserAccountPacket user, EnvProperties properties) {
         this(app, user, new Environment(properties));
     }
