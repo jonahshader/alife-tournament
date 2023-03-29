@@ -45,4 +45,43 @@ public class CustomMath {
             max = Math.max(values.get(i), max);
         return max;
     }
+
+    // from https://stackoverflow.com/questions/442758/which-java-library-computes-the-cumulative-standard-normal-distribution-function
+    // returns the cumulative normal distribution function (CNDF)
+    // for a standard normal: N(0,1)
+    public static double CNDF(double x)
+    {
+        int neg = (x < 0d) ? 1 : 0;
+        if ( neg == 1)
+            x *= -1d;
+
+        double k = (1d / ( 1d + 0.2316419 * x));
+        double y = (((( 1.330274429 * k - 1.821255978) * k + 1.781477937) *
+            k - 0.356563782) * k + 0.319381530) * k;
+        y = 1.0 - 0.398942280401 * Math.exp(-0.5 * x * x) * y;
+
+        return (1d - neg) * y + neg * (1d - y);
+    }
+
+    // adapted from https://www.johndcook.com/blog/cpp_phi_inverse/
+    private static double rationalApproximation(double t) {
+        double c[] = {2.515517, 0.802853, 0.010328};
+        double d[] = {1.432788, 0.189269, 0.001308};
+        return t - ((c[2]*t + c[1])*t + c[0]) /
+            (((d[2]*t + d[1])*t + d[0])*t + 1.0);
+    }
+
+    public static double normalCDFInverse(double p) {
+
+        if (p < 0.5)
+        {
+            // F^-1(p) = - G^-1(p)
+            return -rationalApproximation( Math.sqrt(-2.0*Math.log(p)) );
+        }
+        else
+        {
+            // F^-1(p) = G^-1(1-p)
+            return rationalApproximation( Math.sqrt(-2.0*Math.log(1-p)) );
+        }
+    }
 }

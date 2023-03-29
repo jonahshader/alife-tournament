@@ -5,6 +5,7 @@ import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
 import com.csi4999.systems.creature.tools.FlagellaBuilder;
 import com.csi4999.systems.creature.tools.MouthBuilder;
+import com.csi4999.systems.tournament.RankUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,38 +14,24 @@ import java.util.List;
  * this packet is sent (S -> C) on a successful login
  */
 public class UserAccountPacket {
-    private static final long NUMBER_OF_TOOLS_DEFAULT = 3;
-    private static final long NUMBER_OF_SENSORS_DEFAULT = 2;
 
     public long userID;
     public List<ToolBuilder> toolBuilders;
     public List<SensorBuilder> sensorBuilders;
-    public long numberOfTools;
-    public long numberOfSensors;
-    public long maxTools;
-    public long maxSensors;
-    public int foodTarget;
+    public long maxTools = 4; // TODO: turn these back down for final release
+    public long maxSensors = 4;
+    public int maxMutationRate = 1;
+    public int maxCreaturesPerSecond = 0;
+    public int maxInitialCreatures = 600;
 
 
+    // ranking stuff
+    public float rank = RankUpdater.RANK_MEAN;
+    public int gamesPlayed = 0;
 
-
-
-    public float wins;
-    public float confidence;
+    public int money = 0;
 
     public UserAccountPacket(){} // empty constructor for Kryo
-
-    public UserAccountPacket(long userID, List<ToolBuilder> toolBuilders, List<SensorBuilder> sensorBuilders,
-                             long numberOfTools, long numberOfSensors) {
-        this.userID = userID;
-        this.toolBuilders = toolBuilders;
-        this.sensorBuilders = sensorBuilders;
-        // are these just the length of the list ?
-        this.numberOfTools = numberOfTools;
-        this.numberOfSensors = numberOfSensors;
-        this.wins = 0;
-        this.confidence = 0;
-    }
 
     public static UserAccountPacket createDefault(long id) {
         UserAccountPacket p = new UserAccountPacket();
@@ -54,8 +41,6 @@ public class UserAccountPacket {
         p.toolBuilders.add(new MouthBuilder());
         p.toolBuilders.add(new FlagellaBuilder());
         p.sensorBuilders.add(new EyeBuilder());
-        p.numberOfTools = NUMBER_OF_TOOLS_DEFAULT;
-        p.numberOfSensors = NUMBER_OF_SENSORS_DEFAULT;
         return p;
     }
 }

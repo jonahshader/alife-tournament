@@ -22,7 +22,7 @@ public class EnvProperties {
 
     // for creature spawner
     public int initialCreatures = 600;
-    public int minCreatures = 0;
+    public int creaturesPerSecond = 0;
     public float creatureSpawnStd = 2048f;
     public List<SensorBuilder> sensorBuilders = new ArrayList<>();
     public List<ToolBuilder> toolBuilders = new ArrayList<>();

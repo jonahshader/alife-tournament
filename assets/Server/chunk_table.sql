@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS chunk (
 	chunk_id INTEGER PRIMARY KEY,
-	chunk_wins REAL NOT NULL,
-	chunk_confidence REAL NOT NULL,
+	games_played INTEGER NOT NULL,
+	rank REAL NOT NULL,
 	user_id INTEGER NOT NULL,
 
 	FOREIGN KEY (user_id)
