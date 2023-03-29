@@ -40,6 +40,14 @@ public class Environment {
         this.creatureSpawner = new CreatureSpawner(this.r, this.physics, properties);
     }
 
+    public Environment(EnvProperties properties, Creature creature) {
+        this.properties = properties;
+        this.physics = new PhysicsEngine();
+        this.r = new RandomXS128();
+        this.foodSpawner = new FoodSpawner(this.r, this.physics, properties);
+        this.creatureSpawner = new CreatureSpawner(creature, this.physics, properties, this.r);
+    }
+
     public void draw(ShapeDrawer drawer, Batch batch, Camera cam) {
         physics.draw(batch, drawer, cam);
 //        physics.renderBounds(drawer);

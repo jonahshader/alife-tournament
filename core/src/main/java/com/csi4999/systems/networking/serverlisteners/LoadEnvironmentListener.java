@@ -22,7 +22,7 @@ public class LoadEnvironmentListener implements Listener {
         this.k = k;
     }
 
-    private final String ENVIRONMENT_LOAD_QUERY = "SELECT * FROM environment WHERE environment_id = ?;";
+
     @Override
     public void received(Connection c, Object o) {
         if (o instanceof RequestEnvironmentPacket){

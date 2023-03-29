@@ -96,9 +96,10 @@ public class MainMenuScreen implements Screen {
                 Client client = GameClient.getInstance().client;
                 client.sendTCP(new RequestSavedEntityDataPacket(GameClient.getInstance().user.userID));
                 while (! DescriptionListener.getInstance().ready){}
-                System.out.println(DescriptionListener.getInstance().environmentDescriptions.size());
-                ScreenStack.push(new SavedEntitiesScreen(app, DescriptionListener.getInstance().environmentDescriptions,
-                    DescriptionListener.getInstance().creatureDescriptions, GameClient.getInstance().user));
+                DescriptionListener.getInstance().ready = false;
+//                ScreenStack.push(new SavedEntitiesScreen(app, DescriptionListener.getInstance().environmentDescriptions,
+//                    DescriptionListener.getInstance().creatureDescriptions, GameClient.getInstance().user));
+                ScreenStack.push(new SavedEnvScreen(app, DescriptionListener.getInstance().environmentDescriptions));
             }
         });
 

@@ -86,5 +86,8 @@ public class RegisterPackets {
         k.register(TournamentFailPacket.class);
         k.register(NewRanksPacket.class);
 
+        // classes for creature load
+        k.register(RequestCreaturePacket.class);
+
     }
 }
