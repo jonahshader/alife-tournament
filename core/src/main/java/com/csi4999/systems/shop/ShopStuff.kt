@@ -16,6 +16,15 @@ fun makeShopItems() : List<ShopItem> {
     items += ShopItem({ level: Int -> level.toFloat() + 1 }, defaultLevelToCost, { user.maxToolsLevel }, { level: Int -> user.maxToolsLevel = level }, { v: Float -> user.maxTools = v.toInt() },
         "Max Tools", "Increases the maximum number of tools a creature can have at once.", -1)
 
+    // mutationRate
+    items += ShopItem({ level: Int -> level.toFloat()}, defaultLevelToCost, { user.maxMutationRateLevel }, { level: Int -> user.maxMutationRateLevel = level }, { v: Float -> user.maxMutationRate = v.toInt() },
+        "Max Tools", "Increases the maximum rate at which a creature mutates.", -1)
+
+    // maxCreaturesPerSecond
+    // maxInitialCreatures
+    // maxFood
+    //
+
 
     return items
 }

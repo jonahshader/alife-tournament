@@ -147,13 +147,13 @@ public class GenerationScreen implements Screen {
         Label creatureDeviationValueLabel = new Label(String.valueOf((int) properties.creatureSpawnStd), skin);
 
         // Initial Food
-        Slider initialFoodSlider = new Slider(0, 10000, 1, false, skin);
+        Slider initialFoodSlider = new Slider(0, user.maxInitialFood, 1, false, skin);
         initialFoodSlider.setValue(properties.initialFood);
         Label initialFoodLabel = new Label("Initial Food", skin);
         Label initialFoodValueLabel = new Label(String.valueOf(properties.initialFood), skin);
 
         // Food Target
-        Slider foodTargetSlider = new Slider(0, 600, 1, false, skin);
+        Slider foodTargetSlider = new Slider(0, user.maxFoodTarget, 1, false, skin);
         foodTargetSlider.setValue(properties.foodTarget);
         Label foodTargetLabel = new Label("Food Target", skin);
         Label foodTargetValueLabel = new Label(String.valueOf(properties.foodTarget), skin);
@@ -219,12 +219,26 @@ public class GenerationScreen implements Screen {
         });
         initialFoodSlider.addListener(event -> {
             int initialFood = (int) initialFoodSlider.getValue();
+
+            if (initialFood > properties.foodTarget) {
+                properties.foodTarget = initialFood;
+                initialFoodValueLabel.setText(String.valueOf(initialFood));
+                initialFoodSlider.setValue(initialFood);
+            }
+
             properties.initialFood = initialFood;
             initialFoodValueLabel.setText(String.valueOf(initialFood));
             return false;
         });
         foodTargetSlider.addListener(event -> {
             int foodTarget = (int) foodTargetSlider.getValue();
+
+            if (foodTarget > properties.initialFood) {
+                properties.initialFood = foodTarget;
+                foodTargetValueLabel.setText(String.valueOf(foodTarget));
+                foodTargetSlider.setValue(foodTarget);
+            }
+
             properties.foodTarget = foodTarget;
             foodTargetValueLabel.setText(String.valueOf(foodTarget));
             return false;

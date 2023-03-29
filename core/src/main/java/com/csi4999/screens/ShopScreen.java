@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.networking.GameClient;
 import com.csi4999.systems.shop.ShopItem;
 
 import java.util.List;
@@ -43,23 +44,26 @@ public class ShopScreen implements Screen {
     @Override
     public void show() {
         Table mainTable = new Table();
+        Table topBarTable = new Table();
         Table shopItemsTable = new Table();
+        Table descriptionBarTable = new Table();
+        Table transactionTable = new Table();
+
         List<ShopItem> items = makeShopItems();
-
-
 
         mainTable.setFillParent(true);
         mainTable.align(Align.top);
 
 
-        Label currencyLabel = new Label("Coins: 5", skin);
+        Label currencyLabel = new Label("Money: " + GameClient.getInstance().user.money, skin);
         currencyLabel.setFontScale(1.25f);
 
         Label shopLabel = new Label("SHOP", skin);
         shopLabel.setFontScale(1.25f);
 
-        Label descriptionLabel = new Label("", skin);
-        Label costLabel = new Label("", skin);
+        Label descriptionLabel = new Label("Select a component", skin);
+
+        Label costLabel = new Label("Cost: ", skin);
 
         Button returnButton = new TextButton("Return", skin);
         returnButton.setScale(1.25f);
@@ -74,22 +78,36 @@ public class ShopScreen implements Screen {
             }
         });
 
-        buyButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Purchased");
-            }
-        });
 
+
+        transactionTable.row();
+        transactionTable.add(buyButton).uniform();
+        transactionTable.row().pad(10, 0, 0, 0);
+        transactionTable.add(sellButton).uniform();
+
+        // Make each shop item
         shopItemsTable.add(items.get(0).makeComponent(skin, descriptionLabel, costLabel, buyButton, sellButton));
 
-        mainTable.row().pad(15, 0, 0, 0);
-        mainTable.add(currencyLabel).width(400);
-        mainTable.add(shopLabel).width(400);
-        mainTable.add(returnButton).width(100);
-        mainTable.row().pad(30, 0, 0, 0);
-        mainTable.add(shopItemsTable);
 
+
+
+        descriptionBarTable.add(descriptionLabel).align(Align.topLeft).pad(0,0,0,300);
+        descriptionBarTable.add(costLabel).pad(0,0,0,25);
+        descriptionBarTable.add(transactionTable);
+
+        topBarTable.add(currencyLabel).width(400);
+        topBarTable.add(shopLabel).width(400);
+        topBarTable.add(returnButton).width(100);
+
+        mainTable.row().pad(15, 0, 0, 0);
+        //mainTable.add(currencyLabel).width(400);
+        //mainTable.add(shopLabel).width(400);
+        //mainTable.add(returnButton).width(100);
+        mainTable.add(topBarTable);
+        mainTable.row().pad(50, 0, 445, 0);
+        mainTable.add(shopItemsTable).align(Align.left);
+        mainTable.row();
+        mainTable.add(descriptionBarTable).align(Align.left);
 
         stage.addActor(mainTable);
     }
@@ -106,10 +124,10 @@ public class ShopScreen implements Screen {
         app.shapeDrawer.filledRectangle(35,45, shopViewport.getWorldWidth() - 70, shopViewport.getWorldHeight() - 90);
         app.shapeDrawer.setColor(.26f, .28f, .36f, 1);
         app.shapeDrawer.filledRectangle(75,75, shopViewport.getWorldWidth() - 150, shopViewport.getWorldHeight() - 600);
-        app.shapeDrawer.setColor(0f, 0f, 0f, 1);
-        app.shapeDrawer.filledRectangle(1035, 95, 125, 75);
-        app.shapeDrawer.setColor(.90f, .90f, 0f, 1);
-        app.shapeDrawer.filledRectangle(1040, 100, 115, 65);
+        //app.shapeDrawer.setColor(0f, 0f, 0f, 1);
+        //app.shapeDrawer.filledRectangle(1035, 95, 125, 75);
+        //app.shapeDrawer.setColor(.90f, .90f, 0f, 1);
+        //app.shapeDrawer.filledRectangle(1040, 100, 115, 65);
         app.batch.end();
 
         stage.act();

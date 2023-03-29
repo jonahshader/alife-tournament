@@ -27,7 +27,7 @@ class ShopItem(
         componentTable.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 description.setText(desc)
-                cost.setText(levelToPrice(retrieveLevel() + 1).toString())
+                cost.setText("Cost: " + levelToPrice(retrieveLevel() + 1).toString())
                 purchaseButton.clearListeners()
                 purchaseButton.addListener(object : ClickListener() {
                     override fun clicked(event: InputEvent?, x: Float, y: Float) {
