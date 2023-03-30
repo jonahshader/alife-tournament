@@ -11,6 +11,7 @@ import com.csi4999.screens.SimScreen;
 import com.csi4999.screens.SingleMultiScreen;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.networking.GameServer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import static com.csi4999.singletons.CustomAssetManager.SPRITE_PACK;
@@ -19,6 +20,7 @@ import static com.csi4999.singletons.CustomAssetManager.SPRITE_PACK;
 public class ALifeApp extends Game {
     public SpriteBatch batch;
     public ShapeDrawer shapeDrawer;
+    public GameServer internalServer;
 
     @Override
     public void create() {
@@ -51,5 +53,6 @@ public class ALifeApp extends Game {
         super.dispose();
         if (screen != null)
             screen.dispose();
+        internalServer.shutdown();
     }
 }

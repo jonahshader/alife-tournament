@@ -47,4 +47,7 @@ public class GameServer {
         }
     }
 
+    public void shutdown() {
+        server.stop();
+    }
 }

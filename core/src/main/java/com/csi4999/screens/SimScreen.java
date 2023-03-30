@@ -32,7 +32,7 @@ public class SimScreen implements Screen, InputProcessor {
     public Environment env;
 
     public volatile boolean limitSpeed = true;
-    public boolean renderingEnabled = true;
+    private boolean renderingEnabled = true;
     public volatile boolean playing = true;
 
     public UserAccountPacket user;
@@ -67,6 +67,8 @@ public class SimScreen implements Screen, InputProcessor {
         chunkSelector = new ChunkSelector(worldViewport, worldCam, this);
         toolBar = new ToolBar(app.batch, this, false);
         displayResults = new DisplayResults(this);
+
+        setRenderingEnabled(true);
     }
 
     public SimScreen(ALifeApp app, UserAccountPacket user, TournamentPacket tournament) {
@@ -153,6 +155,11 @@ public class SimScreen implements Screen, InputProcessor {
         if (chunkSelector != null)
             chunkSelector.render(app.shapeDrawer, delta);
         displayResults.render(app.shapeDrawer);
+    }
+
+    public void setRenderingEnabled(boolean enabled) {
+        renderingEnabled = enabled;
+        CustomParticles.enabled = enabled;
     }
 
     @Override

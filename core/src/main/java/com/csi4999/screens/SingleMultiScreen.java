@@ -86,7 +86,7 @@ public class SingleMultiScreen implements Screen {
         offlineButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                new GameServer(OFFLINE_PORT); // server doesn't need to be stored
+                app.internalServer = new GameServer(OFFLINE_PORT); // server doesn't need to be stored
                 // mimic login procedure
                 try {
                     GameClient.getInstance().tryConnect("localhost", OFFLINE_PORT);
