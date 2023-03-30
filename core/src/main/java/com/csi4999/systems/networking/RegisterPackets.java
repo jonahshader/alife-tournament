@@ -64,6 +64,8 @@ public class RegisterPackets {
         k.register(RandomXS128.class, new JavaSerializer());
         k.register(EyeBuilder.class);
         k.register(FlagellaBuilder.class);
+        k.register(Horn.class);
+        k.register(HornBuilder.class);
         k.register(EnvProperties.class);
 
         // classes for creature save

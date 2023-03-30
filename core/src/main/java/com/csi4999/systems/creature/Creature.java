@@ -14,6 +14,7 @@ import com.csi4999.systems.environment.Food;
 import com.csi4999.systems.physics.Circle;
 import com.csi4999.systems.physics.Collider;
 import com.csi4999.systems.physics.PhysicsEngine;
+import com.csi4999.systems.ui.CreatureHud;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
@@ -63,6 +64,8 @@ public class Creature extends Circle implements Mutable {
     public String creatureName;
     public String creatureDescription;
 
+    private Color similarityColor = new Color();
+
 
     private float particleTimer = 0;
 
@@ -99,6 +102,7 @@ public class Creature extends Circle implements Mutable {
         creatureDescription = c.creatureDescription;
 
         updateColor();
+        computeTransform(null);
     }
 
     public Creature(Vector2 pos, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders, int initialSensors, int initialTools, PhysicsEngine engine, Random rand) {
@@ -122,10 +126,8 @@ public class Creature extends Circle implements Mutable {
                 inputSize += newSensor.read().length; // TODO: do we need a getSize method in Sensor? or is using read().length fine?
                 sensors.add(newSensor);
             }
-            inputs = new float[inputSize];
-        } else {
-            inputs = null;
         }
+        inputs = new float[inputSize];
 
         // make some tools
         if (toolBuilders.size() > 0) {
@@ -150,6 +152,8 @@ public class Creature extends Circle implements Mutable {
         normalizeSimilarity(similarityVector);
 
         updateColor();
+
+        computeTransform(null);
     }
 
     @Override
@@ -213,7 +217,8 @@ public class Creature extends Circle implements Mutable {
 
         while (particleTimer > 1) {
             particleTimer -= 1;
-            CustomParticles.addParticle(new Color(color), new Vector2(position), new Vector2(velocity).scl(0.0f), transformedRadius);
+            Color tempColor = (CreatureHud.instance != null && CreatureHud.instance.showSimilarity && CreatureHud.instance.c != null) ? similarityColor : color;
+            CustomParticles.addParticle(new Color(tempColor), new Vector2(position), new Vector2(velocity).scl(0.0f), transformedRadius, 1.5f, 4f, 0.75f);
         }
 
         particleTimer += velocity.len() * dt * PARTICLES_PER_VEL_PER_SEC;
@@ -240,7 +245,15 @@ public class Creature extends Circle implements Mutable {
         Sprite circle = CustomGraphics.getInstance().circle;
         circle.setScale(radius * 2f / circle.getWidth());
         circle.setOriginBasedPosition(0f, 0f);
-        circle.setColor(color);
+        if (CreatureHud.instance != null && CreatureHud.instance.showSimilarity && CreatureHud.instance.c != null) {
+            float similarity = CreatureHud.instance.c.getSimilarity(this) * .5f + .5f;
+            similarity *= similarity;
+            similarityColor.set(similarity, similarity, similarity, 1f);
+            circle.setColor(similarityColor);
+        } else {
+            circle.setColor(color);
+        }
+
         circle.draw(batch);
         float avgColor = (color.r + color.g + color.b) / 3;
         shapeDrawer.setColor(avgColor * color.r, avgColor * color.g, avgColor * color.b, parentAlpha);
@@ -257,6 +270,9 @@ public class Creature extends Circle implements Mutable {
 
     public List<Creature> getNewOffspring(PhysicsEngine engine, Random rand, float mutateAmount) {
         if (replicateTimer < 0) {
+            for (int i = 0; i < 25; i++) {
+                CustomParticles.addParticle(new Color(1f, 1f, 1f, 1f), new Vector2(position), new Vector2().setZero(), transformedRadius, 7f, 3f, .6f);
+            }
 //            System.out.println("tryna replicate");
             replicateTimer += REPLICATE_DELAY;
             // create offspring
@@ -283,9 +299,15 @@ public class Creature extends Circle implements Mutable {
             if (c instanceof Food) {
                 collidingWithFood = true;
                 break;
+            } else if (c instanceof Creature) {
+                if (!c.position.epsilonEquals(position)) {
+                    Vector2 adjustment = new Vector2(position).sub(c.position);
+                    Vector2 maxDist = new Vector2(adjustment).nor().scl(transformedRadius + ((Creature) c).transformedRadius);
+
+                    position.add(maxDist.sub(adjustment).scl(0.5f));
+                }
             }
         }
-        // TODO: replicate eye behavior
     }
 
     public float getMass() {

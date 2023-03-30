@@ -45,11 +45,6 @@ public class PhysicsEngine {
         colliders.removeIf(c -> c.removeQueued);
         renderBoundsLock.unlock();
         drawLock.lock();
-        for (PhysicsObject o : objects) {
-            if (o instanceof PhysicsObject) {
-
-            }
-        }
         objects.removeIf(c -> c.removeQueued);
         drawLock.unlock();
     }

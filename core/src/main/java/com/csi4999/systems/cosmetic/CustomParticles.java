@@ -30,14 +30,13 @@ public class CustomParticles {
         lock.unlock();
     }
 
-    public static void addParticle(Color color, Vector2 pos, Vector2 vel, float radius) {
+    public static void addParticle(Color color, Vector2 pos, Vector2 vel, float radius, float velNoise, float maxAge, float maxOpacity) {
         if (enabled) {
             lock.lock();
-            float noise = 1.5f;
-            vel.add((float) (r.nextGaussian() * noise), (float) (r.nextGaussian() * noise));
+            vel.add((float) (r.nextGaussian() * velNoise), (float) (r.nextGaussian() * velNoise));
             Particle p = new Particle(pos, vel, new Sprite(CustomGraphics.getInstance().circle), color, radius);
-            p.maxOpacity = 0.75f;
-            p.maxAge = 4;
+            p.maxOpacity = maxOpacity;
+            p.maxAge = maxAge;
             particles.add(p);
             lock.unlock();
         }

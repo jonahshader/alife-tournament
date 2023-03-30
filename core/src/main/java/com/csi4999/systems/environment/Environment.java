@@ -43,9 +43,9 @@ public class Environment {
         this.physics = new PhysicsEngine();
         this.r = new RandomXS128();
         this.foodSpawner = new FoodSpawner(this.r, this.physics, properties);
-        this.creatureSpawner = new CreatureSpawner(this.r, this.physics, properties);
+        this.creatureSpawner = new CreatureSpawner(this.r, this.physics, properties, foodSpawner);
 
-        backgroundColor = new Color(0.3f * r.nextFloat(), 0.3f * r.nextFloat(), 0.3f * r.nextFloat(), 1f);
+        backgroundColor = new Color(0.25f * r.nextFloat() + 0.05f, 0.25f * r.nextFloat() + 0.05f, 0.25f * r.nextFloat() + 0.05f, 1f);
     }
 
     public void draw(ShapeDrawer drawer, Batch batch, Camera cam) {
@@ -69,7 +69,7 @@ public class Environment {
     public synchronized void update() {
         physics.run(dt);
         creatureSpawner.run(physics, r, properties.globalMutationRate, dt);
-        foodSpawner.run(r, physics);
+        foodSpawner.run();
         age++;
     }
     public Creature getCreature(int x, int y) {

@@ -18,13 +18,15 @@ public class CreatureSpawner {
     private EnvProperties properties;
     private Random r;
     private PhysicsEngine physics;
+    private FoodSpawner foodSpawner;
 
     private float toSpawn = 0;
     public CreatureSpawner() {}
-    public CreatureSpawner(Random r, PhysicsEngine physics, EnvProperties properties) {
+    public CreatureSpawner(Random r, PhysicsEngine physics, EnvProperties properties, FoodSpawner foodSpawner) {
         this.r = r;
         this.physics = physics;
         this.properties = properties;
+        this.foodSpawner = foodSpawner;
         for (int i = 0; i < properties.initialCreatures; i++) {
             addRandomCreature(r, physics, properties.sensorBuilders, properties.toolBuilders);
         }
@@ -52,6 +54,12 @@ public class CreatureSpawner {
 
     public void handleRemoval() {
         creatureLock.lock();
+        for (Creature c : creatures) {
+            if (c.removeQueued && c.energy >= 1) {
+                // spawn food
+                foodSpawner.addFoodAtPos(new Vector2(c.position), c.energy);
+            }
+        }
         creatures.removeIf(c -> c.removeQueued);
         creatureLock.unlock();
     }

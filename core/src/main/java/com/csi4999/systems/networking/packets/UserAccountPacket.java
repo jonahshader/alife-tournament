@@ -4,6 +4,8 @@ import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
 import com.csi4999.systems.creature.tools.FlagellaBuilder;
+import com.csi4999.systems.creature.tools.Horn;
+import com.csi4999.systems.creature.tools.HornBuilder;
 import com.csi4999.systems.creature.tools.MouthBuilder;
 import com.csi4999.systems.tournament.RankUpdater;
 
@@ -21,7 +23,7 @@ public class UserAccountPacket {
     public long maxTools = 4; // TODO: turn these back down for final release
     public long maxSensors = 4;
     public int maxMutationRate = 1;
-    public int maxCreaturesPerSecond = 0;
+    public int maxCreaturesPerSecond = 100;
     public int maxInitialCreatures = 600;
 
 
@@ -40,6 +42,7 @@ public class UserAccountPacket {
         p.sensorBuilders = new ArrayList<>();
         p.toolBuilders.add(new MouthBuilder());
         p.toolBuilders.add(new FlagellaBuilder());
+        p.toolBuilders.add(new HornBuilder());
         p.sensorBuilders.add(new EyeBuilder());
         return p;
     }
