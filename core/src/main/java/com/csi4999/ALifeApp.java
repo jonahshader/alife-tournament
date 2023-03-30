@@ -1,6 +1,7 @@
 package com.csi4999;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.g2d.CpuSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -22,7 +23,8 @@ public class ALifeApp extends Game {
     @Override
     public void create() {
         ScreenStack.app = this;
-        batch = new SpriteBatch(8191);
+//        batch = new SpriteBatch(8191);
+        batch = new CpuSpriteBatch(8191);
 
         // load assets
         CustomAssetManager.getInstance().loadImages();
