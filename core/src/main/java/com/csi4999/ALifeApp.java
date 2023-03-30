@@ -22,7 +22,7 @@ public class ALifeApp extends Game {
     @Override
     public void create() {
         ScreenStack.app = this;
-        batch = new SpriteBatch();
+        batch = new SpriteBatch(8191);
 
         // load assets
         CustomAssetManager.getInstance().loadImages();

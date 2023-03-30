@@ -1,5 +1,6 @@
 package com.csi4999.systems.creature;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -8,6 +9,7 @@ import com.csi4999.systems.Mutable;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.ai.Brain;
 import com.csi4999.systems.ai.SparseBrain;
+import com.csi4999.systems.cosmetic.CustomParticles;
 import com.csi4999.systems.environment.Food;
 import com.csi4999.systems.physics.Circle;
 import com.csi4999.systems.physics.Collider;
@@ -19,6 +21,8 @@ import java.util.List;
 import java.util.Random;
 
 public class Creature extends Circle implements Mutable {
+
+    private static final float PARTICLES_PER_VEL_PER_SEC = 0.2f;
 
     private static final float BASE_RADIUS = 12f;
     private static final float MIN_SCALE = 0.5f;
@@ -35,6 +39,8 @@ public class Creature extends Circle implements Mutable {
     private static final int REPLICATE_AMOUNT = 2;
     private static final float REPLICATE_COST = 1;
     private static final float COMPONENT_ENERGY_CONSUMPTION_SCALAR = 0.8f;
+
+
 
     private float health;
     public float energy;
@@ -56,6 +62,9 @@ public class Creature extends Circle implements Mutable {
     public long chunkID = -1;
     public String creatureName;
     public String creatureDescription;
+
+
+    private float particleTimer = 0;
 
     public Creature() {}
 
@@ -88,6 +97,8 @@ public class Creature extends Circle implements Mutable {
         chunkID = c.chunkID;
         creatureName = c.creatureName;
         creatureDescription = c.creatureDescription;
+
+        updateColor();
     }
 
     public Creature(Vector2 pos, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders, int initialSensors, int initialTools, PhysicsEngine engine, Random rand) {
@@ -137,6 +148,8 @@ public class Creature extends Circle implements Mutable {
         for (int i = 0; i < similarityVector.length; i++)
             similarityVector[i] = (float) rand.nextGaussian();
         normalizeSimilarity(similarityVector);
+
+        updateColor();
     }
 
     @Override
@@ -198,8 +211,13 @@ public class Creature extends Circle implements Mutable {
         scl = Math.min(scl, BASE_MAX_ENERGY_SCALAR);
         scale.set(scl, scl);
 
+        while (particleTimer > 1) {
+            particleTimer -= 1;
+            CustomParticles.addParticle(new Color(color), new Vector2(position), new Vector2(velocity).scl(0.0f), transformedRadius);
+        }
 
-
+        particleTimer += velocity.len() * dt * PARTICLES_PER_VEL_PER_SEC;
+//        particleTimer += PARTICLES_PER_VEL_PER_SEC;
 
         // continue with default move behavior
         super.move(dt, parent);
@@ -207,6 +225,7 @@ public class Creature extends Circle implements Mutable {
     @Override
     public void mutate(float amount, Random rand) {
         super.mutate(amount, rand);
+        updateColor();
         sensors.forEach(sensor -> sensor.mutate(amount, rand));
         tools.forEach(tool -> tool.mutate(amount, rand));
         brain.mutate(amount, rand);
@@ -214,9 +233,7 @@ public class Creature extends Circle implements Mutable {
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
-        color.r = (float) (Math.tanh(similarityVector[0]) * .5f + .5f);
-        color.g = (float) (Math.tanh(similarityVector[1]) * .5f + .5f);
-        color.b = (float) (Math.tanh(similarityVector[2]) * .5f + .5f);
+
 //        shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
 //        shapeDrawer.filledCircle(0f, 0f, this.radius);
 //        // TODO: make this better
@@ -228,6 +245,12 @@ public class Creature extends Circle implements Mutable {
         float avgColor = (color.r + color.g + color.b) / 3;
         shapeDrawer.setColor(avgColor * color.r, avgColor * color.g, avgColor * color.b, parentAlpha);
         shapeDrawer.circle(0f, 0f, this.radius * (health/MAX_HEALTH));
+    }
+
+    private void updateColor() {
+        color.r = (float) (Math.tanh(similarityVector[0]) * .5f + .5f);
+        color.g = (float) (Math.tanh(similarityVector[1]) * .5f + .5f);
+        color.b = (float) (Math.tanh(similarityVector[2]) * .5f + .5f);
     }
 
 

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.RandomXS128;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.csi4999.systems.cosmetic.CustomParticles;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
@@ -52,6 +53,8 @@ public class Environment {
         Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
         // apply clear color to screen
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        CustomParticles.render(batch);
 
         physics.draw(batch, drawer, cam);
 //        physics.renderBounds(drawer);

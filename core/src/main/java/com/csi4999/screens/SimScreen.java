@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.cosmetic.CustomParticles;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.environment.Environment;
@@ -100,6 +101,7 @@ public class SimScreen implements Screen, InputProcessor {
     private void mainLoop() {
         env.update();
         statsHud.update();
+        CustomParticles.update(Environment.dt);
         if (winCondition != null)
             winCondition.update();
     }
@@ -132,12 +134,12 @@ public class SimScreen implements Screen, InputProcessor {
         creatureHud.updateCamera();
 
         if (renderingEnabled) {
+
             app.batch.begin();
             env.draw(app.shapeDrawer, app.batch, worldCam);
             if (creatureNameTag != null) {
                 creatureNameTag.render(app.batch);
             }
-
             app.batch.end();
         } else {
             Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1f);
