@@ -153,7 +153,8 @@ public class CreatureHud implements InputProcessor, Screen {
             myViewport.apply();
             stage.getBatch().setProjectionMatrix(myCam.combined);
             app.batch.begin();
-            app.shapeDrawer.filledRectangle(0f, 0f, 120f, 150f, new Color(0f, 0f, 0f, 0.5f));
+            //app.shapeDrawer.filledRectangle(0f, 0f, 120f, 150f, new Color(0f, 0f, 0f, 0.5f));
+            app.shapeDrawer.filledRectangle(0f, 0f, 120, mainTable.getHeight(), new Color(0f, 0f, 0f, 0.5f));
             app.batch.end();
             stage.act();
             stage.draw();

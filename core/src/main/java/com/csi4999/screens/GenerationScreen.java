@@ -123,46 +123,46 @@ public class GenerationScreen implements Screen {
         // Sliders //
         // Mutation Rate
         Slider mutationRateSlider = new Slider(0, user.maxMutationRate, 0.1f, false, skin);
-        mutationRateSlider.setValue(properties.globalMutationRate);
+        mutationRateSlider.setValue(user.maxMutationRate);
         Label mutationRateLabel = new Label("Mutation Rate", skin);
-        Label mutationRateValueLabel = new Label(String.valueOf(properties.globalMutationRate), skin);
+        Label mutationRateValueLabel = new Label(String.valueOf((float) user.maxMutationRate), skin);
 
         // Creatures Per Second
         // Slider max bound might need adjustment
-        Slider creaturesPerSecond = new Slider(0, user.maxCreaturesPerSecond, 1, false, skin);
-        creaturesPerSecond.setValue(properties.creaturesPerSecond);
+        Slider creaturesPerSecondSlider = new Slider(0, user.maxCreaturesPerSecond, 1, false, skin);
+        creaturesPerSecondSlider.setValue(user.maxCreaturesPerSecond);
         Label creaturesPerSecondLabel = new Label("Creature Spawn Rate", skin);
-        Label minimumCreaturesValueLabel = new Label(String.valueOf(properties.creaturesPerSecond), skin);
+        Label minimumCreaturesValueLabel = new Label(String.valueOf(user.maxCreaturesPerSecond), skin);
 
         // Initial Creatures
         Slider initialCreaturesSlider = new Slider(0, user.maxInitialCreatures, 1, false, skin);
-        initialCreaturesSlider.setValue(properties.initialCreatures);
+        initialCreaturesSlider.setValue(user.maxInitialCreatures);
         Label initialCreaturesLabel = new Label("Initial Population", skin);
-        Label initialCreaturesValueLabel = new Label(String.valueOf(properties.initialCreatures), skin);
+        Label initialCreaturesValueLabel = new Label(String.valueOf(user.maxInitialCreatures), skin);
 
         // Creature Spread
         Slider creatureDeviationSlider = new Slider(128, 2048, 1, false, skin);
-        creatureDeviationSlider.setValue(properties.creatureSpawnStd);
+        creatureDeviationSlider.setValue(2048);
         Label creatureDeviationLabel = new Label("Creature Deviation", skin);
-        Label creatureDeviationValueLabel = new Label(String.valueOf((int) properties.creatureSpawnStd), skin);
+        Label creatureDeviationValueLabel = new Label(String.valueOf(2048), skin);
 
         // Initial Food
-        Slider initialFoodSlider = new Slider(0, user.maxInitialFood, 1, false, skin);
-        initialFoodSlider.setValue(properties.initialFood);
+        Slider initialFoodSlider = new Slider(0, user.maxFood, 1, false, skin);
+        initialFoodSlider.setValue(user.maxFood);
         Label initialFoodLabel = new Label("Initial Food", skin);
-        Label initialFoodValueLabel = new Label(String.valueOf(properties.initialFood), skin);
+        Label initialFoodValueLabel = new Label(String.valueOf(user.maxFood), skin);
 
         // Food Target
-        Slider foodTargetSlider = new Slider(0, user.maxFoodTarget, 1, false, skin);
-        foodTargetSlider.setValue(properties.foodTarget);
+        Slider foodTargetSlider = new Slider(0, user.maxFood, 1, false, skin);
+        foodTargetSlider.setValue(user.maxFood);
         Label foodTargetLabel = new Label("Food Target", skin);
-        Label foodTargetValueLabel = new Label(String.valueOf(properties.foodTarget), skin);
+        Label foodTargetValueLabel = new Label(String.valueOf(user.maxFood), skin);
 
         // Food Spread
         Slider foodDeviationSlider = new Slider(128, 8192, 1, false, skin);
-        foodDeviationSlider.setValue(properties.foodSpawnStd);
+        foodDeviationSlider.setValue(8192);
         Label foodDeviationLabel = new Label("Food Deviation", skin);
-        Label foodDeviationValueLabel = new Label(String.valueOf((int) properties.foodSpawnStd), skin);
+        Label foodDeviationValueLabel = new Label(String.valueOf(8192), skin);
 
         // Min Sensors
         Slider minSensorSlider = new Slider(0, user.maxSensors, 1, false, skin);
@@ -199,8 +199,8 @@ public class GenerationScreen implements Screen {
             mutationRateValueLabel.setText(String.valueOf(((int)(mutationRate * 100))/ 100f));
             return false;
         });
-        creaturesPerSecond.addListener(event -> {
-            int minCreatures = (int) creaturesPerSecond.getValue();
+        creaturesPerSecondSlider.addListener(event -> {
+            int minCreatures = (int) creaturesPerSecondSlider.getValue();
             properties.creaturesPerSecond = minCreatures;
             minimumCreaturesValueLabel.setText(String.valueOf(minCreatures));
             return false;
@@ -386,7 +386,7 @@ public class GenerationScreen implements Screen {
 
         slidersTable.row().pad(0, 0, 10, 10);
         slidersTable.add(creaturesPerSecondLabel).align(Align.left);
-        slidersTable.add(creaturesPerSecond);
+        slidersTable.add(creaturesPerSecondSlider);
         slidersTable.add(minimumCreaturesValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
 
         slidersTable.row().pad(0, 0, 10, 10);

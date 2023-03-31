@@ -2,12 +2,13 @@ package com.csi4999.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
@@ -28,10 +29,14 @@ public class ShopScreen implements Screen {
     private final FitViewport shopViewport;
     private final ALifeApp app;
     private Stage stage;
+    Pixmap bgPixmap;
+    Color shopElementColor;
 
     public ShopScreen(ALifeApp app) {
         this.app = app;
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
+        bgPixmap = new Pixmap(1,1, Pixmap.Format.RGB565);
+        shopElementColor = new Color(.26f, .28f, .36f, 1);
         shopCam = new OrthographicCamera();
         shopViewport = new FitViewport(1280, 720, shopCam);
         shopCam.position.set(shopCam.viewportWidth/2, shopCam.viewportHeight/2, 0);
@@ -43,6 +48,11 @@ public class ShopScreen implements Screen {
 
     @Override
     public void show() {
+        //bgPixmap.setColor(Color.BLACK);
+        bgPixmap.setColor(shopElementColor);
+        bgPixmap.fill();
+        TextureRegionDrawable textureRegionDrawableBg = new TextureRegionDrawable(new TextureRegion(new Texture(bgPixmap)));
+
         Table mainTable = new Table();
         Table topBarTable = new Table();
         Table shopItemsTable = new Table();
@@ -62,6 +72,7 @@ public class ShopScreen implements Screen {
         shopLabel.setFontScale(1.25f);
 
         Label descriptionLabel = new Label("Select a component", skin);
+        descriptionLabel.setWrap(true);
 
         Label costLabel = new Label("Cost: ", skin);
 
@@ -78,36 +89,43 @@ public class ShopScreen implements Screen {
             }
         });
 
-
-
+        // Buy and sell buttons
         transactionTable.row();
         transactionTable.add(buyButton).uniform();
-        transactionTable.row().pad(10, 0, 0, 0);
+        transactionTable.row();
         transactionTable.add(sellButton).uniform();
 
         // Make each shop item
-        shopItemsTable.add(items.get(0).makeComponent(skin, descriptionLabel, costLabel, buyButton, sellButton));
+        for (int row = 0; row < 2; row++) {
+            shopItemsTable.row().align(Align.center);
+            for (int col = 0; col < 3; col++) {
+                Table wrap = new Table();
+                Table item = items.get((row * 3) + col).makeComponent(skin, descriptionLabel, costLabel, buyButton, sellButton, currencyLabel);
+                wrap.add(item);
+                item.setBackground(textureRegionDrawableBg);
+                wrap.pad(55,55,55,55);
+                //shopItemsTable.add(items.get((row * 3) + col).makeComponent(skin, descriptionLabel, costLabel, buyButton, sellButton)).align(Align.center);
+                shopItemsTable.add(wrap).align(Align.center);
+            }
+        }
 
-
-
-
-        descriptionBarTable.add(descriptionLabel).align(Align.topLeft).pad(0,0,0,300);
-        descriptionBarTable.add(costLabel).pad(0,0,0,25);
-        descriptionBarTable.add(transactionTable);
 
         topBarTable.add(currencyLabel).width(400);
         topBarTable.add(shopLabel).width(400);
-        topBarTable.add(returnButton).width(100);
+        topBarTable.add(returnButton).setActorWidth(400); // .width makes the button stretch
 
-        mainTable.row().pad(15, 0, 0, 0);
-        //mainTable.add(currencyLabel).width(400);
-        //mainTable.add(shopLabel).width(400);
-        //mainTable.add(returnButton).width(100);
-        mainTable.add(topBarTable);
-        mainTable.row().pad(50, 0, 445, 0);
-        mainTable.add(shopItemsTable).align(Align.left);
+        //shopItemsTable.setBackground(textureRegionDrawableBg);
+
+        descriptionBarTable.setBackground(textureRegionDrawableBg);
+        descriptionBarTable.add(descriptionLabel).align(Align.left).width(450).pad(0,55,0,55);
+        descriptionBarTable.add(costLabel).pad(0,55,0,55).size(50, 100);
+        descriptionBarTable.add(transactionTable).size(50, 100).pad(0,0,0,25);
+
+        mainTable.add(topBarTable).align(Align.center).pad(10, 0, 55, 0);
         mainTable.row();
-        mainTable.add(descriptionBarTable).align(Align.left);
+        mainTable.add(shopItemsTable).align(Align.center).pad(0,0,55,0);
+        mainTable.row();
+        mainTable.add(descriptionBarTable).align(Align.center);
 
         stage.addActor(mainTable);
     }
@@ -121,13 +139,10 @@ public class ShopScreen implements Screen {
         app.batch.begin();
         app.shapeDrawer.setColor(.18f, .2f, .28f, 1);
 
-        app.shapeDrawer.filledRectangle(35,45, shopViewport.getWorldWidth() - 70, shopViewport.getWorldHeight() - 90);
-        app.shapeDrawer.setColor(.26f, .28f, .36f, 1);
-        app.shapeDrawer.filledRectangle(75,75, shopViewport.getWorldWidth() - 150, shopViewport.getWorldHeight() - 600);
-        //app.shapeDrawer.setColor(0f, 0f, 0f, 1);
-        //app.shapeDrawer.filledRectangle(1035, 95, 125, 75);
-        //app.shapeDrawer.setColor(.90f, .90f, 0f, 1);
-        //app.shapeDrawer.filledRectangle(1040, 100, 115, 65);
+        app.shapeDrawer.filledRectangle(95,45, shopViewport.getWorldWidth() - 190, shopViewport.getWorldHeight() - 90);
+        //app.shapeDrawer.setColor(.26f, .28f, .36f, 1);
+        //app.shapeDrawer.filledRectangle(75,75, shopViewport.getWorldWidth() - 150, shopViewport.getWorldHeight() - 600);
+
         app.batch.end();
 
         stage.act();

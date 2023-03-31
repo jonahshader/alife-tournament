@@ -21,9 +21,8 @@ class ShopItem(
 ) {
     private var levelLabel: Label? = null
 
-    fun makeComponent(skin: Skin, description: Label, cost: Label, purchaseButton: Button, sellButton: Button): Table {
+    fun makeComponent(skin: Skin, description: Label, cost: Label, purchaseButton: Button, sellButton: Button, currencyLabel: Label): Table {
         val componentTable = Table()
-        componentTable.setSize(100f, 100f)
         componentTable.addListener(object : ClickListener() {
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 description.setText(desc)
@@ -32,22 +31,28 @@ class ShopItem(
                 purchaseButton.addListener(object : ClickListener() {
                     override fun clicked(event: InputEvent?, x: Float, y: Float) {
                         tryPurchase()
+                        currencyLabel.setText("Money: " + GameClient.getInstance().user.money)
                     }
                 })
                 sellButton.clearListeners()
                 sellButton.addListener(object : ClickListener() {
                     override fun clicked(event: InputEvent?, x: Float, y: Float) {
                         trySell()
+                        currencyLabel.setText("Money: " + GameClient.getInstance().user.money)
                     }
                 })
             }
         })
         val nameLabel = Label(name, skin)
-        levelLabel = Label(retrieveLevel().toString(), skin)
-        componentTable.row()
-        componentTable.add(nameLabel).align(Align.center)
-        componentTable.row()
-        componentTable.add(levelLabel).align(Align.left)
+        levelLabel = Label("Level: " + retrieveLevel().toString(), skin)
+        nameLabel.setAlignment(Align.center)
+        levelLabel!!.setAlignment(Align.center)
+
+
+        componentTable.row().size(175f, 35f)
+        componentTable.add(nameLabel)
+        componentTable.row().size(175f, 35f)
+        componentTable.add(levelLabel)
         return componentTable
     }
 
@@ -57,8 +62,8 @@ class ShopItem(
             // Buy
             GameClient.getInstance().user.money -= cost // decrement money
             setLevel(retrieveLevel() + 1) // increment level
-            levelLabel!!.setText(retrieveLevel().toString()) // update label
             setValue(levelToValue(retrieveLevel()))
+            levelLabel!!.setText("Level: " + retrieveLevel().toString()) // update label
             GameClient.getInstance().client.sendTCP(GameClient.getInstance().user) // send updated user to server
         } else {
             // can't purchase. do something
@@ -73,6 +78,7 @@ class ShopItem(
             GameClient.getInstance().user.money += levelToPrice(retrieveLevel())
             setLevel(retrieveLevel() - 1)
             setValue(levelToValue(retrieveLevel()))
+            levelLabel!!.setText("Level: " + retrieveLevel().toString()) // update label
             GameClient.getInstance().client.sendTCP(GameClient.getInstance().user) // send updated user to server
         } else {
             // can't keep selling

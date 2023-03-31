@@ -24,15 +24,14 @@ public class UserAccountPacket {
     public int maxMutationRateLevel = 1;
     public int maxCreaturesPerSecondLevel = 1;
     public int maxInitialCreaturesLevel = 1;
-    public int maxInitialFoodLevel = 1;
+    public int maxFoodLevel = 1;
 
     public int maxTools = 4; // TODO: turn these back down for final release
     public int maxSensors = 4;
     public int maxMutationRate = 1;
     public int maxCreaturesPerSecond = 0;
-    public int maxInitialCreatures = 600;
-    public int maxInitialFood = 100;
-    public int maxFoodTarget = 100;
+    public int maxInitialCreatures = 200;
+    public int maxFood = 100;
 
 
 
