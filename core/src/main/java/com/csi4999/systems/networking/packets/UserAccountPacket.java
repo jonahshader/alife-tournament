@@ -24,6 +24,8 @@ public class UserAccountPacket {
     public int maxCreaturesPerSecond = 0;
     public int maxInitialCreatures = 600;
 
+    public boolean is_admin;
+
 
     // ranking stuff
     public float rank = RankUpdater.RANK_MEAN;

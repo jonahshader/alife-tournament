@@ -34,6 +34,8 @@ public class LoginScreen implements Screen {
     private BitmapFont titleFont;
     private Color titleFontColor;
 
+
+
     public LoginScreen(ALifeApp app) {
         this.app = app;
 
@@ -80,18 +82,10 @@ public class LoginScreen implements Screen {
         TextButton loginButton = new TextButton("login", skin);
 
         // Create buttons and their respective click listeners
-        TextButton savedEntitiesButton = new TextButton("Saved", skin);
         TextButton settingsButton = new TextButton("Settings", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
-        TextButton saveTestButton = new TextButton("Save Test", skin);
 
-        savedEntitiesButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-//                ScreenStack.push(new SavedEntitiesScreen(app));
-            }
-        });
 
         settingsButton.addListener(new ClickListener(){
             @Override
@@ -124,12 +118,7 @@ public class LoginScreen implements Screen {
             }
         });
 
-        saveTestButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SaveTestingScreen(app));
-            }
-        });
+
 
 
         buttonsTable.row().pad(30, 0, 0, 0);
@@ -141,8 +130,8 @@ public class LoginScreen implements Screen {
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(registerButton).fill().uniform();
         buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(saveTestButton).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
+//        buttonsTable.add(saveTestButton).fill().uniform();
+//        buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(accountResponse).fill().uniform();
 
 
