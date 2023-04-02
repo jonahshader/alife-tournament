@@ -97,8 +97,6 @@ public class MainMenuScreen implements Screen {
                 client.sendTCP(new RequestSavedEntityDataPacket(GameClient.getInstance().user.userID));
                 while (! DescriptionListener.getInstance().ready){}
                 DescriptionListener.getInstance().ready = false;
-//                ScreenStack.push(new SavedEntitiesScreen(app, DescriptionListener.getInstance().environmentDescriptions,
-//                    DescriptionListener.getInstance().creatureDescriptions, GameClient.getInstance().user));
                 ScreenStack.push(new SavedEnvScreen(app, DescriptionListener.getInstance().environmentDescriptions));
             }
         });
@@ -109,6 +107,7 @@ public class MainMenuScreen implements Screen {
                 ScreenStack.push(new SettingsScreen(app));
             }
         });
+
 
         exitButton.addListener(new ClickListener(){
             @Override
@@ -126,7 +125,24 @@ public class MainMenuScreen implements Screen {
         buttonsTable.add(savedEntitiesButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
         buttonsTable.add(settingsButton).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
+
+
+        if (GameClient.getInstance().user.is_admin) {
+
+            TextButton saveTestButton = new TextButton("Save Test", skin);
+            saveTestButton.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    ScreenStack.push(new SaveTestingScreen(app));
+                }
+            });
+            buttonsTable.row().pad(0, 0, 10, 0);
+            buttonsTable.add(saveTestButton).fill().uniform();
+            buttonsTable.row().pad(30, 0, 0, 0);
+        }
+        else
+            buttonsTable.row().pad(30, 0, 0, 0);
+
         buttonsTable.add(exitButton).fill().uniform();
 
         mainTable.row().pad(40,0,50,0);
