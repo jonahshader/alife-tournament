@@ -102,6 +102,7 @@ public class CreatureHud implements InputProcessor, Screen {
                 NameDescriptionScreen.NameDescriptionCallback n = (name, description) -> {
                     c.creatureName = name;
                     c.creatureDescription = description;
+                    c.userID = GameClient.getInstance().user.userID;
                     GameClient.getInstance().client.sendTCP(new SaveCreaturePacket(c));
                 };
                 ScreenStack.push(new NameDescriptionScreen(app, "Save Creature", "Save", n));

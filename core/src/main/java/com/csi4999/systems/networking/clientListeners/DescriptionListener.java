@@ -18,7 +18,7 @@ public class DescriptionListener implements Listener {
     public List<SavedCreatureDescription> creatureDescriptions;
     public List<SavedEnvironmentDescription> environmentDescriptions;
 
-    public SavedEntitiesScreen savedEntitiesScreen;
+
 
 
 
@@ -42,16 +42,6 @@ public class DescriptionListener implements Listener {
             ready = true;
 
 
-//            for (SavedCreatureDescription creatureDescription : p.creatureDescriptions) {
-//                System.out.println(creatureDescription.creatureID);
-//                System.out.println(creatureDescription.name);
-//                System.out.println(creatureDescription.description);
-//            }
-//            for (SavedEnvironmentDescription environmentDescription : p.environmentDescriptions) {
-//                System.out.println(environmentDescription.environmentID);
-//                System.out.println(environmentDescription.name);
-//                System.out.println(environmentDescription.description);
-//            }
         }
     }
 }

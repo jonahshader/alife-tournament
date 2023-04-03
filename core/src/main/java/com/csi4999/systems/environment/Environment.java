@@ -48,6 +48,14 @@ public class Environment {
         backgroundColor = new Color(0.25f * r.nextFloat() + 0.05f, 0.25f * r.nextFloat() + 0.05f, 0.25f * r.nextFloat() + 0.05f, 1f);
     }
 
+    public Environment(EnvProperties properties, Creature creature) {
+        this.properties = properties;
+        this.physics = new PhysicsEngine();
+        this.r = new RandomXS128();
+        this.foodSpawner = new FoodSpawner(this.r, this.physics, properties);
+        this.creatureSpawner = new CreatureSpawner(creature, this.physics, properties, this.r);
+    }
+
     public void draw(ShapeDrawer drawer, Batch batch, Camera cam) {
         // set clear color
         Gdx.gl.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
