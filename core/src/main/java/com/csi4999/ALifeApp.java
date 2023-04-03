@@ -1,6 +1,7 @@
 package com.csi4999;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.graphics.g2d.CpuSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -10,6 +11,7 @@ import com.csi4999.screens.SimScreen;
 import com.csi4999.screens.SingleMultiScreen;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.networking.GameServer;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import static com.csi4999.singletons.CustomAssetManager.SPRITE_PACK;
@@ -18,11 +20,13 @@ import static com.csi4999.singletons.CustomAssetManager.SPRITE_PACK;
 public class ALifeApp extends Game {
     public SpriteBatch batch;
     public ShapeDrawer shapeDrawer;
+    public GameServer internalServer;
 
     @Override
     public void create() {
         ScreenStack.app = this;
-        batch = new SpriteBatch();
+//        batch = new SpriteBatch(8191);
+        batch = new CpuSpriteBatch(8191);
 
         // load assets
         CustomAssetManager.getInstance().loadImages();
@@ -49,5 +53,6 @@ public class ALifeApp extends Game {
         super.dispose();
         if (screen != null)
             screen.dispose();
+        internalServer.shutdown();
     }
 }

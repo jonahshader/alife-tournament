@@ -16,6 +16,7 @@ import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
+import com.csi4999.systems.creature.tools.GripperBuilder;
 import com.csi4999.systems.creature.tools.FlagellaBuilder;
 import com.csi4999.systems.creature.tools.HornBuilder;
 import com.csi4999.systems.creature.tools.MouthBuilder;
@@ -41,6 +42,7 @@ public class GenerationScreen implements Screen {
     private boolean mouthAllowed = false;
     private boolean flagellaAllowed = false;
     private boolean hornAllowed = false;
+    private boolean gripperAllowed = false;
 
     public GenerationScreen(ALifeApp app) {
         this.app = app;
@@ -77,6 +79,7 @@ public class GenerationScreen implements Screen {
         CheckBox mouthCheckbox = new CheckBox("Mouth", skin);
         CheckBox flagellaCheckbox = new CheckBox("Flagella", skin);
         CheckBox hornCheckbox = new CheckBox("Horn", skin);
+        CheckBox gripperCheckbox = new CheckBox("Gripper", skin);
 
         // Booleans for checking whether the checkboxes are enabled
         // Creature components are built based on which of these are true
@@ -84,6 +87,7 @@ public class GenerationScreen implements Screen {
         AtomicBoolean mouthEnabled = new AtomicBoolean(false);
         AtomicBoolean flagellaEnabled = new AtomicBoolean(false);
         AtomicBoolean hornEnabled = new AtomicBoolean(false);
+        AtomicBoolean gripperEnabled = new AtomicBoolean(false);
         eyeCheckbox.setChecked(false);
         mouthCheckbox.setChecked(false);
         flagellaCheckbox.setChecked(false);
@@ -110,6 +114,10 @@ public class GenerationScreen implements Screen {
                 hornCheckbox.setChecked(true);
                 hornAllowed = true;
                 hornEnabled.set(true);
+            } else if (t instanceof GripperBuilder) {
+                gripperCheckbox.setChecked(true);
+                gripperAllowed = true;
+                gripperEnabled.set(true);
             }
         }
 
@@ -117,6 +125,7 @@ public class GenerationScreen implements Screen {
         if (!mouthAllowed) mouthCheckbox.setColor(0f, 0f, 0f, .5f);
         if (!flagellaAllowed) flagellaCheckbox.setColor(0f, 0f, 0f, .5f);
         if (!hornAllowed) hornCheckbox.setColor(0f, 0f, 0f, .5f);
+        if (!gripperAllowed) gripperCheckbox.setColor(0f, 0f, 0f, .5f);
 
         UserAccountPacket user = GameClient.getInstance().user;
 
@@ -321,6 +330,14 @@ public class GenerationScreen implements Screen {
             }
             return false;
         });
+        gripperCheckbox.addListener(event -> {
+            if (gripperAllowed) {
+                gripperEnabled.set(gripperCheckbox.isChecked());
+            } else {
+                gripperCheckbox.setChecked(false);
+            }
+            return false;
+        });
 
         // Button listeners
         continueButton.addListener(new ClickListener(){
@@ -338,6 +355,9 @@ public class GenerationScreen implements Screen {
                 }
                 if (hornEnabled.get()) {
                     properties.toolBuilders.add(new HornBuilder());
+                }
+                if (gripperEnabled.get()) {
+                    properties.toolBuilders.add(new GripperBuilder());
                 }
                 ScreenStack.push(new SimScreen(app, GameClient.getInstance().user, properties));
             }
@@ -363,6 +383,9 @@ public class GenerationScreen implements Screen {
 
         componentsTable.row().pad(0,0,10,0);
         componentsTable.add(hornCheckbox).align(Align.left);
+
+        componentsTable.row().pad(0, 0, 10, 0);
+        componentsTable.add(gripperCheckbox).align(Align.left);
 
         // Sliders column
         slidersTable.row().pad(0, 0, 10, 10);

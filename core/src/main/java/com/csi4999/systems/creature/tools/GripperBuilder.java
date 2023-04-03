@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class FlagellaBuilder implements ToolBuilder {
+public class GripperBuilder implements ToolBuilder {
     @Override
     public List<Tool> buildTool(Creature parent, PhysicsEngine engine, Random rand) {
         Vector2 pos = new Vector2().setZero();
@@ -18,12 +18,16 @@ public class FlagellaBuilder implements ToolBuilder {
         float theta = (float) (rand.nextFloat() * 2 * Math.PI);
         pos.set((float) (Math.cos(theta) * r), (float) (Math.sin(theta) * r));
 
-        Flagella f = new Flagella(pos);
-        f.rotationDegrees = rand.nextFloat() * 360;
-        parent.getChildren().add(f);
+        Gripper g = new Gripper(pos, parent);
+        engine.addCollider(g);
+        parent.getChildren().add(g);
 
-        List<Tool> newTools = new ArrayList<>();
-        newTools.add(f);
-        return newTools;
+        List<Tool> t = new ArrayList<>();
+        t.add(g);
+        return t;
+    }
+
+    private float lineLength(int segment, Random rand) {
+        return ((float) Math.sqrt(rand.nextFloat()) * 80f + 10f) / (segment * .2f + 1f);
     }
 }

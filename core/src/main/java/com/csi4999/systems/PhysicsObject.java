@@ -123,7 +123,7 @@ public abstract class PhysicsObject {
     }
 
     // assumes the parent's worldTransform is accurate
-    protected Matrix4 computeTransform(PhysicsObject parent) {
+    public Matrix4 computeTransform(PhysicsObject parent) {
         worldTransform.setToTrnRotScl(position, rotationDegrees, scale);
         if (parent != null)
             worldTransform.preMul(parent.worldTransform);

@@ -3,8 +3,7 @@ package com.csi4999.systems.networking.packets;
 import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
-import com.csi4999.systems.creature.tools.FlagellaBuilder;
-import com.csi4999.systems.creature.tools.MouthBuilder;
+import com.csi4999.systems.creature.tools.*;
 import com.csi4999.systems.tournament.RankUpdater;
 
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ public class UserAccountPacket {
     public long maxTools = 4; // TODO: turn these back down for final release
     public long maxSensors = 4;
     public int maxMutationRate = 1;
-    public int maxCreaturesPerSecond = 0;
+    public int maxCreaturesPerSecond = 100;
     public int maxInitialCreatures = 600;
 
     public boolean is_admin;
@@ -42,6 +41,8 @@ public class UserAccountPacket {
         p.sensorBuilders = new ArrayList<>();
         p.toolBuilders.add(new MouthBuilder());
         p.toolBuilders.add(new FlagellaBuilder());
+        p.toolBuilders.add(new HornBuilder());
+        p.toolBuilders.add(new GripperBuilder());
         p.sensorBuilders.add(new EyeBuilder());
         return p;
     }

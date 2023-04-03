@@ -23,6 +23,7 @@ public class Food extends Circle {
 
 
     private float energy;
+    private boolean growable = true;
 
 
     public Food() {}
@@ -31,7 +32,18 @@ public class Food extends Circle {
         super(position, 0f);
         targetEnergy = (float) Math.max(1.0, rand.nextGaussian(BASE_ENERGY_TARGET, BASE_ENERGY_TARGET_STD));
         energy = 1f;
+        radius = energyToRadius(energy);
         color.set(rand.nextFloat() * .2f, rand.nextFloat() * .2f + .8f, rand.nextFloat() * .2f, 1f);
+        computeTransform(null);
+    }
+
+    public Food(Vector2 position, Random rand, float initialEnergy, float targetEnergy) {
+        super(position, 0f);
+        this.targetEnergy = targetEnergy;
+        energy = initialEnergy;
+        radius = energyToRadius(energy);
+        growable = false;
+        color.set(Math.min(1f, (float) rand.nextGaussian() * .2f + 253/255f), Math.min(1f, (float) rand.nextGaussian() * .2f + 143/255f), Math.min(1f, (float) rand.nextGaussian() * .2f + 58/255f), 1f);
         computeTransform(null);
     }
 
@@ -49,8 +61,10 @@ public class Food extends Circle {
     @Override
     public void move(float dt, PhysicsObject parent) {
         if (!removeQueued) {
-            energy += Math.tanh(targetEnergy - energy) * dt * GROW_RATE;
+            if (growable)
+                energy += Math.tanh(targetEnergy - energy) * dt * GROW_RATE;
             radius = energyToRadius(energy);
+
             super.move(dt, parent);
         }
     }

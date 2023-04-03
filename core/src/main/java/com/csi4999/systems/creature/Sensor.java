@@ -8,5 +8,5 @@ public interface Sensor extends Mutable, CreatureComponent {
 
     // copy is similar to SensorBuilder.buildSensor
     // needs to add it as a child and add to physics engine if applicable
-    Sensor copy(Creature newParent, PhysicsEngine engine);
+    Sensor copySensor(Creature newParent, PhysicsEngine engine);
 }

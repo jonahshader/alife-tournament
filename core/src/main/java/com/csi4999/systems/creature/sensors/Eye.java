@@ -35,6 +35,9 @@ public class Eye extends LineSegment implements Sensor {
 
     public Eye(Eye e) {
         super(e.lineLength);
+        computedTransform.set(e.computedTransform);
+        oldTransform.set(e.oldTransform);
+        worldTransform.set(e.worldTransform);
         lastHitDist = e.lastHitDist;
         position.set(e.position);
         visionData = e.visionData.clone(); // clone is shallow but its fine because its floats
@@ -74,7 +77,7 @@ public class Eye extends LineSegment implements Sensor {
     }
 
     @Override
-    public Sensor copy(Creature newParent, PhysicsEngine engine) {
+    public Sensor copySensor(Creature newParent, PhysicsEngine engine) {
         Eye e = new Eye(this);
         e.parent = newParent;
         newParent.getChildren().add(e);

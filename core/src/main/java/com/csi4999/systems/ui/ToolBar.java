@@ -106,7 +106,7 @@ public class ToolBar implements InputProcessor, Disposable {
         noDrawButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                sim.renderingEnabled = !noDrawButton.isChecked();
+                sim.setRenderingEnabled(!noDrawButton.isChecked());
                 if (noDrawButton.isChecked()) {
                     noDrawButton.setText("Render");
                 } else {
