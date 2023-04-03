@@ -27,6 +27,9 @@ public class Flagella extends PhysicsObject implements Tool {
     // copy constructor
     public Flagella(Flagella f) {
         super(new Vector2(f.position), new Vector2(f.velocity), new Vector2(f.acceleration));
+        computedTransform.set(f.computedTransform);
+        oldTransform.set(f.oldTransform);
+        worldTransform.set(f.worldTransform);
         thrust = new Vector2(f.thrust);
         lastStrength = f.lastStrength;
         animationProgress = f.animationProgress;
@@ -106,7 +109,7 @@ public class Flagella extends PhysicsObject implements Tool {
     }
 
     @Override
-    public Tool copy(Creature newParent, PhysicsEngine engine) {
+    public Tool copyTool(Creature newParent, PhysicsEngine engine) {
         Flagella newF = new Flagella(this);
         newParent.getChildren().add(newF);
         return newF;

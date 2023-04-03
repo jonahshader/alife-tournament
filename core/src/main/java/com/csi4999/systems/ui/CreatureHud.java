@@ -35,6 +35,9 @@ import java.util.HashMap;
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 
 public class CreatureHud implements InputProcessor, Screen {
+
+    public static CreatureHud instance;
+    public boolean showSimilarity = false;
     private static final int WIDTH = (int) (640 * 1.5f);
     private static final int HEIGHT = (int) (360 * 1.5f);
 
@@ -45,12 +48,13 @@ public class CreatureHud implements InputProcessor, Screen {
 
     public Stage stage;
     private Table mainTable;
-    private Creature c;
+    public Creature c;
     private ALifeApp app;
     private Environment env;
 
 
     public CreatureHud(Batch batch, OrthographicCamera worldCam, ALifeApp app, Environment env) {
+        instance = this;
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
         this.app = app;
         this.worldCam = worldCam;
@@ -81,7 +85,7 @@ public class CreatureHud implements InputProcessor, Screen {
         stage.clear();
         mainTable = new Table();
 
-        mainTable.setSize(120, 150);
+        mainTable.setSize(120, 170);
         mainTable.setPosition(0, 0);
 
         mainTable.align(Align.bottomLeft);
@@ -89,6 +93,7 @@ public class CreatureHud implements InputProcessor, Screen {
         Label title = new Label("Creature Info", skin);
 
         TextButton saveButton = new TextButton("Save Creature", skin);
+        TextButton similarityButton = new TextButton("Similarity", skin);
 
 
         saveButton.addListener(new ClickListener(){
@@ -97,9 +102,17 @@ public class CreatureHud implements InputProcessor, Screen {
                 NameDescriptionScreen.NameDescriptionCallback n = (name, description) -> {
                     c.creatureName = name;
                     c.creatureDescription = description;
+                    c.userID = GameClient.getInstance().user.userID;
                     GameClient.getInstance().client.sendTCP(new SaveCreaturePacket(c));
                 };
                 ScreenStack.push(new NameDescriptionScreen(app, "Save Creature", "Save", n));
+            }
+        });
+
+        similarityButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                showSimilarity = !showSimilarity;
             }
         });
 
@@ -143,6 +156,8 @@ public class CreatureHud implements InputProcessor, Screen {
         mainTable.add(sensorsLabel).fill().uniformX().pad(pad);
         mainTable.row().center();
         mainTable.add(saveButton).fill().uniformX().pad(pad);
+        mainTable.row().center();
+        mainTable.add(similarityButton).fill().uniformX().pad(pad);
 
         stage.addActor(mainTable);
     }

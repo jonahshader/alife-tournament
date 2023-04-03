@@ -34,6 +34,7 @@ public class GameServer {
         server.addListener(new SavedEntityListListener(db, server.getKryo()));
         server.addListener(new LoadEnvironmentListener(db, server.getKryo()));
         server.addListener(new TournamentListener(db, server.getKryo()));
+        server.addListener(new LoadCreatureListener(db, server.getKryo()));
     }
 
     private void setupServer(int port) {
@@ -47,4 +48,7 @@ public class GameServer {
         }
     }
 
+    public void shutdown() {
+        server.stop();
+    }
 }

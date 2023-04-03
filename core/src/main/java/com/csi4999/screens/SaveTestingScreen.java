@@ -111,6 +111,7 @@ public class SaveTestingScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Client client = GameClient.getInstance().client;
                 client.sendTCP(new RequestSavedEntityDataPacket(0));
+
             }
         });
 
@@ -240,7 +241,7 @@ public class SaveTestingScreen implements Screen {
         buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();
 
-        mainTable.row().pad(40,0,50,0);
+        mainTable.row().pad(0,0,20,0);
         mainTable.add(title);
         mainTable.row();
         mainTable.add(buttonsTable);

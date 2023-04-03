@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.cosmetic.CustomParticles;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.environment.Environment;
@@ -31,7 +32,7 @@ public class SimScreen implements Screen, InputProcessor {
     public Environment env;
 
     public volatile boolean limitSpeed = true;
-    public boolean renderingEnabled = true;
+    private boolean renderingEnabled = true;
     public volatile boolean playing = true;
 
     public UserAccountPacket user;
@@ -53,6 +54,10 @@ public class SimScreen implements Screen, InputProcessor {
         this(app, user, new Environment(properties));
     }
 
+    public SimScreen(ALifeApp app, UserAccountPacket user, EnvProperties properties, Creature creature) {
+        this(app, user, new Environment(properties, creature));
+    }
+
     public SimScreen(ALifeApp app, UserAccountPacket user, Environment env) {
         instance = this;
         this.app = app;
@@ -66,6 +71,8 @@ public class SimScreen implements Screen, InputProcessor {
         chunkSelector = new ChunkSelector(worldViewport, worldCam, this);
         toolBar = new ToolBar(app.batch, this, false);
         displayResults = new DisplayResults(this);
+
+        setRenderingEnabled(true);
     }
 
     public SimScreen(ALifeApp app, UserAccountPacket user, TournamentPacket tournament) {
@@ -100,6 +107,7 @@ public class SimScreen implements Screen, InputProcessor {
     private void mainLoop() {
         env.update();
         statsHud.update();
+        CustomParticles.update(Environment.dt);
         if (winCondition != null)
             winCondition.update();
     }
@@ -127,21 +135,21 @@ public class SimScreen implements Screen, InputProcessor {
         worldViewport.apply();
         app.batch.setProjectionMatrix(worldCam.combined);
 
-        // set clear color
-        Gdx.gl.glClearColor(.21f, .2f, .21f, 1f);
-        // apply clear color to screen
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
 
         creatureHud.updateCamera();
 
         if (renderingEnabled) {
+
             app.batch.begin();
             env.draw(app.shapeDrawer, app.batch, worldCam);
             if (creatureNameTag != null) {
                 creatureNameTag.render(app.batch);
             }
-
             app.batch.end();
+        } else {
+            Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1f);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         }
 
 
@@ -151,6 +159,11 @@ public class SimScreen implements Screen, InputProcessor {
         if (chunkSelector != null)
             chunkSelector.render(app.shapeDrawer, delta);
         displayResults.render(app.shapeDrawer);
+    }
+
+    public void setRenderingEnabled(boolean enabled) {
+        renderingEnabled = enabled;
+        CustomParticles.enabled = enabled;
     }
 
     @Override

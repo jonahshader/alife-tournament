@@ -8,5 +8,5 @@ public interface Tool extends Mutable, CreatureComponent {
 
     // copy is similar to ToolBuilder.buildTool
     // needs to add it as a child and add to physics engine if applicable
-    Tool copy(Creature newParent, PhysicsEngine engine);
+    Tool copyTool(Creature newParent, PhysicsEngine engine);
 }

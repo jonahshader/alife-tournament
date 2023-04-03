@@ -1,5 +1,6 @@
 package com.csi4999.systems.creature;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
@@ -8,10 +9,12 @@ import com.csi4999.systems.Mutable;
 import com.csi4999.systems.PhysicsObject;
 import com.csi4999.systems.ai.Brain;
 import com.csi4999.systems.ai.SparseBrain;
+import com.csi4999.systems.cosmetic.CustomParticles;
 import com.csi4999.systems.environment.Food;
 import com.csi4999.systems.physics.Circle;
 import com.csi4999.systems.physics.Collider;
 import com.csi4999.systems.physics.PhysicsEngine;
+import com.csi4999.systems.ui.CreatureHud;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.ArrayList;
@@ -19,6 +22,8 @@ import java.util.List;
 import java.util.Random;
 
 public class Creature extends Circle implements Mutable {
+
+    private static final float PARTICLES_PER_VEL_PER_SEC = 0.2f;
 
     private static final float BASE_RADIUS = 12f;
     private static final float MIN_SCALE = 0.5f;
@@ -35,6 +40,8 @@ public class Creature extends Circle implements Mutable {
     private static final int REPLICATE_AMOUNT = 2;
     private static final float REPLICATE_COST = 1;
     private static final float COMPONENT_ENERGY_CONSUMPTION_SCALAR = 0.8f;
+
+
 
     private float health;
     public float energy;
@@ -57,6 +64,11 @@ public class Creature extends Circle implements Mutable {
     public String creatureName;
     public String creatureDescription;
 
+    private Color similarityColor = new Color();
+
+
+    private float particleTimer = 0;
+
     public Creature() {}
 
     public Creature(Creature c, PhysicsEngine engine) {
@@ -74,9 +86,13 @@ public class Creature extends Circle implements Mutable {
         tools = new ArrayList<>();
 
         for (Sensor s : c.sensors)
-            sensors.add(s.copy(this, engine));
-        for (Tool t : c.tools)
-            tools.add(t.copy(this, engine));
+            sensors.add(s.copySensor(this, engine));
+        for (Tool t : c.tools) {
+            Tool copy = t.copyTool(this, engine);
+            if (copy != null)
+                tools.add(copy);
+        }
+
 
 
         brain = c.brain.copy();
@@ -88,6 +104,9 @@ public class Creature extends Circle implements Mutable {
         chunkID = c.chunkID;
         creatureName = c.creatureName;
         creatureDescription = c.creatureDescription;
+
+        updateColor();
+        computeTransform(null);
     }
 
     public Creature(Vector2 pos, List<SensorBuilder> sensorBuilders, List<ToolBuilder> toolBuilders, int initialSensors, int initialTools, PhysicsEngine engine, Random rand) {
@@ -111,16 +130,14 @@ public class Creature extends Circle implements Mutable {
                 inputSize += newSensor.read().length; // TODO: do we need a getSize method in Sensor? or is using read().length fine?
                 sensors.add(newSensor);
             }
-            inputs = new float[inputSize];
-        } else {
-            inputs = null;
         }
+        inputs = new float[inputSize];
 
         // make some tools
         if (toolBuilders.size() > 0) {
             for (int i = 0; i < initialTools; i++) {
-                Tool newTool  = toolBuilders.get(rand.nextInt(toolBuilders.size())).buildTool(this, engine, rand);
-                tools.add(newTool);
+                List<Tool> newTools  = toolBuilders.get(rand.nextInt(toolBuilders.size())).buildTool(this, engine, rand);
+                tools.addAll(newTools);
             }
         }
 
@@ -137,6 +154,10 @@ public class Creature extends Circle implements Mutable {
         for (int i = 0; i < similarityVector.length; i++)
             similarityVector[i] = (float) rand.nextGaussian();
         normalizeSimilarity(similarityVector);
+
+        updateColor();
+
+        computeTransform(null);
     }
 
     @Override
@@ -198,8 +219,14 @@ public class Creature extends Circle implements Mutable {
         scl = Math.min(scl, BASE_MAX_ENERGY_SCALAR);
         scale.set(scl, scl);
 
+        while (particleTimer > 1) {
+            particleTimer -= 1;
+            Color tempColor = (CreatureHud.instance != null && CreatureHud.instance.showSimilarity && CreatureHud.instance.c != null) ? similarityColor : color;
+            CustomParticles.addParticle(new Color(tempColor), new Vector2(position), new Vector2(velocity).scl(0.0f), transformedRadius, 1.5f, 4f, 0.75f);
+        }
 
-
+        particleTimer += velocity.len() * dt * PARTICLES_PER_VEL_PER_SEC;
+//        particleTimer += PARTICLES_PER_VEL_PER_SEC;
 
         // continue with default move behavior
         super.move(dt, parent);
@@ -207,6 +234,7 @@ public class Creature extends Circle implements Mutable {
     @Override
     public void mutate(float amount, Random rand) {
         super.mutate(amount, rand);
+        updateColor();
         sensors.forEach(sensor -> sensor.mutate(amount, rand));
         tools.forEach(tool -> tool.mutate(amount, rand));
         brain.mutate(amount, rand);
@@ -214,26 +242,41 @@ public class Creature extends Circle implements Mutable {
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
-        color.r = (float) (Math.tanh(similarityVector[0]) * .5f + .5f);
-        color.g = (float) (Math.tanh(similarityVector[1]) * .5f + .5f);
-        color.b = (float) (Math.tanh(similarityVector[2]) * .5f + .5f);
+
 //        shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
 //        shapeDrawer.filledCircle(0f, 0f, this.radius);
 //        // TODO: make this better
         Sprite circle = CustomGraphics.getInstance().circle;
         circle.setScale(radius * 2f / circle.getWidth());
         circle.setOriginBasedPosition(0f, 0f);
-        circle.setColor(color);
+        if (CreatureHud.instance != null && CreatureHud.instance.showSimilarity && CreatureHud.instance.c != null) {
+            float similarity = CreatureHud.instance.c.getSimilarity(this) * .5f + .5f;
+            similarity *= similarity;
+            similarityColor.set(similarity, similarity, similarity, 1f);
+            circle.setColor(similarityColor);
+        } else {
+            circle.setColor(color);
+        }
+
         circle.draw(batch);
         float avgColor = (color.r + color.g + color.b) / 3;
         shapeDrawer.setColor(avgColor * color.r, avgColor * color.g, avgColor * color.b, parentAlpha);
         shapeDrawer.circle(0f, 0f, this.radius * (health/MAX_HEALTH));
     }
 
+    private void updateColor() {
+        color.r = (float) (Math.tanh(similarityVector[0]) * .5f + .5f);
+        color.g = (float) (Math.tanh(similarityVector[1]) * .5f + .5f);
+        color.b = (float) (Math.tanh(similarityVector[2]) * .5f + .5f);
+    }
+
 
 
     public List<Creature> getNewOffspring(PhysicsEngine engine, Random rand, float mutateAmount) {
         if (replicateTimer < 0) {
+            for (int i = 0; i < 25; i++) {
+                CustomParticles.addParticle(new Color(1f, 1f, 1f, 1f), new Vector2(position), new Vector2().setZero(), transformedRadius, 7f, 3f, .6f);
+            }
 //            System.out.println("tryna replicate");
             replicateTimer += REPLICATE_DELAY;
             // create offspring
@@ -260,9 +303,15 @@ public class Creature extends Circle implements Mutable {
             if (c instanceof Food) {
                 collidingWithFood = true;
                 break;
+            } else if (c instanceof Creature) {
+                if (!c.position.epsilonEquals(position)) {
+                    Vector2 adjustment = new Vector2(position).sub(c.position);
+                    Vector2 maxDist = new Vector2(adjustment).nor().scl(transformedRadius + ((Creature) c).transformedRadius);
+
+                    position.add(maxDist.sub(adjustment).scl(0.5f));
+                }
             }
         }
-        // TODO: replicate eye behavior
     }
 
     public float getMass() {
