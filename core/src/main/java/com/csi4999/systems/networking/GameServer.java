@@ -35,6 +35,7 @@ public class GameServer {
         server.addListener(new LoadEnvironmentListener(db, server.getKryo()));
         server.addListener(new TournamentListener(db, server.getKryo()));
         server.addListener(new LoadCreatureListener(db, server.getKryo()));
+        server.addListener(new RankingRequestListener(db, server.getKryo()));
     }
 
     private void setupServer(int port) {

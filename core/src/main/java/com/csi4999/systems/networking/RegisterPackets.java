@@ -93,5 +93,10 @@ public class RegisterPackets {
         // classes for creature load
         k.register(RequestCreaturePacket.class);
 
+        // classes for leaderboard
+        k.register(RequestRankingsPacket.class);
+        k.register(RankingInfo.class);
+        k.register(RankingPacket.class);
+
     }
 }
