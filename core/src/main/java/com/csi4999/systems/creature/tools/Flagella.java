@@ -109,7 +109,7 @@ public class Flagella extends PhysicsObject implements Tool {
     }
 
     @Override
-    public Tool copy(Creature newParent, PhysicsEngine engine) {
+    public Tool copyTool(Creature newParent, PhysicsEngine engine) {
         Flagella newF = new Flagella(this);
         newParent.getChildren().add(newF);
         return newF;

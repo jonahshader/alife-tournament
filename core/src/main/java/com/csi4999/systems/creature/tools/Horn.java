@@ -68,7 +68,7 @@ public class Horn extends LineSegment implements Tool {
     }
 
     @Override
-    public Tool copy(Creature newParent, PhysicsEngine engine) {
+    public Tool copyTool(Creature newParent, PhysicsEngine engine) {
         Horn h = new Horn(this);
         h.parent = newParent;
         newParent.getChildren().add(h);

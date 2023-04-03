@@ -77,7 +77,7 @@ public class Eye extends LineSegment implements Sensor {
     }
 
     @Override
-    public Sensor copy(Creature newParent, PhysicsEngine engine) {
+    public Sensor copySensor(Creature newParent, PhysicsEngine engine) {
         Eye e = new Eye(this);
         e.parent = newParent;
         newParent.getChildren().add(e);

@@ -6,11 +6,13 @@ import com.csi4999.systems.creature.Tool;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.physics.PhysicsEngine;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class HornBuilder implements ToolBuilder {
     @Override
-    public Tool buildTool(Creature parent, PhysicsEngine engine, Random rand) {
+    public List<Tool> buildTool(Creature parent, PhysicsEngine engine, Random rand) {
 
         float rot = rand.nextFloat() * 360;
         Vector2 pos = new Vector2().set(parent.radius, 0f).rotateDeg(rot);
@@ -19,6 +21,8 @@ public class HornBuilder implements ToolBuilder {
         engine.addCollider(h);
         parent.getChildren().add(h);
 
-        return h;
+        List<Tool> newTools = new ArrayList<>();
+        newTools.add(h);
+        return newTools;
     }
 }

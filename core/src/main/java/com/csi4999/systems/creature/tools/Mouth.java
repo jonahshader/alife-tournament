@@ -95,7 +95,7 @@ public class Mouth extends Circle implements Tool {
     }
 
     @Override
-    public Tool copy(Creature newParent, PhysicsEngine engine) {
+    public Tool copyTool(Creature newParent, PhysicsEngine engine) {
         Mouth m = new Mouth(this);
         m.parent = newParent;
         newParent.getChildren().add(m);

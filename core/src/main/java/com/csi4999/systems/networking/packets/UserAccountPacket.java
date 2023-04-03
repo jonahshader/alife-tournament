@@ -3,10 +3,7 @@ package com.csi4999.systems.networking.packets;
 import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
-import com.csi4999.systems.creature.tools.FlagellaBuilder;
-import com.csi4999.systems.creature.tools.Horn;
-import com.csi4999.systems.creature.tools.HornBuilder;
-import com.csi4999.systems.creature.tools.MouthBuilder;
+import com.csi4999.systems.creature.tools.*;
 import com.csi4999.systems.tournament.RankUpdater;
 
 import java.util.ArrayList;
@@ -43,6 +40,7 @@ public class UserAccountPacket {
         p.toolBuilders.add(new MouthBuilder());
         p.toolBuilders.add(new FlagellaBuilder());
         p.toolBuilders.add(new HornBuilder());
+        p.toolBuilders.add(new GripperBuilder());
         p.sensorBuilders.add(new EyeBuilder());
         return p;
     }

@@ -86,9 +86,13 @@ public class Creature extends Circle implements Mutable {
         tools = new ArrayList<>();
 
         for (Sensor s : c.sensors)
-            sensors.add(s.copy(this, engine));
-        for (Tool t : c.tools)
-            tools.add(t.copy(this, engine));
+            sensors.add(s.copySensor(this, engine));
+        for (Tool t : c.tools) {
+            Tool copy = t.copyTool(this, engine);
+            if (copy != null)
+                tools.add(copy);
+        }
+
 
 
         brain = c.brain.copy();
@@ -132,8 +136,8 @@ public class Creature extends Circle implements Mutable {
         // make some tools
         if (toolBuilders.size() > 0) {
             for (int i = 0; i < initialTools; i++) {
-                Tool newTool  = toolBuilders.get(rand.nextInt(toolBuilders.size())).buildTool(this, engine, rand);
-                tools.add(newTool);
+                List<Tool> newTools  = toolBuilders.get(rand.nextInt(toolBuilders.size())).buildTool(this, engine, rand);
+                tools.addAll(newTools);
             }
         }
 
