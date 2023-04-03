@@ -14,17 +14,12 @@ import java.util.concurrent.locks.ReentrantLock;
 public class CreatureSpawner {
     public ReentrantLock creatureLock = new ReentrantLock();
     private List<Creature> creatures = new ArrayList<>();
-
     private EnvProperties properties;
-    private Random r;
-    private PhysicsEngine physics;
     private FoodSpawner foodSpawner;
 
     private float toSpawn = 0;
     public CreatureSpawner() {}
     public CreatureSpawner(Random r, PhysicsEngine physics, EnvProperties properties, FoodSpawner foodSpawner) {
-        this.r = r;
-        this.physics = physics;
         this.properties = properties;
         this.foodSpawner = foodSpawner;
         for (int i = 0; i < properties.initialCreatures; i++) {
@@ -33,8 +28,9 @@ public class CreatureSpawner {
     }
 
     // used for loading a specific creature
-    public CreatureSpawner(Creature creature, PhysicsEngine physics, EnvProperties properties, Random r) {
+    public CreatureSpawner(Random r, PhysicsEngine physics, EnvProperties properties, FoodSpawner foodSpawner, Creature creature) {
         this.properties = properties;
+        this.foodSpawner = foodSpawner;
         for (int i = 0; i < properties.initialCreatures; i++) {
             addSpecificCreature(creature, physics, r);
         }
@@ -45,7 +41,7 @@ public class CreatureSpawner {
         List<Creature> newCreatures = new ArrayList<>();
         while (toSpawn > 1) {
             toSpawn -= 1;
-            addRandomCreature(r, physics, properties.sensorBuilders, properties.toolBuilders);
+            addRandomCreature(rand, engine, properties.sensorBuilders, properties.toolBuilders);
         }
         for (Creature c : creatures) {
             List<Creature> newOffspring = c.getNewOffspring(engine, rand, mutateAmount);

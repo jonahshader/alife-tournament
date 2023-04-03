@@ -66,6 +66,7 @@ public class RegisterPackets {
         k.register(FlagellaBuilder.class);
         k.register(Horn.class);
         k.register(HornBuilder.class);
+        k.register(Gripper.class);
         k.register(GripperBuilder.class);
         k.register(EnvProperties.class);
 
