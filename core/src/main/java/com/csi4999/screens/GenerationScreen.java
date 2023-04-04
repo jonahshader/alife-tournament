@@ -141,7 +141,7 @@ public class GenerationScreen implements Screen {
         Slider creaturesPerSecondSlider = new Slider(0, user.maxCreaturesPerSecond, 1, false, skin);
         creaturesPerSecondSlider.setValue(user.maxCreaturesPerSecond);
         Label creaturesPerSecondLabel = new Label("Creature Spawn Rate", skin);
-        Label minimumCreaturesValueLabel = new Label(String.valueOf(user.maxCreaturesPerSecond), skin);
+        Label creaturesPerSecondValueLabel = new Label(String.valueOf(user.maxCreaturesPerSecond), skin);
 
         // Initial Creatures
         Slider initialCreaturesSlider = new Slider(0, user.maxInitialCreatures, 1, false, skin);
@@ -209,9 +209,9 @@ public class GenerationScreen implements Screen {
             return false;
         });
         creaturesPerSecondSlider.addListener(event -> {
-            int minCreatures = (int) creaturesPerSecondSlider.getValue();
-            properties.creaturesPerSecond = minCreatures;
-            minimumCreaturesValueLabel.setText(String.valueOf(minCreatures));
+            int creaturesPerSecond = (int) creaturesPerSecondSlider.getValue();
+            properties.creaturesPerSecond = creaturesPerSecond;
+            creaturesPerSecondValueLabel.setText(String.valueOf(creaturesPerSecond));
             return false;
         });
         initialCreaturesSlider.addListener(event -> {
@@ -410,7 +410,7 @@ public class GenerationScreen implements Screen {
         slidersTable.row().pad(0, 0, 10, 10);
         slidersTable.add(creaturesPerSecondLabel).align(Align.left);
         slidersTable.add(creaturesPerSecondSlider);
-        slidersTable.add(minimumCreaturesValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
+        slidersTable.add(creaturesPerSecondValueLabel).pad(0, 10f, 0, 0).align(Align.center).width(width);
 
         slidersTable.row().pad(0, 0, 10, 10);
         slidersTable.add(initialCreaturesLabel).align(Align.left);

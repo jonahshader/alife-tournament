@@ -28,9 +28,9 @@ public class UserAccountPacket {
     public int maxTools = 4; // TODO: turn these back down for final release
     public int maxSensors = 4;
     public int maxMutationRate = 1;
-    public int maxCreaturesPerSecond = 100;
-    public int maxInitialCreatures = 600;
-    public int maxFood = 100;
+    public int maxCreaturesPerSecond = 5;
+    public int maxInitialCreatures = 150;
+    public int maxFood = 600;
 
 
 
@@ -41,7 +41,7 @@ public class UserAccountPacket {
     public float rank = RankUpdater.RANK_MEAN;
     public int gamesPlayed = 0;
 
-    public int money = 0;
+    public int money = 16;
 
     public UserAccountPacket(){} // empty constructor for Kryo
 
