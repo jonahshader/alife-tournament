@@ -32,6 +32,7 @@ class ShopItem(
                     override fun clicked(event: InputEvent?, x: Float, y: Float) {
                         tryPurchase()
                         currencyLabel.setText("Money: " + GameClient.getInstance().user.money)
+                        cost.setText("Cost: " + levelToPrice(retrieveLevel() + 1).toString())
                     }
                 })
                 sellButton.clearListeners()
@@ -39,6 +40,7 @@ class ShopItem(
                     override fun clicked(event: InputEvent?, x: Float, y: Float) {
                         trySell()
                         currencyLabel.setText("Money: " + GameClient.getInstance().user.money)
+                        cost.setText("Cost: " + levelToPrice(retrieveLevel() + 1).toString())
                     }
                 })
             }
@@ -73,7 +75,7 @@ class ShopItem(
 
     fun trySell() {
         val level = retrieveLevel()
-        if (level > 0) {
+        if (level > 1) {
             // Sell
             GameClient.getInstance().user.money += levelToPrice(retrieveLevel())
             setLevel(retrieveLevel() - 1)
