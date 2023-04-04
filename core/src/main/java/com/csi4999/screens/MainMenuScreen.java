@@ -18,6 +18,8 @@ import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.networking.GameClient;
 import com.csi4999.systems.networking.clientListeners.DescriptionListener;
+import com.csi4999.systems.networking.clientListeners.RankingResponseListener;
+import com.csi4999.systems.networking.packets.RequestRankingsPacket;
 import com.csi4999.systems.networking.packets.RequestSavedEntityDataPacket;
 import com.esotericsoftware.kryonet.Client;
 import jdk.javadoc.internal.doclint.Env;
@@ -48,6 +50,11 @@ public class MainMenuScreen implements Screen {
         menuCam.update();
 
         stage = new Stage(menuViewport, app.batch);
+
+        Client client = GameClient.getInstance().client;
+        client.sendTCP(new RequestRankingsPacket());
+        while (!RankingResponseListener.getInstance().ready){}
+        RankingResponseListener.getInstance().ready = false;
     }
 
     @Override
@@ -72,6 +79,7 @@ public class MainMenuScreen implements Screen {
         TextButton trainingButton = new TextButton("Play", skin);
         TextButton tournamentButton = new TextButton("Tournament", skin);
         TextButton savedEntitiesButton = new TextButton("Load", skin);
+        TextButton LeaderboardButton = new TextButton("LeaderBoard", skin);
         TextButton settingsButton = new TextButton("Settings", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
@@ -101,10 +109,17 @@ public class MainMenuScreen implements Screen {
             }
         });
 
-        settingsButton.addListener(new ClickListener(){
+        trainingButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SettingsScreen(app));
+                ScreenStack.push(new GenerationScreen(app));
+            }
+        });
+
+        LeaderboardButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ScreenStack.push(new LeaderboardScreen(app));
             }
         });
 
@@ -124,6 +139,12 @@ public class MainMenuScreen implements Screen {
         buttonsTable.row().pad(0, 0, 10, 0);
         buttonsTable.add(savedEntitiesButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
+
+        if (RankingResponseListener.getInstance().leaderboard.size() > 3) {
+            buttonsTable.add(LeaderboardButton).fill().uniform();
+            buttonsTable.row().pad(0, 0, 10, 0);
+        }
+
         buttonsTable.add(settingsButton).fill().uniform();
 
 

@@ -23,6 +23,8 @@ import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.environment.Environment;
 import com.csi4999.systems.networking.GameClient;
 
+import com.csi4999.systems.networking.clientListeners.RankingResponseListener;
+import com.csi4999.systems.networking.common.RankingInfo;
 import com.csi4999.systems.networking.packets.*;
 import com.csi4999.systems.physics.PhysicsEngine;
 
@@ -103,7 +105,7 @@ public class SaveTestingScreen implements Screen {
         TextButton updateCreatureButton = new TextButton("Update an Existing Creature", skin);
         TextButton bogusCreatureButton = new TextButton("Send Creature with bad id", skin);
 
-        TextButton updateAccountButton = new TextButton("Update an account", skin);
+        TextButton printBoard = new TextButton("Print Board", skin);
         TextButton getSaved = new TextButton("Get Saved", skin);
 
         getSaved.addListener(new ClickListener(){
@@ -190,12 +192,21 @@ public class SaveTestingScreen implements Screen {
             }
         });
 
-        updateAccountButton.addListener(new ClickListener(){
+        printBoard.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Client client = GameClient.getInstance().client;
-                UserAccountPacket user = UserAccountPacket.createDefault(1);
-                client.sendTCP(user);
+                client.sendTCP(new RequestRankingsPacket());
+
+                while (! RankingResponseListener.getInstance().ready) {}
+                RankingResponseListener.getInstance().ready = false;
+
+                int i = 1;
+
+                for (RankingInfo r : RankingResponseListener.getInstance().leaderboard) {
+                    System.out.println("Rank: " + i + " User: " + r.username + " Ranking: " + r.ranking);
+                    i++;
+                }
 
             }
         });
@@ -236,7 +247,7 @@ public class SaveTestingScreen implements Screen {
         buttonsTable.add(bogusCreatureButton).fill().uniform();
 
         buttonsTable.row().pad(5, 0, 0, 0);
-        buttonsTable.add(updateAccountButton).fill().uniform();
+        buttonsTable.add(printBoard).fill().uniform();
 
         buttonsTable.row().pad(5, 0, 0, 0);
         buttonsTable.add(exitButton).fill().uniform();

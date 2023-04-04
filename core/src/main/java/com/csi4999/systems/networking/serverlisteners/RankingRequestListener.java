@@ -55,9 +55,10 @@ public class RankingRequestListener implements Listener {
 
             }
 
-            for (int i = 0; i < 10; i++) {
+            while ((! rankings.isEmpty()) && (leaderboard.size() <= 10)) {
                 leaderboard.add(rankings.poll());
             }
+
 
             return leaderboard;
 
