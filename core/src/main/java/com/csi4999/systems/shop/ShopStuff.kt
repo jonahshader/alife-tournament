@@ -1,11 +1,13 @@
 package com.csi4999.systems.shop
 
 import com.csi4999.systems.networking.GameClient
+import com.csi4999.systems.networking.packets.UserAccountPacket
 import kotlin.math.pow
 
-fun makeShopItems() : List<ShopItem> {
+fun makeShopItems() = makeShopItems(GameClient.getInstance().user)
+
+fun makeShopItems(user: UserAccountPacket) : List<ShopItem> {
     val defaultLevelToCost = { level: Int -> 2f.pow(level).toInt() }
-    val user = GameClient.getInstance().user
     val items = mutableListOf<ShopItem>()
 
     // maxSensors

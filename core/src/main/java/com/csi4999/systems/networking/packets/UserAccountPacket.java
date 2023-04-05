@@ -4,10 +4,13 @@ import com.csi4999.systems.creature.SensorBuilder;
 import com.csi4999.systems.creature.ToolBuilder;
 import com.csi4999.systems.creature.sensors.EyeBuilder;
 import com.csi4999.systems.creature.tools.*;
+import com.csi4999.systems.shop.ShopItem;
 import com.csi4999.systems.tournament.RankUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.csi4999.systems.shop.ShopStuffKt.makeShopItems;
 
 /**
  * this packet is sent (S -> C) on a successful login
@@ -25,12 +28,12 @@ public class UserAccountPacket {
     public int maxInitialCreaturesLevel = 1;
     public int maxFoodLevel = 1;
 
-    public int maxTools = 4; // TODO: turn these back down for final release
-    public int maxSensors = 4;
-    public int maxMutationRate = 1;
-    public int maxCreaturesPerSecond = 5;
-    public int maxInitialCreatures = 150;
-    public int maxFood = 600;
+    public int maxTools;
+    public int maxSensors;
+    public int maxMutationRate;
+    public int maxCreaturesPerSecond;
+    public int maxInitialCreatures;
+    public int maxFood;
 
 
 
@@ -55,6 +58,11 @@ public class UserAccountPacket {
         p.toolBuilders.add(new HornBuilder());
         p.toolBuilders.add(new GripperBuilder());
         p.sensorBuilders.add(new EyeBuilder());
+
+        // get initial values from default shop items
+        List<ShopItem> shopItems = makeShopItems(p);
+        shopItems.forEach(ShopItem::initUserAccountValue);
+
         return p;
     }
 }

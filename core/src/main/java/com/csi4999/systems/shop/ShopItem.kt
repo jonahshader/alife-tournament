@@ -58,6 +58,11 @@ class ShopItem(
         return componentTable
     }
 
+    fun initUserAccountValue() {
+        setLevel(1)
+        setValue(levelToValue(1))
+    }
+
     fun tryPurchase() {
         val cost = levelToPrice(retrieveLevel() + 1)
         if (cost <= GameClient.getInstance().user.money && (retrieveLevel() < maxLevel  || maxLevel < 0)) {
