@@ -76,8 +76,9 @@ public class MainMenuScreen implements Screen {
 
 
         // Create buttons and their respective click listeners
+        TextButton shopButton = new TextButton("Shop", skin);
         TextButton trainingButton = new TextButton("Play", skin);
-        TextButton tournamentButton = new TextButton("Tournament", skin);
+
         TextButton savedEntitiesButton = new TextButton("Load", skin);
         TextButton LeaderboardButton = new TextButton("LeaderBoard", skin);
         TextButton settingsButton = new TextButton("Settings", skin);
@@ -91,10 +92,10 @@ public class MainMenuScreen implements Screen {
             }
         });
 
-        tournamentButton.addListener(new ClickListener(){
+        shopButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user, EnvProperties.makeTestDefault()));
+                ScreenStack.push(new ShopScreen(app));
             }
         });
 
@@ -134,8 +135,8 @@ public class MainMenuScreen implements Screen {
 
         buttonsTable.row().pad(0, 0, 10, 0);
         buttonsTable.add(trainingButton).fill().uniform();
-//        buttonsTable.row().pad(0, 0, 10, 0);
-//        buttonsTable.add(tournamentButton).fill().uniform();
+        buttonsTable.row().pad(0, 0, 10, 0);
+        buttonsTable.add(shopButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
         buttonsTable.add(savedEntitiesButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
@@ -184,7 +185,7 @@ public class MainMenuScreen implements Screen {
         app.batch.begin();
         app.shapeDrawer.setColor(.18f, .2f, .28f, 1);
 
-        app.shapeDrawer.filledRectangle(25,25, menuViewport.getWorldWidth() - 50, menuViewport.getWorldHeight() - 50); // Why are these the values that produce a somewhat symmetrical result?
+        app.shapeDrawer.filledRectangle(25,25, menuViewport.getWorldWidth() - 50, menuViewport.getWorldHeight() - 50);
         app.batch.end();
 
         stage.act();
