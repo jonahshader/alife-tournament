@@ -170,11 +170,11 @@ public class MainMenuScreen implements Screen {
             buttonsTable.row().pad(30, 0, 0, 0);
         }
         else
-            buttonsTable.row().pad(30, 0, 0, 0);
+            buttonsTable.row().pad(0, 0, 10, 0);
 
         buttonsTable.add(exitButton).fill().uniform();
 
-        mainTable.row().pad(40,0,50,0);
+        mainTable.row().pad(40,0,25,0);
         mainTable.add(title);
         mainTable.row();
         mainTable.add(buttonsTable);
