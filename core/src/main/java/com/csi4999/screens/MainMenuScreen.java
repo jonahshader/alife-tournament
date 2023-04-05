@@ -124,6 +124,13 @@ public class MainMenuScreen implements Screen {
             }
         });
 
+        settingsButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ScreenStack.push(new SettingsScreen(app));
+            }
+        });
+
 
         exitButton.addListener(new ClickListener(){
             @Override
