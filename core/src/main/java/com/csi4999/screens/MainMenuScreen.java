@@ -80,7 +80,7 @@ public class MainMenuScreen implements Screen {
         TextButton trainingButton = new TextButton("Play", skin);
 
         TextButton savedEntitiesButton = new TextButton("Load", skin);
-        TextButton LeaderboardButton = new TextButton("LeaderBoard", skin);
+        TextButton LeaderboardButton = new TextButton("Leaderboard", skin);
         TextButton settingsButton = new TextButton("Settings", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
@@ -148,10 +148,10 @@ public class MainMenuScreen implements Screen {
         buttonsTable.add(savedEntitiesButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
 
-        if (RankingResponseListener.getInstance().leaderboard.size() > 3) {
-            buttonsTable.add(LeaderboardButton).fill().uniform();
-            buttonsTable.row().pad(0, 0, 10, 0);
-        }
+
+        buttonsTable.add(LeaderboardButton).fill().uniform();
+        buttonsTable.row().pad(0, 0, 10, 0);
+
 
         buttonsTable.add(settingsButton).fill().uniform();
 
