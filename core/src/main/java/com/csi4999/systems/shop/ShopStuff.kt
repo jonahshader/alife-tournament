@@ -8,6 +8,7 @@ fun makeShopItems() = makeShopItems(GameClient.getInstance().user)
 
 fun makeShopItems(user: UserAccountPacket) : List<ShopItem> {
     val defaultLevelToCost = { level: Int -> 2f.pow(level).toInt() }
+    val componentLevelToCost = { level: Int -> 25}
     val items = mutableListOf<ShopItem>()
 
     // maxSensors
@@ -34,6 +35,18 @@ fun makeShopItems(user: UserAccountPacket) : List<ShopItem> {
     // maxFood
     items += ShopItem({ level: Int -> level.toFloat() * 100 + 500}, defaultLevelToCost, { user.maxFoodLevel }, { level: Int -> user.maxFoodLevel = level }, { v: Float -> user.maxFood = v.toInt() },
         "Max Food", "Increases the maximum limits for initial food and food target.", -1)
+
+    // Eye
+    items += ShopItem({ level: Int -> level.toFloat()}, componentLevelToCost, {user.eyeLevel}, {level: Int -> user.eyeLevel = level}, {v: Float -> user.eyeLevel = v.toInt()}, "Eye Component", "A purchase enables creatures to spawn with eyes that can sense entities in the environment.",
+        2)
+
+    // Horn
+    items += ShopItem({ level: Int -> level.toFloat()}, componentLevelToCost, {user.hornLevel}, {level: Int -> user.hornLevel = level}, {v: Float -> user.hornLevel = v.toInt()}, "Horn Component", "A purchase enables creatures to spawn with horns that can damage other creatures.",
+        2)
+    // Gripper
+    items += ShopItem({ level: Int -> level.toFloat()}, componentLevelToCost, {user.gripperLevel}, {level: Int -> user.gripperLevel = level}, {v: Float -> user.gripperLevel = v.toInt()}, "Gripper Component", "A purchase enables creatures to spawn with grippers that can manipulate the position of food in the environment.",
+        2)
+
 
     return items
 }

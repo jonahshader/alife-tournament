@@ -28,6 +28,12 @@ public class UserAccountPacket {
     public int maxInitialCreaturesLevel = 1;
     public int maxFoodLevel = 1;
 
+
+    // Levels used by shop and generation screen to determine whether the user bought/can use the components
+    public int hornLevel = 1;
+    public int eyeLevel = 1;
+    public int gripperLevel = 1;
+
     public int maxTools;
     public int maxSensors;
     public int maxMutationRate;
