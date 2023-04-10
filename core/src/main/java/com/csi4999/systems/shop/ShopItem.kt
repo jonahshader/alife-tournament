@@ -19,7 +19,8 @@ class ShopItem(
     private val desc: String,
     private val maxLevel: Int
 ) {
-    private var levelLabel: Label? = null
+    private lateinit var levelLabel: Label
+    private lateinit var nameLabel: Label
 
     fun makeComponent(skin: Skin, description: Label, cost: Label, purchaseButton: Button, sellButton: Button, currencyLabel: Label): Table {
         val componentTable = Table()
@@ -45,10 +46,10 @@ class ShopItem(
                 })
             }
         })
-        val nameLabel = Label(name, skin)
+        nameLabel = Label(name, skin)
         levelLabel = Label("Level: " + retrieveLevel().toString(), skin)
         nameLabel.setAlignment(Align.center)
-        levelLabel!!.setAlignment(Align.center)
+        levelLabel.setAlignment(Align.center)
 
 
         componentTable.row().size(175f, 35f)
@@ -70,12 +71,13 @@ class ShopItem(
             GameClient.getInstance().user.money -= cost // decrement money
             setLevel(retrieveLevel() + 1) // increment level
             setValue(levelToValue(retrieveLevel()))
-            levelLabel!!.setText("Level: " + retrieveLevel().toString()) // update label
+            levelLabel.setText("Level: " + retrieveLevel().toString()) // update label
             GameClient.getInstance().client.sendTCP(GameClient.getInstance().user) // send updated user to server
         } else {
             // can't purchase. do something
             println("Not enough money!")
         }
+        updateColor()
     }
 
     fun trySell() {
@@ -85,11 +87,23 @@ class ShopItem(
             GameClient.getInstance().user.money += levelToPrice(retrieveLevel())
             setLevel(retrieveLevel() - 1)
             setValue(levelToValue(retrieveLevel()))
-            levelLabel!!.setText("Level: " + retrieveLevel().toString()) // update label
+            levelLabel.setText("Level: " + retrieveLevel().toString()) // update label
             GameClient.getInstance().client.sendTCP(GameClient.getInstance().user) // send updated user to server
         } else {
             // can't keep selling
             println("Can't sell something you don't have")
+        }
+        updateColor()
+    }
+
+    private fun updateColor() {
+        val level = retrieveLevel()
+        if (level == maxLevel) {
+            nameLabel.setColor(1f, 1f, 1f, .5f)
+            levelLabel.setColor(1f, 1f, 1f, .5f)
+        } else {
+            nameLabel.setColor(1f, 1f, 1f, 1f)
+            levelLabel.setColor(1f, 1f, 1f, 1f)
         }
     }
 }

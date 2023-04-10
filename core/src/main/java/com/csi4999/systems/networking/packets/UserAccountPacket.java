@@ -18,8 +18,6 @@ import static com.csi4999.systems.shop.ShopStuffKt.makeShopItems;
 public class UserAccountPacket {
 
     public long userID;
-    public List<ToolBuilder> toolBuilders;
-    public List<SensorBuilder> sensorBuilders;
 
     public int maxToolsLevel = 1;
     public int maxSensorsLevel = 1;
@@ -50,20 +48,13 @@ public class UserAccountPacket {
     public float rank = RankUpdater.RANK_MEAN;
     public int gamesPlayed = 0;
 
-    public int money = 16;
+    public int money = 0;
 
     public UserAccountPacket(){} // empty constructor for Kryo
 
     public static UserAccountPacket createDefault(long id) {
         UserAccountPacket p = new UserAccountPacket();
         p.userID = id;
-        p.toolBuilders = new ArrayList<>();
-        p.sensorBuilders = new ArrayList<>();
-        p.toolBuilders.add(new MouthBuilder());
-        p.toolBuilders.add(new FlagellaBuilder());
-        p.toolBuilders.add(new HornBuilder());
-        p.toolBuilders.add(new GripperBuilder());
-        p.sensorBuilders.add(new EyeBuilder());
 
         // get initial values from default shop items
         List<ShopItem> shopItems = makeShopItems(p);
