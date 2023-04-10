@@ -94,6 +94,38 @@ public class GenerationScreen implements Screen {
         hornCheckbox.setChecked(false);
 
         // Checking whether the builders for each component are present for user account and automatically enabling
+
+
+        // Flagella and mouth enabled by default
+        flagellaCheckbox.setChecked(true);
+        flagellaAllowed = true;
+        flagellaEnabled.set(true);
+
+        mouthCheckbox.setChecked(true);
+        mouthAllowed = true;
+        mouthEnabled.set(true);
+
+        // Rest of the components check if the user bought a level
+        if (GameClient.getInstance().user.eyeLevel == 2) {
+            eyeCheckbox.setChecked(true);
+            eyeAllowed = true;
+            eyeEnabled.set(true);
+        }
+
+        if (GameClient.getInstance().user.hornLevel == 2) {
+            hornCheckbox.setChecked(true);
+            hornAllowed = true;
+            hornEnabled.set(true);
+        }
+
+        if (GameClient.getInstance().user.gripperLevel == 2) {
+            gripperCheckbox.setChecked(true);
+            gripperAllowed = true;
+            gripperEnabled.set(true);
+        }
+
+        /*
+        // Old version that checks the builders
         for (SensorBuilder s: GameClient.getInstance().user.sensorBuilders) {
             if (s instanceof EyeBuilder) {
                 eyeCheckbox.setChecked(true);
@@ -101,6 +133,7 @@ public class GenerationScreen implements Screen {
                 eyeEnabled.set(true);
             }
         }
+
         for (ToolBuilder t: GameClient.getInstance().user.toolBuilders) {
             if (t instanceof MouthBuilder) {
                 mouthCheckbox.setChecked(true);
@@ -120,6 +153,8 @@ public class GenerationScreen implements Screen {
                 gripperEnabled.set(true);
             }
         }
+
+        */
 
         if (!eyeAllowed) eyeCheckbox.setColor(0f, 0f, 0f, .5f);
         if (!mouthAllowed) mouthCheckbox.setColor(0f, 0f, 0f, .5f);
@@ -387,13 +422,13 @@ public class GenerationScreen implements Screen {
 
         // Components column
         componentsTable.row().pad(0,0,10,0);
-        componentsTable.add(eyeCheckbox).align(Align.left);
-
-        componentsTable.row().pad(0,0,10,0);
         componentsTable.add(flagellaCheckbox).align(Align.left);
 
         componentsTable.row().pad(0,0,10,0);
         componentsTable.add(mouthCheckbox).align(Align.left);
+
+        componentsTable.row().pad(0,0,10,0);
+        componentsTable.add(eyeCheckbox).align(Align.left);
 
         componentsTable.row().pad(0,0,10,0);
         componentsTable.add(hornCheckbox).align(Align.left);

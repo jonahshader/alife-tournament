@@ -96,14 +96,14 @@ public class ShopScreen implements Screen {
         transactionTable.add(sellButton).uniform();
 
         // Make each shop item
-        for (int row = 0; row < 2; row++) {
+        for (int row = 0; row < 3; row++) {
             shopItemsTable.row().align(Align.center);
             for (int col = 0; col < 3; col++) {
                 Table wrap = new Table();
                 Table item = items.get((row * 3) + col).makeComponent(skin, descriptionLabel, costLabel, buyButton, sellButton, currencyLabel);
                 wrap.add(item);
                 item.setBackground(textureRegionDrawableBg);
-                wrap.pad(55,55,55,55);
+                wrap.pad(25,55,25,55);
                 //shopItemsTable.add(items.get((row * 3) + col).makeComponent(skin, descriptionLabel, costLabel, buyButton, sellButton)).align(Align.center);
                 shopItemsTable.add(wrap).align(Align.center);
             }
@@ -113,8 +113,6 @@ public class ShopScreen implements Screen {
         topBarTable.add(currencyLabel).width(400);
         topBarTable.add(shopLabel).width(400);
         topBarTable.add(returnButton).setActorWidth(400); // .width makes the button stretch
-
-        //shopItemsTable.setBackground(textureRegionDrawableBg);
 
         descriptionBarTable.setBackground(textureRegionDrawableBg);
         descriptionBarTable.add(descriptionLabel).align(Align.left).width(450).pad(0,55,0,55);
