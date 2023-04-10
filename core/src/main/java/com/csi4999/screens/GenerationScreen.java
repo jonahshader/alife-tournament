@@ -61,11 +61,11 @@ public class GenerationScreen implements Screen {
         menuCam.update();
 
         stage = new Stage(menuViewport, app.batch);
-        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         Table mainTable = new Table();
         Table slidersTable = new Table();
         Table componentsTable = new Table();
