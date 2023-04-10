@@ -91,9 +91,9 @@ public class ShopScreen implements Screen {
 
         // Buy and sell buttons
         transactionTable.row();
-        transactionTable.add(buyButton).uniform();
+        transactionTable.add(buyButton).uniform().fill();
         transactionTable.row();
-        transactionTable.add(sellButton).uniform();
+        transactionTable.add(sellButton).uniform().fill();
 
         // Make each shop item
         for (int row = 0; row < 3; row++) {
@@ -138,8 +138,6 @@ public class ShopScreen implements Screen {
         app.shapeDrawer.setColor(.18f, .2f, .28f, 1);
 
         app.shapeDrawer.filledRectangle(95,45, shopViewport.getWorldWidth() - 190, shopViewport.getWorldHeight() - 90);
-        //app.shapeDrawer.setColor(.26f, .28f, .36f, 1);
-        //app.shapeDrawer.filledRectangle(75,75, shopViewport.getWorldWidth() - 150, shopViewport.getWorldHeight() - 600);
 
         app.batch.end();
 

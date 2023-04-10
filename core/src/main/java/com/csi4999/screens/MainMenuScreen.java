@@ -1,5 +1,6 @@
 package com.csi4999.screens;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
@@ -65,7 +67,6 @@ public class MainMenuScreen implements Screen {
         Table buttonsTable = new Table();
 
         mainTable.setFillParent(true);
-        mainTable.top();
 
         mainTable.align(Align.center);
         buttonsTable.align(Align.center);
@@ -81,7 +82,7 @@ public class MainMenuScreen implements Screen {
 
         TextButton savedEntitiesButton = new TextButton("Load", skin);
         TextButton LeaderboardButton = new TextButton("Leaderboard", skin);
-        TextButton settingsButton = new TextButton("Settings", skin);
+        TextButton fullscreenButton = new TextButton("F", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
 
@@ -124,10 +125,14 @@ public class MainMenuScreen implements Screen {
             }
         });
 
-        settingsButton.addListener(new ClickListener(){
+        fullscreenButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SettingsScreen(app));
+                if (Gdx.graphics.isFullscreen()) {
+                    Gdx.graphics.setWindowedMode(400, 400);
+                } else {
+                    Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+                }
             }
         });
 
@@ -153,9 +158,6 @@ public class MainMenuScreen implements Screen {
         buttonsTable.row().pad(0, 0, 10, 0);
 
 
-        buttonsTable.add(settingsButton).fill().uniform();
-
-
         if (GameClient.getInstance().user.is_admin) {
 
             TextButton saveTestButton = new TextButton("Save Test", skin);
@@ -167,7 +169,7 @@ public class MainMenuScreen implements Screen {
             });
             buttonsTable.row().pad(0, 0, 10, 0);
             buttonsTable.add(saveTestButton).fill().uniform();
-            buttonsTable.row().pad(30, 0, 0, 0);
+            buttonsTable.row().pad(0, 0, 0, 0);
         }
         else
             buttonsTable.row().pad(0, 0, 10, 0);
@@ -178,7 +180,8 @@ public class MainMenuScreen implements Screen {
         mainTable.add(title);
         mainTable.row();
         mainTable.add(buttonsTable);
-
+        mainTable.row();
+        mainTable.add(fullscreenButton).align(Align.left);
 
         stage.addActor(mainTable);
     }
