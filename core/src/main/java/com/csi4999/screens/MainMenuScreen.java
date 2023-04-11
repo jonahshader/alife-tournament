@@ -82,6 +82,7 @@ public class MainMenuScreen implements Screen {
 
         TextButton savedEntitiesButton = new TextButton("Load", skin);
         TextButton LeaderboardButton = new TextButton("Leaderboard", skin);
+        TextButton infoButton = new TextButton("Info", skin);
         TextButton fullscreenButton = new TextButton("F", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
@@ -125,6 +126,14 @@ public class MainMenuScreen implements Screen {
             }
         });
 
+        infoButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+//                ScreenStack.push(new SettingsScreen(app));
+                ScreenStack.push(new InfoScreen(app));
+            }
+        });
+
         fullscreenButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -156,6 +165,9 @@ public class MainMenuScreen implements Screen {
 
         buttonsTable.add(LeaderboardButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
+
+
+        buttonsTable.add(infoButton).fill().uniform();
 
 
         if (GameClient.getInstance().user.is_admin) {

@@ -61,11 +61,11 @@ public class GenerationScreen implements Screen {
         menuCam.update();
 
         stage = new Stage(menuViewport, app.batch);
-        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         Table mainTable = new Table();
         Table slidersTable = new Table();
         Table componentsTable = new Table();
@@ -203,10 +203,10 @@ public class GenerationScreen implements Screen {
         Label foodTargetValueLabel = new Label(String.valueOf(user.maxFood), skin);
 
         // Food Spread
-        Slider foodDeviationSlider = new Slider(128, 8192, 1, false, skin);
-        foodDeviationSlider.setValue(8192);
+        Slider foodDeviationSlider = new Slider(128, 2048, 1, false, skin);
+        foodDeviationSlider.setValue(2048);
         Label foodDeviationLabel = new Label("Food Deviation", skin);
-        Label foodDeviationValueLabel = new Label(String.valueOf(8192), skin);
+        Label foodDeviationValueLabel = new Label(String.valueOf(2048), skin);
 
         // Min Sensors
         Slider minSensorSlider = new Slider(0, user.maxSensors, 1, false, skin);
