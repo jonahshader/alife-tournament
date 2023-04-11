@@ -4,14 +4,18 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.ScreenStack;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
 
@@ -27,7 +31,7 @@ public class InfoScreen implements Screen {
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
         menuCam = new OrthographicCamera();
-        menuViewport = new FitViewport(640, 360, menuCam);
+        menuViewport = new FitViewport(480, 360, menuCam);
 
         menuCam.position.set(menuCam.viewportWidth/2, menuCam.viewportHeight/2, 0);
         menuCam.update();
@@ -43,16 +47,26 @@ public class InfoScreen implements Screen {
         mainTable.setSize(menuViewport.getWorldWidth(), menuViewport.getWorldHeight());
         mainTable.center();
 
-        Label info1 = new Label("This is a game about training creatures to fight in tournaments. Train new creatures by going to 'Training'. Start a tournament by clicking 'Tournament' and selecting a region with creatures. Get money by having more creatures left by the end of the tournament. Use that money to buy upgrades in the shop to evolve better creatures.", skin);
+        Label infoLabel = new Label("Information", skin);
+
+        Label info1 = new Label("This is a game about training creatures to fight in tournaments. Press 'Play' from the main menu to start training new creatures. Start a tournament by clicking 'Tournament' from play, then select the creatures you want in the tournament. Get money by having more creatures remaining by the end of the tournament. Use that money to buy upgrades in the shop to evolve better creatures.", skin);
         info1.setWrap(true);
 
-//        info1.setSize(menuViewport.getWorldWidth(), menuViewport.getWorldHeight());
-//        info1.setWidth(menuViewport.getWorldWidth());
-//        System.out.println(menuViewport.getWorldWidth());
+        TextButton back = new TextButton("Back", skin);
+
+        back.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ScreenStack.pop();
+            }
+        });
 
         mainTable.row().pad(35);
-//        mainTable.add(info1).setActorWidth(menuViewport.getWorldWidth());
+        mainTable.add(infoLabel).center();
+        mainTable.row().pad(35);
         mainTable.add(info1).width(menuViewport.getWorldWidth() - 70);
+        mainTable.row().pad(35);
+        mainTable.add(back);
 
         stage.addActor(mainTable);
     }
