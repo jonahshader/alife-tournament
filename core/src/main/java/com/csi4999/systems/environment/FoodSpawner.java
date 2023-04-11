@@ -26,7 +26,12 @@ public class FoodSpawner {
 
     public void run() {
         handleRemoval();
-        if (food.size() < properties.foodTarget) {
+        // count living food
+        int livingFood = 0;
+        for (Food f : food) {
+            if (f.growable) livingFood++;
+        }
+        if (livingFood < properties.foodTarget) {
             addRandomFood(false);
         }
     }

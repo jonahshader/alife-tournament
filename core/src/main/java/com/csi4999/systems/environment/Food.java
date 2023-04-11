@@ -20,10 +20,10 @@ public class Food extends Circle {
     private static final float GROW_RATE = 2f;
     private float targetEnergy;
 
-
+    private int lifeRemaining = 60 * 100;
 
     private float energy;
-    private boolean growable = true;
+    boolean growable = true;
 
 
     public Food() {}
@@ -61,9 +61,14 @@ public class Food extends Circle {
     @Override
     public void move(float dt, PhysicsObject parent) {
         if (!removeQueued) {
-            if (growable)
+            if (growable) {
                 energy += Math.tanh(targetEnergy - energy) * dt * GROW_RATE;
+            } else {
+                lifeRemaining--;
+            }
+
             radius = energyToRadius(energy);
+            if (lifeRemaining <= 0) queueRemoval();
 
             super.move(dt, parent);
         }
