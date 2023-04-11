@@ -112,9 +112,9 @@ public class ShopScreen implements Screen {
         }
 
 
-        topBarTable.add(currencyLabel).width(400);
-        topBarTable.add(shopLabel).width(400);
-        topBarTable.add(returnButton).setActorWidth(400); // .width makes the button stretch
+        topBarTable.add(currencyLabel).width(300);
+        topBarTable.add(shopLabel).width(300);
+        topBarTable.add(returnButton).setActorWidth(300); // .width makes the button stretch
 
         descriptionBarTable.setBackground(textureRegionDrawableBg);
         descriptionBarTable.add(descriptionLabel).align(Align.left).width(425).pad(0,55,0,55);
