@@ -101,7 +101,7 @@ public class ChunkSelector implements InputProcessor {
             Vector2 worldPos = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
             newEnv.removeOutsideOfRectangle(new Rectangle(worldPos.x - CHUNK_SIZE/2, worldPos.y - CHUNK_SIZE/2, CHUNK_SIZE, CHUNK_SIZE));
             newEnv.physics.shiftObjects(worldPos.scl(-1f));
-            newEnv.update();
+//            newEnv.update();
 
             newEnv.userID = GameClient.getInstance().user.userID;
 

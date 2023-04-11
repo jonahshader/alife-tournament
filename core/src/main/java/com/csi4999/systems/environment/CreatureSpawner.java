@@ -62,6 +62,7 @@ public class CreatureSpawner {
             if (c.removeQueued && c.energy >= 1) {
                 // spawn food
                 foodSpawner.addFoodAtPos(new Vector2(c.position), c.energy);
+                System.out.println("Creating dead creature food.");
             }
         }
         creatures.removeIf(c -> c.removeQueued);

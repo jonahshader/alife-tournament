@@ -159,7 +159,13 @@ public class PhysicsEngine {
 
     public void removeOutsideOfRectangle(Rectangle rectangle) {
         for (PhysicsObject o : objects) {
-            if (!rectangle.contains(o.position)) o.queueRemoval();
+            if (!rectangle.contains(o.position)) {
+                if (o instanceof Creature) {
+                    ((Creature)o).energy = -1; // remove energy so it doesn't produce dead food.
+                }
+                o.queueRemoval();
+            }
+
         }
 
         // handle removal of things
