@@ -38,7 +38,9 @@ public class ShopScreen implements Screen {
         bgPixmap = new Pixmap(1,1, Pixmap.Format.RGB565);
         shopElementColor = new Color(.26f, .28f, .36f, 1);
         shopCam = new OrthographicCamera();
-        shopViewport = new FitViewport(1280, 720, shopCam);
+//        shopViewport = new FitViewport(1280, 720, shopCam); // 1280, 720
+        shopViewport = new FitViewport(960, 540, shopCam); // 1280, 720
+//        shopViewport = new FitViewport(800, 720, shopCam);
         shopCam.position.set(shopCam.viewportWidth/2, shopCam.viewportHeight/2, 0);
         shopCam.update();
 
@@ -103,7 +105,7 @@ public class ShopScreen implements Screen {
                 Table item = items.get((row * 3) + col).makeComponent(skin, descriptionLabel, costLabel, buyButton, sellButton, currencyLabel);
                 wrap.add(item);
                 item.setBackground(textureRegionDrawableBg);
-                wrap.pad(25,55,25,55);
+                wrap.pad(20,50,20,50);
                 //shopItemsTable.add(items.get((row * 3) + col).makeComponent(skin, descriptionLabel, costLabel, buyButton, sellButton)).align(Align.center);
                 shopItemsTable.add(wrap).align(Align.center);
             }
@@ -115,13 +117,13 @@ public class ShopScreen implements Screen {
         topBarTable.add(returnButton).setActorWidth(400); // .width makes the button stretch
 
         descriptionBarTable.setBackground(textureRegionDrawableBg);
-        descriptionBarTable.add(descriptionLabel).align(Align.left).width(450).pad(0,55,0,55);
-        descriptionBarTable.add(costLabel).pad(0,55,0,55).size(50, 100);
-        descriptionBarTable.add(transactionTable).size(50, 100).pad(0,0,0,25);
+        descriptionBarTable.add(descriptionLabel).align(Align.left).width(425).pad(0,55,0,55);
+        descriptionBarTable.add(costLabel).pad(0,55,0,55).size(50, 80);
+        descriptionBarTable.add(transactionTable).size(50, 80).pad(0,0,0,25);
 
-        mainTable.add(topBarTable).align(Align.center).pad(10, 0, 55, 0);
+        mainTable.add(topBarTable).align(Align.center).pad(10, 0, 30, 0);
         mainTable.row();
-        mainTable.add(shopItemsTable).align(Align.center).pad(0,0,55,0);
+        mainTable.add(shopItemsTable).align(Align.center).pad(0,0,30,0);
         mainTable.row();
         mainTable.add(descriptionBarTable).align(Align.center);
 

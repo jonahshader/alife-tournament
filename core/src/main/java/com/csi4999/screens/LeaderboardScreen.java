@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
+import com.csi4999.singletons.ScreenStack;
 import com.csi4999.systems.networking.clientListeners.RankingResponseListener;
 import com.csi4999.systems.networking.common.RankingInfo;
 import com.csi4999.systems.networking.common.SavedCreatureDescription;
@@ -104,7 +105,7 @@ public class LeaderboardScreen implements Screen {
         backButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new MainMenuScreen(app));
+                ScreenStack.pop();
             }
         });
 

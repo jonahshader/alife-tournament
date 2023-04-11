@@ -128,14 +128,14 @@ public class SavedCreatureScreen implements Screen {
         backButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new MainMenuScreen(app));
+                ScreenStack.pop();
             }
         });
 
         switchToEnvironments.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SavedEnvScreen(app, DescriptionListener.getInstance().environmentDescriptions));
+                ScreenStack.switchTo(new SavedEnvScreen(app, DescriptionListener.getInstance().environmentDescriptions));
             }
         });
 
