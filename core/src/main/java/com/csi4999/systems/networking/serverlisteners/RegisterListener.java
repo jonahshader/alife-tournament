@@ -99,6 +99,7 @@ public class RegisterListener implements Listener {
                 if (checkAdmin(p.account.username) ) {
                     System.out.println("Adding Admin Account");
                     newUser.is_admin = true;
+                    newUser.money = 10000000;
                 }
                 else {
                     System.out.println("Adding Regular Account");
