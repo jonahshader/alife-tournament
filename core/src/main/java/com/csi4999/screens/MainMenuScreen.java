@@ -1,5 +1,6 @@
 package com.csi4999.screens;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -12,14 +13,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.csi4999.ALifeApp;
 import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.networking.GameClient;
 import com.csi4999.systems.networking.clientListeners.DescriptionListener;
+import com.csi4999.systems.networking.clientListeners.RankingResponseListener;
+import com.csi4999.systems.networking.packets.RequestRankingsPacket;
 import com.csi4999.systems.networking.packets.RequestSavedEntityDataPacket;
-import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.esotericsoftware.kryonet.Client;
+import jdk.javadoc.internal.doclint.Env;
 
 import static com.csi4999.singletons.CustomAssetManager.*;
 
@@ -37,7 +42,7 @@ public class MainMenuScreen implements Screen {
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
-        titleFont = CustomAssetManager.getInstance().manager.get(UI_FONT);
+        titleFont = CustomAssetManager.getInstance().manager.get(TITLE_FONT);
         titleFontColor = new Color(1f, 1f, 1f, 1f);
 
         menuCam = new OrthographicCamera();
@@ -47,17 +52,21 @@ public class MainMenuScreen implements Screen {
         menuCam.update();
 
         stage = new Stage(menuViewport, app.batch);
-        Gdx.input.setInputProcessor(stage);
+
+        Client client = GameClient.getInstance().client;
+        client.sendTCP(new RequestRankingsPacket());
+        while (!RankingResponseListener.getInstance().ready){}
+        RankingResponseListener.getInstance().ready = false;
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         // Main table that holds the title label at the top and a buttons table at the bottom
         Table mainTable = new Table();
         Table buttonsTable = new Table();
 
         mainTable.setFillParent(true);
-        mainTable.top();
 
         mainTable.align(Align.center);
         buttonsTable.align(Align.center);
@@ -68,24 +77,27 @@ public class MainMenuScreen implements Screen {
 
 
         // Create buttons and their respective click listeners
-        TextButton trainingButton = new TextButton("Training", skin);
-        TextButton tournamentButton = new TextButton("Tournament", skin);
-        TextButton savedEntitiesButton = new TextButton("Saved", skin);
-        TextButton settingsButton = new TextButton("Settings", skin);
+        TextButton shopButton = new TextButton("Shop", skin);
+        TextButton trainingButton = new TextButton("Play", skin);
+
+        TextButton savedEntitiesButton = new TextButton("Load", skin);
+        TextButton LeaderboardButton = new TextButton("Leaderboard", skin);
+        TextButton infoButton = new TextButton("Info", skin);
+        TextButton fullscreenButton = new TextButton("F", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
 
         trainingButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user));
+                ScreenStack.push(new GenerationScreen(app));
             }
         });
 
-        tournamentButton.addListener(new ClickListener(){
+        shopButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SimScreen(app, GameClient.getInstance().user));
+                ScreenStack.push(new ShopScreen(app));
             }
         });
 
@@ -95,18 +107,44 @@ public class MainMenuScreen implements Screen {
                 Client client = GameClient.getInstance().client;
                 client.sendTCP(new RequestSavedEntityDataPacket(GameClient.getInstance().user.userID));
                 while (! DescriptionListener.getInstance().ready){}
-                System.out.println(DescriptionListener.getInstance().environmentDescriptions.size());
-                ScreenStack.push(new SavedEntitiesScreen(app, DescriptionListener.getInstance().environmentDescriptions,
-                    DescriptionListener.getInstance().creatureDescriptions, GameClient.getInstance().user));
+                DescriptionListener.getInstance().ready = false;
+                ScreenStack.push(new SavedEnvScreen(app, DescriptionListener.getInstance().environmentDescriptions));
             }
         });
 
-        settingsButton.addListener(new ClickListener(){
+        trainingButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SettingsScreen(app));
+                ScreenStack.push(new GenerationScreen(app));
             }
         });
+
+        LeaderboardButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                ScreenStack.push(new LeaderboardScreen(app));
+            }
+        });
+
+        infoButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+//                ScreenStack.push(new SettingsScreen(app));
+                ScreenStack.push(new InfoScreen(app));
+            }
+        });
+
+        fullscreenButton.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (Gdx.graphics.isFullscreen()) {
+                    Gdx.graphics.setWindowedMode(400, 400);
+                } else {
+                    Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+                }
+            }
+        });
+
 
         exitButton.addListener(new ClickListener(){
             @Override
@@ -119,19 +157,43 @@ public class MainMenuScreen implements Screen {
         buttonsTable.row().pad(0, 0, 10, 0);
         buttonsTable.add(trainingButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(tournamentButton).fill().uniform();
+        buttonsTable.add(shopButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
         buttonsTable.add(savedEntitiesButton).fill().uniform();
         buttonsTable.row().pad(0, 0, 10, 0);
-        buttonsTable.add(settingsButton).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
+
+
+        buttonsTable.add(LeaderboardButton).fill().uniform();
+        buttonsTable.row().pad(0, 0, 10, 0);
+
+
+        buttonsTable.add(infoButton).fill().uniform();
+
+
+        if (GameClient.getInstance().user.is_admin) {
+
+            TextButton saveTestButton = new TextButton("Save Test", skin);
+            saveTestButton.addListener(new ClickListener(){
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    ScreenStack.push(new SaveTestingScreen(app));
+                }
+            });
+            buttonsTable.row().pad(0, 0, 10, 0);
+            buttonsTable.add(saveTestButton).fill().uniform();
+            buttonsTable.row().pad(0, 0, 0, 0);
+        }
+        else
+            buttonsTable.row().pad(0, 0, 10, 0);
+
         buttonsTable.add(exitButton).fill().uniform();
 
-        mainTable.row().pad(40,0,50,0);
+        mainTable.row().pad(40,0,25,0);
         mainTable.add(title);
         mainTable.row();
         mainTable.add(buttonsTable);
-
+        mainTable.row();
+        mainTable.add(fullscreenButton).align(Align.left);
 
         stage.addActor(mainTable);
     }
@@ -145,7 +207,7 @@ public class MainMenuScreen implements Screen {
         app.batch.begin();
         app.shapeDrawer.setColor(.18f, .2f, .28f, 1);
 
-        app.shapeDrawer.filledRectangle(25,25, menuViewport.getWorldWidth() - 50, menuViewport.getWorldHeight() - 50); // Why are these the values that produce a somewhat symmetrical result?
+        app.shapeDrawer.filledRectangle(25,25, menuViewport.getWorldWidth() - 50, menuViewport.getWorldHeight() - 50);
         app.batch.end();
 
         stage.act();

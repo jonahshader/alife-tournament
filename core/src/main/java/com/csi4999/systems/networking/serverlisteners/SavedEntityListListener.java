@@ -45,6 +45,7 @@ public class SavedEntityListListener implements Listener {
 
     private void sendList(Connection c, RequestSavedEntityDataPacket p) {
         List<SavedEnvironmentDescription> envs = new ArrayList<>();
+        List<SavedCreatureDescription> creatures = new ArrayList<>();
 
         try {
             PreparedStatement s = db.con.prepareStatement(ENV_LIST_QUERY);
@@ -63,7 +64,7 @@ public class SavedEntityListListener implements Listener {
             throw new RuntimeException(exception);
         }
 
-        List<SavedCreatureDescription> creatures = new ArrayList<>();
+
 
         try {
             PreparedStatement s = db.con.prepareStatement(CREATURE_LIST_QUERY);

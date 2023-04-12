@@ -38,7 +38,7 @@ public abstract class Circle extends Collider {
         }
     }
 
-    private boolean circleCheck(Circle o) {
+    protected boolean circleCheck(Circle o) {
         return (o.transformedPos.x - transformedPos.x) * (o.transformedPos.x - transformedPos.x) +
             (o.transformedPos.y - transformedPos.y) * (o.transformedPos.y - transformedPos.y) <=
             (o.transformedRadius + transformedRadius) * (o.transformedRadius + transformedRadius);

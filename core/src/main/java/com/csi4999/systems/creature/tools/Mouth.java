@@ -16,7 +16,7 @@ public class Mouth extends Circle implements Tool {
     private static final float ENERGY_CONSUMPTION_DYNAMIC = 0.3f; // units per strength squared per second
     private static final float ENERGY_CONSUMPTION_STATIC = 0.03f; // units per second
     private static final float MUTATE_ROTATION_STD = 1f;
-    private static final float MAX_CONSUME_RATE = 30f;
+    private static final float MAX_CONSUME_RATE = 15f;
 
     private Creature parent;
     private MouthPart left, right;
@@ -28,10 +28,16 @@ public class Mouth extends Circle implements Tool {
     // copy constructor
     public Mouth(Mouth m) {
         super(new Vector2(m.position), m.radius);
+        computedTransform.set(m.computedTransform);
+        oldTransform.set(m.oldTransform);
+        worldTransform.set(m.worldTransform);
         rotationDegrees = m.rotationDegrees;
         left = new MouthPart();
         left.scale.y = -1;
         right = new MouthPart();
+
+        left.computeTransform(this);
+        right.computeTransform(this);
         getChildren().add(left);
         getChildren().add(right);
         animationProgress = m.animationProgress;
@@ -89,7 +95,7 @@ public class Mouth extends Circle implements Tool {
     }
 
     @Override
-    public Tool copy(Creature newParent, PhysicsEngine engine) {
+    public Tool copyTool(Creature newParent, PhysicsEngine engine) {
         Mouth m = new Mouth(this);
         m.parent = newParent;
         newParent.getChildren().add(m);

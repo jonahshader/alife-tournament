@@ -1,5 +1,6 @@
 package com.csi4999.systems.networking.clientListeners;
 
+import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.environment.Environment;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -8,6 +9,7 @@ public class LoadListener implements Listener {
 
     private static LoadListener instance;
     public Environment environment;
+    public Creature creature;
     public volatile boolean ready;
 
     private LoadListener(){this.ready=false;}
@@ -25,6 +27,11 @@ public class LoadListener implements Listener {
 
             ready = false;
             this.environment = (Environment) o;
+            ready = true;
+        } else if (o instanceof Creature) {
+            System.out.println("Received Creature");
+            ready = false;
+            this.creature = (Creature) o;
             ready = true;
         }
     }

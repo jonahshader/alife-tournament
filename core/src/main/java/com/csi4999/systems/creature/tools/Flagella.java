@@ -21,11 +21,15 @@ public class Flagella extends PhysicsObject implements Tool {
     private Vector2 thrust;
     private float lastStrength = 0f;
     private float animationProgress = 0;
+    private boolean opposingThrust = false;
 
     public Flagella(){}
     // copy constructor
     public Flagella(Flagella f) {
         super(new Vector2(f.position), new Vector2(f.velocity), new Vector2(f.acceleration));
+        computedTransform.set(f.computedTransform);
+        oldTransform.set(f.oldTransform);
+        worldTransform.set(f.worldTransform);
         thrust = new Vector2(f.thrust);
         lastStrength = f.lastStrength;
         animationProgress = f.animationProgress;
@@ -46,6 +50,11 @@ public class Flagella extends PhysicsObject implements Tool {
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
+        if (opposingThrust) {
+            color.set(1f, 0.6f, 0.6f, 1f);
+        } else {
+            color.set(0.7f, 0.95f, 0.95f, 1f);
+        }
         Sprite circle = CustomGraphics.getInstance().circle;
         circle.setScale(2 * 2f / circle.getWidth());
         circle.setOriginBasedPosition(0f, 0f);
@@ -74,6 +83,17 @@ public class Flagella extends PhysicsObject implements Tool {
         lastStrength = strength;
         float scl = strength * FORCE;
         thrust.set(scl / parent.getMass(), 0f).rotateRad(theta);
+//        float scl2 = thrust.dot(parent.velocity) / (thrust.len() * parent.velocity.len());
+//        if (Float.isNaN(scl2)) scl2 = -1;
+//        scl2 = (2-scl2)/3;
+//        System.out.println(scl2);
+//        thrust.scl(scl2);
+        if (thrust.dot(parent.velocity) < 0) {
+            thrust.scl(4); // increase thrust if reverse
+            opposingThrust = true;
+        } else {
+            opposingThrust = false;
+        }
         parent.acceleration.add(thrust);
 
         float I = .5f * parent.radius * parent.radius * parent.getMass();
@@ -89,7 +109,7 @@ public class Flagella extends PhysicsObject implements Tool {
     }
 
     @Override
-    public Tool copy(Creature newParent, PhysicsEngine engine) {
+    public Tool copyTool(Creature newParent, PhysicsEngine engine) {
         Flagella newF = new Flagella(this);
         newParent.getChildren().add(newF);
         return newF;

@@ -14,7 +14,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class RegisterListener implements Listener {
 
@@ -26,9 +30,24 @@ public class RegisterListener implements Listener {
 
     private final String getUserIDQuery = "SELECT user_id FROM user WHERE username = ? AND password = ?";
 
+    private ArrayList<String> registeredAdmins;
+
     public RegisterListener(Database db, Kryo k) {
         this.db = db;
         this.k = k;
+        registeredAdmins = new ArrayList<>();
+        try {
+            File f = new File("Server/Admins/register.txt");
+            Scanner scan = new Scanner(f);
+            while (scan.hasNextLine()) {
+                String name = scan.nextLine();
+                registeredAdmins.add(name);
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Admin File not found");
+        }
+
     }
 
     @Override
@@ -76,6 +95,17 @@ public class RegisterListener implements Listener {
                 long userID = result.getLong("user_id");
                 System.out.println("found user with id " + userID); //log
                 UserAccountPacket newUser = UserAccountPacket.createDefault(userID);
+
+                if (checkAdmin(p.account.username) ) {
+                    System.out.println("Adding Admin Account");
+                    newUser.is_admin = true;
+                    newUser.money = 10000000;
+                }
+                else {
+                    System.out.println("Adding Regular Account");
+                    newUser.is_admin = false;
+                }
+
                 db.serializeObject(SerializedType.USER_ACCOUNT, newUser.userID, k, newUser);
                 c.sendTCP(new RegisterSuccessPacket());
             } else {
@@ -85,5 +115,13 @@ public class RegisterListener implements Listener {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean checkAdmin(String username) {
+        for (String s : registeredAdmins) {
+            if (username.equals(s))
+                return true;
+        }
+        return false;
     }
 }

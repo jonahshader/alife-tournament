@@ -1,7 +1,5 @@
 CREATE TABLE IF NOT EXISTS creature (
 	creature_id INTEGER PRIMARY KEY,
-	wins INTEGER NOT NULL,
-	losses INTEGER NOT NULL,
 	user_id INTEGER NOT NULL,
 
 	FOREIGN KEY (user_id)

@@ -20,11 +20,10 @@ import com.csi4999.systems.networking.clientListeners.RegisterFeedbackListener;
 import com.csi4999.systems.networking.common.Account;
 import com.csi4999.systems.networking.packets.LoginPacket;
 import com.csi4999.systems.networking.packets.RegisterPacket;
-import com.csi4999.systems.networking.packets.UserAccountPacket;
 import com.esotericsoftware.kryonet.Client;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
-import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
+import static com.csi4999.singletons.CustomAssetManager.TITLE_FONT;
 
 public class LoginScreen implements Screen {
     private Skin skin;
@@ -35,12 +34,14 @@ public class LoginScreen implements Screen {
     private BitmapFont titleFont;
     private Color titleFontColor;
 
+
+
     public LoginScreen(ALifeApp app) {
         this.app = app;
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
-        titleFont = CustomAssetManager.getInstance().manager.get(UI_FONT);
+        titleFont = CustomAssetManager.getInstance().manager.get(TITLE_FONT);
         titleFontColor = new Color(1f, 1f, 1f, 1f);
 
         menuCam = new OrthographicCamera();
@@ -50,11 +51,11 @@ public class LoginScreen implements Screen {
         menuCam.update();
 
         stage = new Stage(menuViewport, app.batch);
-        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         // Main table that holds the title label at the top and a buttons table at the bottom
         Table mainTable = new Table();
         Table buttonsTable = new Table();
@@ -81,18 +82,10 @@ public class LoginScreen implements Screen {
         TextButton loginButton = new TextButton("login", skin);
 
         // Create buttons and their respective click listeners
-        TextButton savedEntitiesButton = new TextButton("Saved", skin);
         TextButton settingsButton = new TextButton("Settings", skin);
         TextButton exitButton = new TextButton("Exit", skin);
         exitButton.setColor(1f, 0f, 0f, 1f);
-        TextButton saveTestButton = new TextButton("Save Test", skin);
 
-        savedEntitiesButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-//                ScreenStack.push(new SavedEntitiesScreen(app));
-            }
-        });
 
         settingsButton.addListener(new ClickListener(){
             @Override
@@ -125,12 +118,7 @@ public class LoginScreen implements Screen {
             }
         });
 
-        saveTestButton.addListener(new ClickListener(){
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.push(new SaveTestingScreen(app));
-            }
-        });
+
 
 
         buttonsTable.row().pad(30, 0, 0, 0);
@@ -142,8 +130,8 @@ public class LoginScreen implements Screen {
         buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(registerButton).fill().uniform();
         buttonsTable.row().pad(30, 0, 0, 0);
-        buttonsTable.add(saveTestButton).fill().uniform();
-        buttonsTable.row().pad(30, 0, 0, 0);
+//        buttonsTable.add(saveTestButton).fill().uniform();
+//        buttonsTable.row().pad(30, 0, 0, 0);
         buttonsTable.add(accountResponse).fill().uniform();
 
 

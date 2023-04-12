@@ -1,7 +1,6 @@
 package com.csi4999.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -19,7 +18,7 @@ import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.ScreenStack;
 
 import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
-import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
+import static com.csi4999.singletons.CustomAssetManager.TITLE_FONT;
 
 public class NameDescriptionScreen implements Screen {
     private Skin skin;
@@ -42,7 +41,7 @@ public class NameDescriptionScreen implements Screen {
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
-        titleFont = CustomAssetManager.getInstance().manager.get(UI_FONT);
+        titleFont = CustomAssetManager.getInstance().manager.get(TITLE_FONT);
         titleFontColor = new Color(1f, 1f, 1f, 1f);
 
         menuCam = new OrthographicCamera();
@@ -53,7 +52,6 @@ public class NameDescriptionScreen implements Screen {
 
         stage = new Stage(menuViewport, app.batch);
         oldInputProcessor = Gdx.input.getInputProcessor();
-        Gdx.input.setInputProcessor(stage);
 
         // make ui
         Table t = new Table();
@@ -114,7 +112,7 @@ public class NameDescriptionScreen implements Screen {
     }
     @Override
     public void show() {
-
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override

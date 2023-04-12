@@ -13,7 +13,7 @@ import java.util.Random;
 
 public class Horn extends LineSegment implements Tool {
     private static final float MUTATE_ROT_STD = 1f;
-    private static final float MAX_DAMAGE_RATE = 1f;
+    private static final float MAX_DAMAGE_RATE = 5f;
     private static final float ENERGY_CONSUMPTION_DYNAMIC = 0.03f;
     private static final float ENERGY_CONSUMPTION_STATIC = 0.003f;
 
@@ -27,6 +27,9 @@ public class Horn extends LineSegment implements Tool {
 
     public Horn(Horn h) {
         super(new Vector2(h.position), h.lineLength);
+        computedTransform.set(h.computedTransform);
+        oldTransform.set(h.oldTransform);
+        worldTransform.set(h.worldTransform);
         rotationDegrees = h.rotationDegrees;
         lastStrength = h.lastStrength;
         lastDt = h.lastDt;
@@ -51,7 +54,6 @@ public class Horn extends LineSegment implements Tool {
 
     @Override
     public void draw(Batch batch, ShapeDrawer shapeDrawer, float parentAlpha) {
-
         shapeDrawer.setColor(color.r, color.g, color.b, parentAlpha);
         shapeDrawer.filledTriangle(0f, 1.5f, lineLength, 0f, 0f, -1.5f, color);
     }
@@ -66,7 +68,7 @@ public class Horn extends LineSegment implements Tool {
     }
 
     @Override
-    public Tool copy(Creature newParent, PhysicsEngine engine) {
+    public Tool copyTool(Creature newParent, PhysicsEngine engine) {
         Horn h = new Horn(this);
         h.parent = newParent;
         newParent.getChildren().add(h);
@@ -81,8 +83,15 @@ public class Horn extends LineSegment implements Tool {
         for (Collider c : collision) {
             if (c != parent && c instanceof Creature) {
                 Creature cr = (Creature) c;
-                cr.takeDamage(lastStrength * lastDt * MAX_DAMAGE_RATE);
+//                float attackScale = 1 - (cr.getSimilarity(this) * .5f);
+                float attackScale = (float) Math.pow(1 - (cr.getSimilarity(this) * .5f + .5f), 2);
+                cr.takeDamage(lastStrength * attackScale * lastDt * MAX_DAMAGE_RATE);
                 color.r = 0f;
+
+                if (cr.removeQueued) {
+                    parent.energy += cr.energy * .5f;
+                    cr.energy *= .5f;
+                }
             }
         }
     }

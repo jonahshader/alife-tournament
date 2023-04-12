@@ -20,7 +20,6 @@ import com.csi4999.systems.networking.GameServer;
 import com.csi4999.systems.networking.common.Account;
 import com.csi4999.systems.networking.packets.LoginPacket;
 import com.csi4999.systems.networking.packets.RegisterPacket;
-import com.csi4999.systems.networking.packets.UserAccountPacket;
 
 import java.io.IOException;
 
@@ -41,7 +40,7 @@ public class SingleMultiScreen implements Screen {
 
         skin = CustomAssetManager.getInstance().manager.get(SKIN_MAIN);
 
-        titleFont = CustomAssetManager.getInstance().manager.get(UI_FONT);
+        titleFont = CustomAssetManager.getInstance().manager.get(TITLE_FONT);
         titleFontColor = new Color(1f, 1f, 1f, 1f);
 
         menuCam = new OrthographicCamera();
@@ -51,11 +50,11 @@ public class SingleMultiScreen implements Screen {
         menuCam.update();
 
         stage = new Stage(menuViewport, app.batch);
-        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         // Main table that holds the title label at the top and a buttons table at the bottom
         Table mainTable = new Table();
         Table buttonsTable = new Table();
@@ -80,14 +79,14 @@ public class SingleMultiScreen implements Screen {
         onlineButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ScreenStack.switchTo(new ConnectScreen(app));
+                ScreenStack.push(new ConnectScreen(app));
             }
         });
 
         offlineButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                new GameServer(OFFLINE_PORT); // server doesn't need to be stored
+                app.internalServer = new GameServer(OFFLINE_PORT); // server doesn't need to be stored
                 // mimic login procedure
                 try {
                     GameClient.getInstance().tryConnect("localhost", OFFLINE_PORT);

@@ -6,13 +6,23 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.csi4999.ALifeApp;
+import com.csi4999.singletons.ScreenStack;
+import com.csi4999.systems.cosmetic.CustomParticles;
+import com.csi4999.systems.creature.Creature;
+import com.csi4999.systems.environment.EnvProperties;
 import com.csi4999.systems.environment.Environment;
+import com.csi4999.systems.networking.common.ChunkPerformance;
+import com.csi4999.systems.networking.packets.NewRanksPacket;
+import com.csi4999.systems.networking.packets.TournamentPacket;
+import com.csi4999.systems.networking.packets.TournamentResultsPacket;
 import com.csi4999.systems.networking.packets.UserAccountPacket;
-import com.csi4999.systems.ui.CreatureHud;
-import com.csi4999.systems.ui.PanCam;
-import com.csi4999.systems.ui.ToolBar;
+import com.csi4999.systems.tournament.WinCondition;
+import com.csi4999.systems.ui.*;
+
+import java.util.List;
 
 public class SimScreen implements Screen, InputProcessor {
+    public static SimScreen instance;
     public static final int GAME_WIDTH = 640;
     public static final int GAME_HEIGHT = 360;
     private final OrthographicCamera worldCam;
@@ -22,62 +32,84 @@ public class SimScreen implements Screen, InputProcessor {
     public Environment env;
 
     public volatile boolean limitSpeed = true;
-    public boolean renderingEnabled = true;
+    private boolean renderingEnabled = true;
     public volatile boolean playing = true;
 
     public UserAccountPacket user;
-    private ToolBar toolBar;
+    public ToolBar toolBar;
     private CreatureHud creatureHud;
+    private StatsHud statsHud;
+    public ChunkSelector chunkSelector;
+    private WinCondition winCondition;
+    public TournamentResultsPacket tournamentResults;
+    public NewRanksPacket newRanksPacket;
+    public List<String> chunkNames;
+    public List<Float> initialRanks;
+    private DisplayResults displayResults;
+    private CreatureNameTag creatureNameTag;
 
     private Thread simThread;
 
-    public SimScreen(ALifeApp app, UserAccountPacket user) {
+    public SimScreen(ALifeApp app, UserAccountPacket user, EnvProperties properties) {
+        this(app, user, new Environment(properties));
+    }
+
+    public SimScreen(ALifeApp app, UserAccountPacket user, EnvProperties properties, Creature creature) {
+        this(app, user, new Environment(properties, creature));
+    }
+
+    public SimScreen(ALifeApp app, UserAccountPacket user, Environment env) {
+        instance = this;
         this.app = app;
         this.user = user;
-        this.env = new Environment(3000, 150);
+        this.env = env;
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
         creatureHud = new CreatureHud(app.batch, worldCam, app, env);
+        statsHud = new StatsHud(env.creatureSpawner, env.foodSpawner);
+        chunkSelector = new ChunkSelector(worldViewport, worldCam, this);
+        toolBar = new ToolBar(app.batch, this, false);
+        displayResults = new DisplayResults(this);
 
-        toolBar = new ToolBar(app.batch, this);
-
-        InputMultiplexer m = new InputMultiplexer();
-        m.addProcessor(toolBar.stage);
-        m.addProcessor(creatureHud.stage);
-        m.addProcessor(creatureHud);
-        m.addProcessor(new PanCam(worldViewport, worldCam));
-        m.addProcessor(this);
-        Gdx.input.setInputProcessor(m);
+        setRenderingEnabled(true);
     }
 
-    public SimScreen(ALifeApp app, UserAccountPacket user, Environment environment) {
+    public SimScreen(ALifeApp app, UserAccountPacket user, TournamentPacket tournament) {
+        instance = this;
         this.app = app;
         this.user = user;
+        env = tournament.environment;
+        chunkNames = tournament.names;
+        initialRanks = tournament.initialRanks;
 
         worldCam = new OrthographicCamera();
         worldViewport = new ExtendViewport(GAME_WIDTH, GAME_HEIGHT, worldCam);
-
-        toolBar = new ToolBar(app.batch, this);
-
-        InputMultiplexer m = new InputMultiplexer();
-        m.addProcessor(toolBar.stage);
-        m.addProcessor(new PanCam(worldViewport, worldCam));
-        m.addProcessor(this);
-        Gdx.input.setInputProcessor(m);
-
-        this.env = environment;
+        creatureHud = new CreatureHud(app.batch, worldCam, app, env);
+        statsHud = new StatsHud(env.creatureSpawner, env.foodSpawner);
+        toolBar = new ToolBar(app.batch, this, true);
+        winCondition = new WinCondition(this, tournament.chunkIDs);
+        displayResults = new DisplayResults(this);
+        creatureNameTag = new CreatureNameTag(tournament.chunkIDs, tournament.names, env.creatureSpawner);
     }
 
     private void tryLaunchSimThread() {
         if (simThread == null || !simThread.isAlive()) {
             simThread = new Thread(() -> {
                 while (!limitSpeed && playing) {
-                    env.update();
+                    mainLoop();
                 }
             });
             simThread.start();
         }
+    }
+
+    private void mainLoop() {
+        env.update();
+        statsHud.update();
+        CustomParticles.update(Environment.dt);
+        if (winCondition != null)
+            winCondition.update();
     }
 
 
@@ -85,30 +117,53 @@ public class SimScreen implements Screen, InputProcessor {
     public void render(float delta) {
         if (playing) {
             if (limitSpeed) {
-                env.update();
+                mainLoop();
             } else {
                 tryLaunchSimThread();
             }
         }
 
+//        if (!savedUserRank && newRanksPacket != null && tournamentResults != null) {
+//            for (ChunkPerformance p : tournamentResults.performances) {
+//                if (p.user)
+//            }
+//
+//            savedUserRank = true;
+//        }
+
 
         worldViewport.apply();
         app.batch.setProjectionMatrix(worldCam.combined);
 
-        // set clear color
-        Gdx.gl.glClearColor(.5f, .5f, .5f, 1f);
-        // apply clear color to screen
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (renderingEnabled) {
-            app.batch.begin();
-            env.draw(app.shapeDrawer, app.batch);
-            app.batch.end();
-        }
 
         creatureHud.updateCamera();
+
+        if (renderingEnabled) {
+
+            app.batch.begin();
+            env.draw(app.shapeDrawer, app.batch, worldCam);
+            if (creatureNameTag != null) {
+                creatureNameTag.render(app.batch);
+            }
+            app.batch.end();
+        } else {
+            Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1f);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        }
+
+
         creatureHud.render(delta);
         toolBar.render();
+        statsHud.render(app.shapeDrawer);
+        if (chunkSelector != null)
+            chunkSelector.render(app.shapeDrawer, delta);
+        displayResults.render(app.shapeDrawer);
+    }
+
+    public void setRenderingEnabled(boolean enabled) {
+        renderingEnabled = enabled;
+        CustomParticles.enabled = enabled;
     }
 
     @Override
@@ -116,10 +171,24 @@ public class SimScreen implements Screen, InputProcessor {
         worldViewport.update(width, height);
         toolBar.resize(width, height);
         creatureHud.resize(width, height);
+        statsHud.resize(width, height);
+        displayResults.resize(width, height);
     }
 
     @Override
-    public void show() {}
+    public void show() {
+        InputMultiplexer m = new InputMultiplexer();
+        m.addProcessor(statsHud);
+        m.addProcessor(toolBar.stage);
+        m.addProcessor(creatureHud.stage);
+        m.addProcessor(creatureHud);
+        m.addProcessor(new PanCam(worldViewport, worldCam));
+        if (chunkSelector != null)
+            m.addProcessor(chunkSelector);
+        m.addProcessor(this);
+        Gdx.input.setInputProcessor(m);
+    }
+
     @Override
     public void pause() {}
     @Override
@@ -134,6 +203,10 @@ public class SimScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.ESCAPE) {
+            playing = false;
+            ScreenStack.switchTo(new MainMenuScreen(app));
+        }
         return false;
     }
 

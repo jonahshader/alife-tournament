@@ -2,11 +2,8 @@ package com.csi4999.systems.creature.sensors;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.csi4999.singletons.CustomAssetManager;
 import com.csi4999.singletons.CustomGraphics;
 import com.csi4999.systems.creature.Creature;
 import com.csi4999.systems.creature.Sensor;
@@ -18,33 +15,35 @@ import com.csi4999.systems.physics.PhysicsEngine;
 import space.earlygrey.shapedrawer.ShapeDrawer;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Random;
 
-import static com.csi4999.singletons.CustomAssetManager.SKIN_MAIN;
-import static com.csi4999.singletons.CustomAssetManager.UI_FONT;
+import static com.csi4999.systems.CustomMath.towardsValue;
 
 public class Eye extends LineSegment implements Sensor {
-    private float[] visionData;
+    private float[] visionData, baselineVisionData;
+    private static final float MUTATE_POS_STD = 0.5f;
     private static final float MUTATE_LENGTH_STD = 0.5f;
-    private static final float MUTATE_ROTATION_STD = 0.5f;
+    private static final float MUTATE_ROTATION_STD = 1f;
 
     private static final float ENERGY_CONSUMPTION = 0.025f; // energy per second
+    private static final float EYE_DECAY = 0.05f;
 
     private Color colorTransparent;
-    private Collider parent;
+    private Collider parent; // TODO: fix bug where parent isn't set correctly in tournament
 
     private float lastHitDist;
 
     public Eye(Eye e) {
         super(e.lineLength);
+        computedTransform.set(e.computedTransform);
+        oldTransform.set(e.oldTransform);
+        worldTransform.set(e.worldTransform);
         lastHitDist = e.lastHitDist;
         position.set(e.position);
         visionData = e.visionData.clone(); // clone is shallow but its fine because its floats
+        baselineVisionData = e.baselineVisionData.clone();
         colorTransparent = new Color(e.colorTransparent);
         rotationDegrees = e.rotationDegrees;
-
     }
 
     public Eye() {} //Kryo
@@ -57,6 +56,7 @@ public class Eye extends LineSegment implements Sensor {
         position.set(pos);
         // similarity score, isFood, distance
         visionData = new float[] {-1f, 0f, 0f};
+        baselineVisionData = new float[] {-1f, 0f, 0f};
         colorTransparent = new Color();
     }
 
@@ -66,6 +66,9 @@ public class Eye extends LineSegment implements Sensor {
         // Wiggle vision line length
         lineLength += rand.nextGaussian() * MUTATE_LENGTH_STD;
         rotationDegrees += rand.nextGaussian() * MUTATE_ROTATION_STD;
+
+        position.x += rand.nextGaussian() * MUTATE_POS_STD;
+        position.y += rand.nextGaussian() * MUTATE_POS_STD;
     }
 
     @Override
@@ -74,7 +77,7 @@ public class Eye extends LineSegment implements Sensor {
     }
 
     @Override
-    public Sensor copy(Creature newParent, PhysicsEngine engine) {
+    public Sensor copySensor(Creature newParent, PhysicsEngine engine) {
         Eye e = new Eye(this);
         e.parent = newParent;
         newParent.getChildren().add(e);
@@ -98,21 +101,21 @@ public class Eye extends LineSegment implements Sensor {
 
     @Override
     public void handleColliders() {
+        collision.sort((o1, o2) -> {
+            float d1 = getDistToCollider(o1);
+            float d2 = getDistToCollider(o2);
+            return Float.compare(d1, d2);
+        });
 
-        if (collision.size() <= 1) {
-            Arrays.fill(visionData, 0f);
-            visionData[0] = -1; // similarity defaults to 0
-            lastHitDist = lineLength;
-            this.color.set(1f, 1f, 1f, 1f);
-        } else {
-            collision.sort((o1, o2) -> {
-                float d1 = getDistToCollider(o1);
-                float d2 = getDistToCollider(o2);
-                return Float.compare(d1, d2);
-            });
-            Collider nearest = collision.get(0);
-            if (nearest == parent)
-                nearest = collision.get(1);
+        Collider nearest = null;
+        for (Collider c : collision) {
+            if (c != parent) {
+                nearest = c;
+                break;
+            }
+        }
+
+        if (nearest != null) {
             lastHitDist = (float) Math.sqrt(getDistToCollider(nearest)) / parent.scale.x;
             visionData[0] = nearest.getSimilarity(parent);
             visionData[1] = nearest instanceof Food ? 1f : -1f;
@@ -124,10 +127,19 @@ public class Eye extends LineSegment implements Sensor {
             visionData[2] = (lineLength - visionData[2]) / lineLength;
 
             // Line changes to color of seen object
-            this.color.set(nearest.color);
+            color.set(nearest.color);
+        } else {
+            // move towards baselineVisionData
+            for (int i = 0; i < visionData.length; i++) {
+                visionData[i] = towardsValue(visionData[i], baselineVisionData[i], EYE_DECAY);
+            }
+            // also move colors towards white
+            color.r = towardsValue(color.r, 1f, EYE_DECAY);
+            color.g = towardsValue(color.g, 1f, EYE_DECAY);
+            color.b = towardsValue(color.b, 1f, EYE_DECAY);
+
+            lastHitDist = lineLength;
         }
-
-
     }
 
     private float getDistToCollider(Collider c) {

@@ -8,29 +8,59 @@ import java.util.List;
 import java.util.Random;
 
 public class FoodSpawner {
-    private static final int INITIAL_AMOUNT = 200;
-    private static final int MINIMUM_AMOUNT = 1000;
-    private static final float SPREAD_STD = 1024f;
     private List<Food> food = new ArrayList<>();
+    private EnvProperties properties;
+    private PhysicsEngine physics;
+    private Random r;
 
     public FoodSpawner(){}
 
-    public FoodSpawner(Random r, PhysicsEngine physics) {
-        for (int i = 0; i < INITIAL_AMOUNT; i++) {
-            addRandomFood(r, physics, true);
+    public FoodSpawner(Random r, PhysicsEngine physics, EnvProperties properties) {
+        this.r = r;
+        this.properties = properties;
+        this.physics = physics;
+        for (int i = 0; i < properties.initialFood; i++) {
+            addRandomFood(true);
         }
     }
 
-    public void run(Random r, PhysicsEngine physics) {
+    public void run() {
+        handleRemoval();
+        // count living food
+        int livingFood = 0;
+        for (Food f : food) {
+            if (f.growable) livingFood++;
+        }
+        if (livingFood < properties.foodTarget) {
+            addRandomFood(false);
+        }
+    }
+
+    public void handleRemoval() {
         food.removeIf(f -> f.removeQueued);
-        if (food.size() < MINIMUM_AMOUNT) {
-            addRandomFood(r, physics, false);
-        }
     }
 
-    private void addRandomFood(Random r, PhysicsEngine physics, boolean growFully) {
-        Food f = new Food(new Vector2((float) r.nextGaussian(0f, SPREAD_STD), (float) r.nextGaussian(0f, SPREAD_STD)), r);
+    public float getAllFoodEnergy() {
+        float totalEnergy = 0;
+        for (Food f : food)
+            totalEnergy += f.getEnergy();
+        return totalEnergy;
+    }
+
+    public void merge(FoodSpawner toMerge) {
+        food.addAll(toMerge.food);
+    }
+
+    private void addRandomFood(boolean growFully) {
+        Food f = new Food(new Vector2((float) r.nextGaussian(0f, properties.foodSpawnStd), (float) r.nextGaussian(0f, properties.foodSpawnStd)), r);
         if (growFully) f.growFully();
+        physics.addCollider(f);
+        physics.addObject(f);
+        food.add(f);
+    }
+
+    public void addFoodAtPos(Vector2 pos, float energy) {
+        Food f = new Food(pos, r, energy, energy);
         physics.addCollider(f);
         physics.addObject(f);
         food.add(f);

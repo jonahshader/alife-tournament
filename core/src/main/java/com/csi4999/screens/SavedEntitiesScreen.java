@@ -70,7 +70,6 @@ public class SavedEntitiesScreen implements Screen {
         savedEntitiesCam.update();
 
         stage = new Stage(savedEntitiesViewport, app.batch);
-        Gdx.input.setInputProcessor(stage);
 
         // fake data are created
         if (noDatabase) {
@@ -85,11 +84,9 @@ public class SavedEntitiesScreen implements Screen {
     }
 
 
-
-
-
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         // main table for the screen
         Table mainTable = new Table();
         mainTable.setFillParent(true);
@@ -210,7 +207,7 @@ public class SavedEntitiesScreen implements Screen {
         backButton.addListener(new ClickListener(){
                         @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game)Gdx.app.getApplicationListener()).setScreen(new MainMenuScreen(app));
+                ScreenStack.pop();
             }
         });
 

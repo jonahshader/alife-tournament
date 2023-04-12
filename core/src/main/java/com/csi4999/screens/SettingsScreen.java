@@ -22,13 +22,12 @@ public class SettingsScreen extends AppPreferences implements Screen {
     private Skin skin;
     private final OrthographicCamera settingsCam;
     private final FitViewport settingsViewport;
-    private final ALifeApp app;
     private Stage stage;
-    private InputProcessor oldInputProcessor;
+
+    private final ALifeApp app;
 
     public SettingsScreen(ALifeApp app) {
         this.app = app;
-
         skin = new Skin(Gdx.files.internal("ui/neutralizer/skin/neutralizer-ui.json"));
 
         settingsCam = new OrthographicCamera();
@@ -38,12 +37,12 @@ public class SettingsScreen extends AppPreferences implements Screen {
         settingsCam.update();
 
         stage = new Stage(settingsViewport, app.batch);
-        oldInputProcessor = Gdx.input.getInputProcessor();
-        Gdx.input.setInputProcessor(stage);
+
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(stage);
         Table mainTable = new Table();
         mainTable.setFillParent(true);
         mainTable.top();
@@ -55,8 +54,7 @@ public class SettingsScreen extends AppPreferences implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.input.setInputProcessor(oldInputProcessor);
-                ScreenStack.pop();
+                ScreenStack.switchTo(new MainMenuScreen(app));
             }
         });
 
