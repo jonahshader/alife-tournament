@@ -85,7 +85,9 @@ public class SavedEnvScreen implements Screen {
             environmentName.setEllipsis(true);
             Label environmentDescription;
 
-            if (d.description.length() <= 25)
+            if (d.description == null)
+                environmentDescription = new Label("No Description",skin);
+            else if (d.description.length() <= 25)
                 environmentDescription = new Label(d.description,skin);
             else
                 environmentDescription = new Label(d.description.substring(0,24),skin);

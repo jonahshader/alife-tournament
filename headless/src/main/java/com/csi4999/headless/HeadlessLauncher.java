@@ -14,19 +14,15 @@ import java.util.Scanner;
 public class HeadlessLauncher {
     public static void main(String[] args) {
 //        createApplication();
-        GameServer server = new GameServer(25565); // TODO: use args
-        while (true) {
-            ExamplePacket p = new ExamplePacket();
-            p.message = "hi lol";
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+        int port = args.length == 1 ? Integer.parseInt(args[0]) : 25565;
+        System.out.println("Starting server on port " + port + "...");
+        GameServer server = new GameServer(port);
 
-//            System.out.println("sending ExamplePacket with message " + p.message);
-//            server.server.sendToAllTCP(p); // send to all connected clients
-        }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Stopping server...");
+            server.shutdown();
+        }));
+
     }
 
     private static Application createApplication() {

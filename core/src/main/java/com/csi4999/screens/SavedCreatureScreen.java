@@ -84,7 +84,9 @@ public class SavedCreatureScreen implements Screen {
             creatureName.setEllipsis(true);
             Label creatureDescription;
 
-            if (d.description.length() <= 25)
+            if (d.description == null)
+                creatureDescription = new Label("No Description",skin);
+            else if (d.description.length() <= 25)
                 creatureDescription = new Label(d.description,skin);
             else
                 creatureDescription = new Label(d.description.substring(0,24),skin);
