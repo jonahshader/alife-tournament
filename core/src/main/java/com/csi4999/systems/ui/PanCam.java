@@ -43,7 +43,7 @@ public class PanCam implements InputProcessor {
     @Override
     public boolean scrolled(float amountX, float amountY) {
         // zoom in/out, centered at mouse pos
-        float zoomScalar = (float) Math.pow(1.125f, amountY);
+        float zoomScalar = (float) Math.pow(1.25f, amountY);
         Vector2 translation = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY())).sub(new Vector2(cam.position.x, cam.position.y));
         cam.translate(translation);
         cam.update();
